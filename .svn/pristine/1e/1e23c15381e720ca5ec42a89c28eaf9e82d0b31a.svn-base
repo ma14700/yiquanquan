@@ -1,0 +1,299 @@
+<template>
+  <div>
+<!--头部  -->
+   <head-top></head-top>
+<!--头部  end-->
+<!--navbar  -->
+<mt-navbar v-model="selected" class="blank-leaving">
+  <mt-tab-item id="1">综合</mt-tab-item>
+  <mt-tab-item id="2">销量</mt-tab-item>
+  <mt-tab-item id="3">人气</mt-tab-item>
+  <mt-tab-item id="4">价格</mt-tab-item>
+  <div class="list"><i class="iconfont" @click="changeIcon"    :class="[test?'icon-list':'icon-liebiao1gai']"></i></div>
+</mt-navbar>
+<!--navbar end -->
+<!-- tab-container -->
+<mt-tab-container v-model="selected" class="blank-leaving">
+  <mt-tab-container-item id="1">
+    <div  :key="n" v-for="n in 10"  :class="[test?'lump-wraper':'item-wraper']">
+        <div class="img-box"><img src="./taocan1.jpg" alt=""></div>
+        <div class="content">
+            <p class="title">生日PARTY氢气球套餐氢气球套餐生日PARTY生日PARTY氢气球套餐氢气球套餐生日PARTY</p>
+            <p class="price">￥500.00<del>800.00</del><i class="iconfont icon-gouwuche"></i></p>
+        </div>
+    </div>
+  </mt-tab-container-item>
+  <mt-tab-container-item id="2">
+    <div  :key="n" v-for="n in 3"  :class="[test?'lump-wraper':'item-wraper']">
+        <div class="img-box"><img src="./taocan1.jpg" alt=""></div>
+        <div class="content">
+            <p class="title">生日PARTY氢气球套餐氢气球套餐生日PARTY生日PARTY氢气球套餐氢气球套餐生日PARTY</p>
+            <p class="price">￥500.00<del>800.00</del><i class="iconfont icon-gouwuche"></i></p>
+        </div>
+    </div>
+  </mt-tab-container-item>
+  <mt-tab-container-item id="3">
+    <div  :key="n" v-for="n in 4"  :class="[test?'lump-wraper':'item-wraper']">
+        <div class="img-box"><img src="./taocan1.jpg" alt=""></div>
+        <div class="content">
+            <p class="title">生日PARTY氢气球套餐氢气球套餐生日PARTY生日PARTY氢气球套餐氢气球套餐生日PARTY</p>
+            <p class="price">￥500.00<del>800.00</del><i class="iconfont icon-gouwuche"></i></p>
+        </div>
+    </div>
+  </mt-tab-container-item>
+  <mt-tab-container-item id="4">
+   <div  :key="n" v-for="n in 6"  :class="[test?'lump-wraper':'item-wraper']">
+        <div class="img-box"><img src="./taocan1.jpg" alt=""></div>
+        <div class="content">
+            <p class="title">生日PARTY氢气球套餐氢气球套餐生日PARTY生日PARTY氢气球套餐氢气球套餐生日PARTY</p>
+            <p class="price">￥500.00<del>800.00</del><i class="iconfont icon-gouwuche"></i></p>
+        </div>
+    </div>
+  </mt-tab-container-item>
+</mt-tab-container>
+<!-- tab-container end-->
+
+<!--固定搜索  -->
+<div class="aside">
+    <i class="iconfont icon-sousuo search"></i>
+    <i class="iconfont icon-dingbu02 go-top" :class="{'show':showIcon}"  @click="gotop" ></i>
+</div>
+
+<!--固定搜索 end -->
+
+ <!--查看更多  -->
+    <div class="more">
+        <span class="more-text">
+            MORE/查看更多
+        </span>
+    </div>
+
+
+
+ <!--查看更多 end  -->
+    <footer class="footer"></footer>
+    <foot-Guide selected="shop"></foot-Guide>  
+  </div>
+</template>
+
+<script>
+import { Header } from 'mint-ui';
+import { Navbar, TabItem } from 'mint-ui';
+import headTop from '../../components/head/head';
+import footGuide from '../../components/footer/footGuide';
+    export default{
+        data(){
+            return{
+            selected:'1',
+            value:'',
+            test:true,
+            scroll:'',
+            // transitionName: 'ease'
+            }
+        },
+        components:{
+            footGuide,
+            headTop 
+        },
+        computed:{
+            showIcon:function(){
+                this.changeShow();
+               
+                return this.scroll>100;
+                
+            }
+           
+        },
+        mounted() {
+            window.addEventListener('scroll', this.changeShow)
+        },
+
+        created(){
+            
+        },
+        
+        methods:{
+            handleClose(){
+
+            },
+            changeIcon:function(){
+                this.test = !this.test;
+            },
+            changeShow(){
+                this.scroll=document.body.scrollTop;   
+            },
+            gotop(){
+                if(document.body.scrollTop>100){
+                    document.body.scrollTop=0;
+                }else{
+                    console.log(document.body.scrollTop);
+                }
+            }
+        }
+    }
+</script>
+
+
+<style>
+/* .ease-transition{
+    transition: all .3s ease;
+
+}
+.ease-enter, .expand-leave{
+    height: 0;
+    padding: 0 10px;
+    opacity: 0;
+} */
+/*navbar  */
+.mint-navbar{
+    height: 1.2rem;
+    text-align: left;
+    display: block;
+    position: relative;
+}
+.mint-navbar .mint-tab-item{
+    padding: 0;
+    width: 2.2rem;
+    float: left;
+    color: #b0a4bc;
+    
+}
+.mint-navbar .mint-tab-item.is-selected{
+    border: none;
+    color: #4a2c68;
+    margin: 0;
+}
+.mint-navbar .mint-tab-item-label{
+     line-height: 1.2rem;
+    font-size: .4rem;
+     
+}
+.mint-navbar .list{ 
+    position: absolute;
+    right: 0.4rem;
+    font-size: .426667rem;
+    line-height: 1.2rem;
+    color: #b0a4bc;
+}
+
+/*container  */
+/*块  */
+.lump-wraper{
+    width: 4.466667rem;
+    float: left;
+    line-height:.64rem;
+    margin-bottom: .4rem
+}
+.lump-wraper .img-box{
+    width:100%;
+}
+.lump-wraper:nth-child(odd){
+    margin-right: .266667rem;
+}
+
+
+/*块 列表 共有  */
+.img-box{
+    border: .013333rem solid #c4bacd;
+    border-radius: .133333rem
+}
+.img-box img{
+    width:100%;
+}
+
+.title{
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: .4rem;
+    color: #492b67;
+}
+.price{
+    color: #de3163;
+    font-size: .36rem;
+    
+}
+
+.price del{
+    color: #cdc6d5;
+    margin-left: .266667rem
+}
+.price i{
+    float: right;
+    margin-right: .133333rem;
+    color: #cdc6d5;
+}
+
+/*列表 */
+.item-wraper{
+    width: 9.2rem;
+    height: 2.666667rem;
+}
+.item-wraper .img-box{
+    width: 2.666667rem;
+    float: left;
+}
+.item-wraper .title{
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient: vertical;
+     white-space: normal!important;
+     line-height: .506667rem
+}
+.item-wraper .content{
+    width: 6.47rem;
+    padding: .4rem .24rem;
+    box-sizing: border-box;
+    float: right
+}
+.item-wraper .price{
+    margin-top: .4rem
+}
+/*搜索  */
+.aside i{
+    position: fixed;
+    z-index: 100;
+    width: 1rem;
+    height: 1rem;
+    text-align: center;
+    line-height: 1rem;
+    font-size: .48rem;
+    background: #fff;
+    border-radius: 50%;
+    color: #d3cdda;
+    border: .013333rem solid #d3cdda;
+}
+.search{
+    
+    right: .4rem;
+    bottom: 3.4rem;
+   
+}
+.go-top{
+    right: .4rem;
+    bottom: 2rem;
+display: none;
+}
+.show{
+    display: block
+}
+
+/*  more*/
+.more{
+    width: 100%;
+    height: 1.4rem;
+    padding: .4rem 0;
+    box-sizing: border-box;
+}
+.more .more-text{
+    display: block;
+    width: 2.7rem;
+    font-size: .36rem;
+    margin: 0 auto;
+    border-top:.013333rem solid #beb5c9;
+    border-bottom:.013333rem solid #beb5c9;
+    color: #beb5c9;
+    line-height: .6rem;
+
+}
+</style>

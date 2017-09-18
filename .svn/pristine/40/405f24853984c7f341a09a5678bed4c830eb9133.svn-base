@@ -1,0 +1,76 @@
+import {
+    RECORD_ADDRESS,
+    ADD_CART,
+    REDUCE_CART,
+    INIT_BUYCART,
+    CLEAR_CART,
+    RECORD_SHOPDETAIL,
+    RECORD_USERINFO,
+    GET_USERINFO,
+    CONFIRM_REMARK,
+    CONFIRM_INVOICE,
+    CHOOSE_SEARCH_ADDRESS,
+    SAVE_GEOHASH,
+    CONFIRM_ADDRESS,
+    CHOOSE_ADDRESS,
+    NEED_VALIDATION,
+    SAVE_CART_ID_SIG,
+    SAVE_ORDER_PARAM,
+    CHANGE_ORDER_PARAM,
+    ORDER_SUCCESS,
+    SAVE_SHOPID,
+    SAVE_ORDER,
+    OUT_LOGIN,
+    RETSET_NAME,
+    SAVE_AVANDER,
+    SAVE_ADDRESS,
+    SAVE_ADDDETAIL,
+    SAVE_QUESTION,
+    ADD_ADDRESS,
+    BUY_CART,
+} from './mutation-types'
+
+export default {
+    //加入购物车
+    [ADD_CART](state, {
+        item_id, //商品id
+        category_id, //商品分类id
+        name, //商品名字
+        price, //商品价格
+        specs, //商品规格
+        old_price, //商品原价
+        stock, //库存
+        packing_fee, //邮费
+        goods_id
+
+
+    }) {
+        let cart = state.cartList;
+        let category = cart[category_id] = (cart[category_id] || {});
+        let item = category[item_id] = (category[item_id] || {});
+
+        if (item[goods_id]) {
+            item[goods_id]['num']++;
+        } else {
+            item[food_id] = {
+                "num": 1,
+                "id": goods_id,
+                "name": price,
+                "specs": specs,
+                "packing_fee": packing_fee,
+                "stock": stock
+            };
+        }
+        state.cartList = {...cart };
+        //存入localStorage
+        setStore('buyCart', state.cartList);
+
+    },
+    //网页初始化时从本地缓存获取购物车列表
+    [INIT_BUYCART](state) {
+        let initCart = getStore('buyCart');
+        if (initCart) {
+            state.cartList = JSON.parse(initCart);
+        }
+    },
+}

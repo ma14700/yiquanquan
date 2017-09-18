@@ -1,0 +1,124 @@
+<template>
+  <div qsearch>
+    <head-top></head-top>
+    <div class="qsearch">
+      <div class="qsearch-head">
+        <div class="head-left" @click="qsearchBack()">
+          <i class="iconfont icon-fanhui"></i>
+        </div>
+        <div  class="head-right">
+          <input type="text" placeholder="请输入关键词">
+          <i class="iconfont icon-sousuo qsearch-enter"></i>
+        </div>
+      </div>
+      <div class="qsearch-content">
+        <p>热门搜索</p>
+        <ul class="qsearch-content-title" >
+          <li v-for="item in hotGoods" @click="goGoods(item.id)" :key="item.id">{{item.name}}</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import headTop from '../../components/head/head';
+export default {
+  data(){
+    return{
+      hotGoods:[]
+    }
+  },
+  created(){
+    this.hotData();
+  },
+  methods:{
+    qsearchBack(){
+      this.$router.go(-1)
+    },
+    //传输热门商品
+    hotData(){
+      this.$http.get('/api/partypkgcat/partycatlist').then(res=>{
+        this.hotGoods = res.data;
+      })
+    },
+    goGoods(index){
+      console.log(index)
+    }
+  },
+  components:{
+    headTop
+  }
+}
+</script>
+
+<style>
+.head-left{
+  width: 10%;
+  float: left;
+  height: .933333rem;
+  line-height: .933333rem;
+  margin-left: 2%;
+}
+.head-left i {
+  font-size: .56rem;
+}
+.head-right{
+  width: 85%;
+  float: right;
+  height: .933333rem;
+  line-height: .933333rem;
+  position: relative;
+  background: #eeecf1;
+  border-radius: 5px;
+  margin-right: 3%;
+}
+.head-right input{
+  width: 90%;
+  height: .8rem;
+  padding: 0px;
+  border:none;
+  border-radius: 5px;
+  padding-left: 10px;
+  padding-right: 15%;
+  background: #eeecf1;
+  box-sizing: border-box;
+  color: #c5bcce;
+  font-size: 12px;
+  line-height: 0.8rem;
+}
+.qsearch-head{
+  margin-top: 10px;
+  height: .933333rem;
+}
+.qsearch{
+  width: 9.2rem;
+  margin:0 auto;
+  min-height: 8rem;
+}
+.qsearch-enter{
+  position: absolute;
+  font-size: .453333rem;
+}
+.qsearch-content{
+  margin-top: .533333rem;
+  color: #c5bcce;
+}
+.qsearch-content-title{
+  width: 100%;
+  margin-top: .4rem;
+  margin-left: 0.2rem;
+}
+.qsearch-content-title li{
+  width: 20%;
+  margin-right: 4%;
+  float: left;
+  height: .666667rem;
+  line-height: .666667rem;
+  text-align: center;
+  border:1px solid #c5bcce;
+  color: #c5bcce;
+  border-radius: 3px;
+  margin-bottom: .266667rem;
+}
+</style>
+

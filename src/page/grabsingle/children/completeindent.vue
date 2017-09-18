@@ -1,0 +1,128 @@
+<template>
+  <div>
+      <head-top></head-top>
+      <div class="startindent">
+        <div class="startindent-head">
+            <i class="iconfont icon-cuohao"></i>抢单成功后才能查看订单详情！
+        </div>
+        <div class="startindent-content">
+            <div class="startindent-content-indent">订单编号: 124541251241441 <span>5分钟前</span></div>
+            <div class="startindent-content-time"><span><i class="iconfont icon-cuohao"></i></span>服务时间:<span class="startpd">2017</span></div>
+            <div class="startindent-content-time startindent-content-local"><span><i class="iconfont icon-pingjia"></i></span>服务时间:<span class="startpd">2017</span></div>
+            <div class="startindent-content-grab1">订单详情</div>
+        </div>
+         <div class="startindent-content">
+            <div class="startindent-content-indent">订单编号: 124541251241441 <span>5分钟前</span></div>
+            <div class="startindent-content-time"><span><i class="iconfont icon-cuohao"></i></span>服务时间:<span class="startpd">2017</span></div>
+            <div class="startindent-content-time startindent-content-local"><span><i class="iconfont icon-pingjia"></i></span>服务时间:<span class="startpd">2017</span></div>
+            <div class="startindent-content-grab1">订单详情</div>
+        </div>
+         <div class="startindent-content">
+            <div class="startindent-content-indent">订单编号: 124541251241441 <span>5分钟前</span></div>
+            <div class="startindent-content-time"><span><i class="iconfont icon-cuohao"></i></span>服务时间:<span class="startpd">2017</span></div>
+            <div class="startindent-content-time startindent-content-local"><span><i class="iconfont icon-pingjia"></i></span>服务时间:<span class="startpd">2017</span></div>
+            <div class="startindent-content-grab1">订单详情</div>
+        </div>
+      </div>
+      <footer></footer>
+  </div>
+  
+</template>
+<script>
+    import headTop from '../../../components/head/head'
+    export default {
+        data(){
+            return{
+
+            }
+        },
+        mounted(){
+
+        },
+        methods:{
+
+        },
+        components:{
+            headTop
+        }
+    }
+</script>
+
+<style>
+    footer{
+        height: 1.6rem;
+    }
+    .startpd{
+        padding-left: 5px;
+        color: #bbb1c5;
+    }
+    .startindent{
+        width: 100%;
+        background: #f3eef7;
+        padding-bottom: 0.4rem;
+    }
+    .startindent-head{
+        width: 100%;
+        height: 1.333333rem;
+        line-height: 1.333333rem;
+        background: #fff;
+        font-size: .346667rem;
+        color: #bbb1c5;
+        box-sizing: border-box;
+        padding-left: 0.4rem;
+    }
+    .startindent-head i{
+        font-size: .346667rem !important;
+        padding-right: .533333rem;
+    }
+    .startindent-content{
+        width: 10rem;
+        margin:0 auto;
+        background: #fff;
+        margin-top: .4rem;
+        box-sizing: border-box;
+        padding: 0 0.4rem 0  0.4rem;
+    }
+    .startindent-content-indent{
+        width: 100%;
+        height: 1.333333rem;
+        line-height: 1.333333rem;
+        font-size: .426667rem;
+        color: #492b67;
+    }
+    .startindent-content-indent span{
+        font-size: 12px;
+        color: #bbb1c5;
+        display: inline-block;
+        float: right;
+        padding-top: 7px;
+    }
+    .startindent-content-time{
+        font-size: .346667rem;
+        color: #492b67;
+    }
+    .startindent-content-time i{
+        font-size: .346667rem;
+        color: #492b67;
+    }
+    .startindent-content-time span{
+        padding-right: 10px;
+    }
+    .startindent-content-local{
+        height: 1rem;
+        line-height: 1rem;
+        border-bottom:1px solid #eeecf1;
+    }
+    .startindent-content-grab1{
+        width: 4.533333rem;
+        height: 1.2rem;
+        line-height: 1.2rem;
+        border-radius: 6px;
+        margin:0 auto;
+        text-align: center;
+        color: #b0a4bc;
+        font-size: .48rem;
+    }
+</style>
+
+

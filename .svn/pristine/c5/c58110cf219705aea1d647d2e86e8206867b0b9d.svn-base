@@ -1,0 +1,143 @@
+<template>
+  <div class="editprofile">
+    <ul class="personal-data">
+      <li class="personal-pic">头像
+        <span>
+          <img src="../../../assets/center/mypic1.jpg" alt="">
+        </span>
+      </li>
+      <li>昵称
+        <input type="text" placeholder="编辑昵称">
+      </li>
+      <li @click="showChoose">性别
+        <span>{{this.sex}}</span>
+      </li>
+      <li>个性签名
+        <input type="text" placeholder="个性签名">
+      </li>
+      
+    </ul>
+    <div class="choose-sex" v-if="test">
+      <h3>请选择性别：</h3>
+        <mt-picker :slots="slots" @change="onValuesChange" >
+          
+        </mt-picker>
+      </div>
+  </div>
+</template>
+<script>
+import { Picker } from 'mint-ui';
+export default {
+  data() {
+    return {
+      test:false,
+      slots: [
+        {
+          values: [
+            '男',
+            '女'
+          ]
+        }
+      ],
+      sex: ''
+    }
+  },
+  methods: {
+    onValuesChange(picker, values) {
+      this.sex = values[0];
+      console.log(this.sex)
+    },
+    showChoose(){
+      this.test=!this.test
+    }
+  }
+}
+</script>
+<style>
+/*不显示center内容  */
+
+.footGuide,
+.mypic,
+.myorder,
+.mymsg,
+footer {
+  display: none;
+}
+
+
+
+/*  */
+
+.personal-data {
+  padding: .4rem;
+  box-sizing: border-box;
+}
+
+.personal-data {
+  line-height: 1.333333rem;
+  font-size: .4rem;
+  overflow: hidden;
+  color: #492b67;
+}
+
+.personal-data li {
+  height: 1.333333rem;
+  
+}
+ 
+.personal-data .personal-pic span {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  overflow: hidden;
+  float: right
+}
+
+.personal-data .personal-pic span img {
+  width: 100%;
+}
+
+.personal-data li span,
+input {
+  float: right;
+  text-align: right;
+  color: #b0a4bc;
+  height: 1.2rem;
+  width: 7rem;
+  border: none;
+}
+
+::-webkit-input-placeholder {
+  /* WebKit, Blink, Edge */
+  color: #b0a4bc;
+  font-size: .4rem
+}
+
+ :-moz-placeholder {
+  /* Mozilla Firefox 4 to 18 */
+  color: #b0a4bc;
+  font-size: .4rem
+}
+
+ ::-moz-placeholder {
+  /* Mozilla Firefox 19+ */
+  color: #b0a4bc;
+  font-size: .4rem
+}
+
+ :-ms-input-placeholder {
+  /* Internet Explorer 10-11 */
+  color: #b0a4bc;
+  font-size: .4rem
+}
+
+.choose-sex{
+  height: auto;
+  padding: 0 .4rem;
+  line-height: 1.333333rem;
+  font-size: .4rem;
+  color: #492b67;
+}
+</style>
+

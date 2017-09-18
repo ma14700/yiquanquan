@@ -1,0 +1,354 @@
+<template>
+  <div class="shoplist">
+<!--头部  -->
+   <head-top></head-top>
+<!--头部  end-->
+<!--navbar  -->
+<mt-navbar v-model="selected" class="blank-leaving" :class="{'fixed':showIcon}">
+  <mt-tab-item id="1">综合</mt-tab-item>
+  <mt-tab-item id="2">销量</mt-tab-item>
+  <mt-tab-item id="3">人气</mt-tab-item>
+  <mt-tab-item id="4" ><span @click="arrowSelected">价格</span> <span class="arrow" ><i class="iconfont icon-shangsanjiao top" :class="[arrowshow?'arrowselected':'arrowNotselected']" ></i><i class="iconfont icon-xiasanjiao bottom" :class="[arrowshow?'arrowNotselected':'arrowselected']" ></i></span></mt-tab-item>
+  <div class="list"><i class="iconfont" @click="changeIcon"    :class="[test?'icon-list':'icon-liebiao1gai']"></i></div>
+</mt-navbar>
+<!--navbar end -->
+<!-- tab-container -->
+<mt-tab-container v-model="selected" class="blank-leaving">
+  <mt-tab-container-item id="1">
+    <div  :key="n" v-for="n in 10"  :class="[test?'lump-wraper':'item-wraper']">
+        <div class="img-box"><img src="../../assets/shop/taocan1.jpg" alt=""></div>
+        <div class="content">
+            <p class="title">生日PARTY氢气球套餐氢气球套餐生日PARTY生日PARTY氢气球套餐氢气球套餐生日PARTY</p>
+            <p class="price">￥500.00<del>800.00</del><i class="iconfont icon-gouwuche"></i></p>
+        </div>
+    </div>
+  </mt-tab-container-item>
+  <mt-tab-container-item id="2">
+    <div  :key="n" v-for="n in 3"  :class="[test?'lump-wraper':'item-wraper']">
+        <div class="img-box"><img src="../../assets/shop/taocan1.jpg" alt=""></div>
+        <div class="content">
+            <p class="title">生日PARTY氢气球套餐氢气球套餐生日PARTY生日PARTY氢气球套餐氢气球套餐生日PARTY</p>
+            <p class="price">￥500.00<del>800.00</del><i class="iconfont icon-gouwuche"></i></p>
+        </div>
+    </div>
+  </mt-tab-container-item>
+  <mt-tab-container-item id="3">
+    <div  :key="n" v-for="n in 4"  :class="[test?'lump-wraper':'item-wraper']">
+        <div class="img-box"><img src="../../assets/shop/taocan1.jpg" alt=""></div>
+        <div class="content">
+            <p class="title">生日PARTY氢气球套餐氢气球套餐生日PARTY生日PARTY氢气球套餐氢气球套餐生日PARTY</p>
+            <p class="price">￥500.00<del>800.00</del><i class="iconfont icon-gouwuche"></i></p>
+        </div>
+    </div>
+  </mt-tab-container-item>
+  <mt-tab-container-item id="4">
+   <div  :key="n" v-for="n in 6"  :class="[test?'lump-wraper':'item-wraper']">
+        <div class="img-box"><img src="../../assets/shop/taocan1.jpg" alt=""></div>
+        <div class="content">
+            <p class="title">生日PARTY氢气球套餐氢气球套餐生日PARTY生日PARTY氢气球套餐氢气球套餐生日PARTY</p>
+            <p class="price">￥500.00<del>800.00</del><i class="iconfont icon-gouwuche"></i></p>
+        </div>
+    </div>
+  </mt-tab-container-item>
+</mt-tab-container>
+<!-- tab-container end-->
+
+<!--固定搜索  -->
+<div class="aside">
+    <i class="iconfont icon-sousuo search"></i>
+    <i class="iconfont icon-dingbu02 go-top" :class="{'show':showIcon}"  @click="gotop" ></i>
+</div>
+
+<!--固定搜索 end -->
+
+ <!--查看更多  -->
+    <div class="more">
+        <span class="more-text">
+            MORE/查看更多
+        </span>
+    </div>
+
+
+
+ <!--查看更多 end  -->
+    <footer class="footer"></footer>
+    <foot-Guide selected="shop"></foot-Guide>  
+  </div>
+</template>
+
+<script>
+import { Header } from 'mint-ui';
+import { Navbar, TabItem } from 'mint-ui';
+import headTop from '../../components/head/head';
+import footGuide from '../../components/footer/footGuide';
+    export default{
+        data(){
+            return{
+            selected:'1',
+            value:'',
+            test:true,
+            scroll:'',
+            arrowshow:true
+            // transitionName: 'ease'
+            }
+        },
+        components:{
+            footGuide,
+            headTop 
+        },
+        computed:{
+            showIcon:function(){
+                console.log(this.scroll);
+                this.changeShow();
+                return this.scroll>65;
+                
+            },
+           
+        },
+        mounted() {
+            window.addEventListener('scroll', this.changeShow)
+        },
+
+        created(){
+            
+        },
+        
+        
+        methods:{
+            handleClose(){
+
+            },
+            changeIcon:function(){
+                this.test = !this.test;
+            },
+            changeShow(){
+                this.scroll=document.body.scrollTop;   
+            },
+            gotop(){
+                if(document.body.scrollTop>100){
+                    document.body.scrollTop=0;
+                }else{
+                    console.log(document.body.scrollTop);
+                }
+            },
+            arrowSelected(){
+                console.log(this.arrowshow);
+                this.arrowshow = !this.arrowshow;
+                console.log(this.arrowshow);
+            }
+        }
+    }
+</script>
+
+
+<style>
+.shoplist{
+    background: #fdfdfe;
+}
+/* .ease-transition{
+    transition: all .3s ease;
+
+}
+.ease-enter, .expand-leave{
+    height: 0;
+    padding: 0 10px;
+    opacity: 0;
+} */
+/*navbar  */
+.shoplist .mint-navbar{
+    height: 1.2rem;
+    text-align: left;
+    display: block;
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
+    box-shadow: 0 0 1px 0 #eee;
+}
+.shoplist .fixed{
+    position: fixed;
+    z-index: 1000;
+    top:0;
+}
+.shoplist .mint-navbar .mint-tab-item{
+    padding: 0;
+    width: 2.2rem;
+    float: left;
+    color: #b0a4bc;
+    
+}
+.shoplist .mint-navbar .mint-tab-item.is-selected{
+    border: none;
+    color: #4a2c68;
+    margin: 0;
+}
+.shoplist .mint-navbar .mint-tab-item-label{
+     line-height: 1.2rem;
+    font-size: .4rem;
+    position: relative;
+     
+}
+.shoplist .mint-navbar .mint-tab-item-label .arrow{
+   position: absolute;
+   top: 0.2rem;
+   width: .4rem;
+   line-height: 1;
+}
+.shoplist .mint-navbar .mint-tab-item-label .arrow i{
+    display: inline-block;
+    font-size: .32rem;
+    position: relative;
+    right: -.1rem;
+}
+.shoplist .mint-navbar .mint-tab-item-label .arrow i.top{
+    
+    
+}
+.shoplist .arrowselected{
+    color:#4a2c68;
+
+}
+.shoplist .arrowNotselected{
+    color:#b0a4bc; 
+}
+.shoplist .mint-navbar .mint-tab-item-label .arrow i.bottom{
+    top:-.1rem;
+   
+}
+.shoplist .mint-navbar .list{ 
+    position: absolute;
+    right: 0.4rem;
+    font-size: .426667rem;
+    line-height: 1.2rem;
+    color: #b0a4bc;
+}
+
+/*container  */
+.shoplist .mint-tab-container{
+    margin-top: .4rem;
+}
+/*块  */
+.shoplist .lump-wraper{
+    width: 4.466667rem;
+    float: left;
+    line-height:.64rem;
+    margin-bottom: .4rem
+}
+.shoplist .lump-wraper .img-box{
+    width:100%;
+    margin-bottom: .4rem;
+}
+.shoplist .lump-wraper:nth-child(odd){
+    margin-right: .266667rem;
+}
+
+
+/*块 列表 共有  */
+.shoplist .img-box{
+    border: 1px solid #ece5f4;
+    border-radius: .133333rem;
+    
+}
+.shoplist .img-box img{
+    width:100%;
+}
+
+.shoplist .title{
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: .4rem;
+    color: #492b67;
+}
+.shoplist .price{
+    color: #de3163;
+    font-size: .4rem;
+    font-weight: 700;
+    
+}
+
+.shoplist .price del{
+    color: #cdc6d5;
+    margin-left: .266667rem;
+    text-decoration: line-through;
+    font-weight: normal;
+    font-size: .36rem;
+}
+.shoplist .price i{
+    float: right;
+    margin-right: .133333rem;
+    color: #cdc6d5;
+    font-weight: normal;
+}
+
+/*列表 */
+.shoplist .item-wraper{
+    width: 9.2rem;
+    height: 2.666667rem;
+}
+.shoplist .item-wraper .img-box{
+    width: 2.666667rem;
+    float: left;
+}
+.shoplist .item-wraper .title{
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient: vertical;
+     white-space: normal!important;
+     line-height: .506667rem
+}
+.shoplist .item-wraper .content{
+    width: 6.47rem;
+    padding: .4rem .24rem;
+    box-sizing: border-box;
+    float: right
+}
+.shoplist .item-wraper .price{
+    margin-top: .4rem
+}
+/*搜索  */
+.shoplist .aside i{
+    position: fixed;
+    z-index: 100;
+    width: 1rem;
+    height: 1rem;
+    text-align: center;
+    line-height: 1rem;
+    font-size: .48rem;
+    background: #fff;
+    border-radius: 50%;
+    color: #d3cdda;
+    border: 1px solid #ece5f4;
+}
+.shoplist .search{
+    
+    right: .4rem;
+    bottom: 3.4rem;
+   
+}
+.shoplist .go-top{
+    right: .4rem;
+    bottom: 2rem;
+display: none;
+}
+.shoplist .show{
+    display: block
+}
+
+/*  more*/
+.shoplist .more{
+    width: 100%;
+    height: 1.4rem;
+    padding: .4rem 0;
+    box-sizing: border-box;
+    text-align: center;
+}
+.shoplist .more .more-text{
+    display: inline-block;
+    font-size: .36rem;
+    border-top:1px solid #ece5f4;
+    border-bottom:1px solid #ece5f4;
+    color: #beb5c9;
+    line-height: .6rem;
+
+}
+</style>

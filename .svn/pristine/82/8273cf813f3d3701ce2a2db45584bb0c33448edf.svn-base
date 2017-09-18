@@ -1,0 +1,122 @@
+import {
+    ADD_CART,
+    REDUCE_CART,
+    INIT_BUYCART,
+    CLEAR_CART,
+    ADD_COLLECTION,
+    REDUCE_COLLECTION,
+    SETTLE_ACCOUNTS,
+    GIT_SETTLE_ACCOUNTS,
+    BUY_CART,
+    DETAIL_ORDER
+
+} from './mutation-types'
+import { setStore, getStore } from '../config/mUtils'
+export default {
+    //加入购物车
+    [ADD_CART](state, {
+        skuId, //商品id
+        goodName, //商品名字
+    }) {
+        let cart = state.cartList;
+        let item = cart[skuId] = (cart[skuId] || {});
+
+        if (item[skuId]) {
+            item[skuId]['num']++;
+
+        } else {
+            item[skuId] = {
+                'num': 1,
+                "id": skuId,
+                "name": goodName,
+            }
+        }
+
+
+        state.cartList = {...cart };
+        //存入localStorage
+        setStore('buyCart', state.cartList);
+        console.log(state.cartList);
+
+    },
+    //移出购物车
+
+    //网页初始化时从本地缓存获取购物车列表
+
+    // // 加入收藏
+    // [ADD_COLLECTION](state, {
+    //     id,
+    //     goodName,
+    //     goodPrice
+    // }) {
+    //     let collect = state.collectionList;
+    //     let item = collect[id] = (collect[id] || {});
+    //     item[id] = {
+    //         "id": id,
+    //         "goodName": goodName,
+    //         "goodPrice": goodPrice
+    //     }
+    //     state.collectList = {...collect };
+    //     //存入localStorage
+    //     setStore('myCollect', state.collectList);
+    //     console.log(state.collectList);
+
+    // },
+    // //取消收藏
+    // [REDUCE_COLLECTION](state, {
+    //     id,
+    //     goodName,
+    //     goodPrice
+    // }) {
+
+    //     let collect = state.collectionList
+    //     let item = collect[id] = (collect[id] || {});
+    //     item[id] = null;
+    //     state.collectList = {...collect }
+    //     setStore('myCollection', state.collectList);
+    //     console.log(state.collectList);
+    // },
+    //结算 商品
+    [SETTLE_ACCOUNTS](state, {
+        SkuInfoId,
+        CartNum,
+        CartGoodId,
+    }) {
+        let Accounts = state.settleAccounts;
+        let item = Accounts[SkuInfoId] = (Accounts[SkuInfoId] || {});
+        item[SkuInfoId] = {
+            "SkuInfoId": SkuInfoId,
+            "CartNum": CartNum,
+            "CartGoodId": CartGoodId
+        }
+        state.settleAccounts = {...Accounts };
+        setStore('settleAccounts', state.settleAccounts);
+        console.log(state.settleAccounts);
+    },
+    //
+    [GIT_SETTLE_ACCOUNTS](state) {
+        let test = getStore('settleAccounts')
+        if (test) {
+            state.settleAccounts = JSON.parse(test);
+        }
+        console.log(state.settleAccounts);
+    },
+    [DETAIL_ORDER](state, {
+        id,
+        goodName,
+        goodPrice
+    }) {
+        let orderParam = state.orderParam;
+        let item = orderParam[id] = (orderParam[id] || {});
+        item[id] = {
+            "id": id,
+            "goodName": goodName,
+            "goodPrice": goodPrice
+        }
+        state.orderParam = {...orderParam };
+        //存入localStorage
+        setStore('myorderParam', state.orderParam);
+        console.log(state.orderParam);
+    },
+
+}

@@ -1,0 +1,162 @@
+<template>
+  <div class="editprofile">
+    <div class="personal-pic">头像
+        <span>
+          <img src="../../../assets/center/mypic1.jpg" alt="">
+        </span>
+      </div>
+    <ul class="personal-data">
+      
+      <li>昵称
+        <input type="text" placeholder="编辑昵称">
+      </li>
+      <li @click="showChoose">性别
+        <span>{{this.sex}}</span>
+      </li>
+      <li>个性签名
+        <input type="text" placeholder="个性签名">
+      </li>
+      
+    </ul>
+    <div class="choose-sex" v-if="test">
+      <h3>请选择性别：</h3>
+        <mt-picker :slots="slots" @change="onValuesChange" >
+          
+        </mt-picker>
+      </div>
+  </div>
+</template>
+<script>
+import { Picker } from 'mint-ui';
+export default {
+  data() {
+    return {
+      test:false,
+      slots: [
+        {
+          values: [
+            '男',
+            '女'
+          ]
+        }
+      ],
+      sex: ''
+    }
+  },
+  methods: {
+    onValuesChange(picker, values) {
+      this.sex = values[0];
+      console.log(this.sex)
+    },
+    showChoose(){
+      this.test=!this.test
+    }
+  }
+}
+</script>
+<style>
+/*不显示center内容  */
+.center{
+    background: #fff;
+}
+.makecard,
+.footGuide,
+.mypic,
+.myorder,
+.mymsg,
+footer {
+  display: none;
+}
+
+
+
+/*  */
+.editprofile{
+  background: #ece5f4;
+  height: 100%;
+}
+.editprofile  .personal-pic{
+  height: 1.333333rem;
+  padding: 0 .4rem;
+  background: #fff;
+  line-height: 1.333333rem;
+  font-size: .4rem;
+  overflow: hidden;
+  color: #492b67;
+  margin-bottom: .266667rem;
+}
+.editprofile  .personal-pic span {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  overflow: hidden;
+  float: right;
+  margin-top: 0.16rem;
+}
+
+.editprofile  .personal-pic span img {
+  width: 100%;
+}
+
+
+
+.editprofile  .personal-data {
+  line-height: 1.333333rem;
+  font-size: .4rem;
+  overflow: hidden;
+  color: #492b67;
+}
+
+.editprofile  .personal-data li {
+  height: 1.333333rem;
+  padding: 0 .4rem;
+  background: #fff;
+}
+ 
+
+
+.editprofile  .personal-data li span,
+input {
+  float: right;
+  text-align: right;
+  color: #b0a4bc;
+  height: 1.2rem;
+  width: 7rem;
+  border: none;
+}
+
+.editprofile  ::-webkit-input-placeholder {
+  /* WebKit, Blink, Edge */
+  color: #b0a4bc;
+  font-size: .4rem
+}
+
+.editprofile   :-moz-placeholder {
+  /* Mozilla Firefox 4 to 18 */
+  color: #b0a4bc;
+  font-size: .4rem
+}
+
+.editprofile   ::-moz-placeholder {
+  /* Mozilla Firefox 19+ */
+  color: #b0a4bc;
+  font-size: .4rem
+}
+
+.editprofile   :-ms-input-placeholder {
+  /* Internet Explorer 10-11 */
+  color: #b0a4bc;
+  font-size: .4rem
+}
+
+.editprofile  .choose-sex{
+  height: auto;
+  padding: 0 .4rem;
+  line-height: 1.333333rem;
+  font-size: .4rem;
+  color: #492b67;
+  background: #fff;
+}
+</style>
+

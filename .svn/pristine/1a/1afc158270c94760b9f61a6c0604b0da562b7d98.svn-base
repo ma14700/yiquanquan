@@ -1,0 +1,504 @@
+<template>
+    <div class="cartpackage">
+<!--头部  -->
+        <head-top></head-top>
+<!--头部  end-->
+<!--商品  -->
+        <div class="goods">
+            <div class="imgbox fl">
+                <img src="../../assets/shopcart/goods.png" alt="">
+            </div>
+            <div class="des fl">
+                <p class="title">生日PARTY氢气球套餐生日PARTY氢气球套餐生日PARTY氢气球套餐生日PARTY氢气球套餐生日PARTY氢气球套餐生日PARTY氢气球套餐</p>
+                <p class="ctype">聚会趴--生日套餐
+                    <span class="price">￥500.00</span>
+                </p>
+    
+            </div>
+        </div>
+<!--商品  -->
+        <div class="addgoods">
+            添加更多商品
+            <i class="iconfont icon-smallxiangyou"></i>
+        </div>
+        <div class="order-price">
+            <p>订单金额 ￥340.00</p>
+            <p class="needpay">需付定金
+                <span>￥340.00</span>
+            </p>
+        </div>
+<!--场地  -->
+        <mt-navbar v-model="selected">
+            <mt-tab-item id="1" class="y" @click="choosePlace('y')">已有场地</mt-tab-item>
+            <mt-tab-item id="2" class="n" @click="choosePlace('n')">没有场地</mt-tab-item>
+    
+        </mt-navbar>
+        <mt-tab-container v-model="selected">
+<!--已有场地   -->
+            <mt-tab-container-item id="1">
+                <ul class="item-wraper">
+                    <li @click="handleClick('time')">预约时间：
+                        <span></span>
+                        <i class="iconfont icon-smallxiangyou"></i>
+                    </li>
+                    <li @click="handleClick('location')">预约地点：
+                        <span>{{'河南省，'+this.modal1+'市'}}</span>
+                        <i class="iconfont icon-smallxiangyou"></i>
+                    </li>
+                    <li>详细地址：
+                        <input type="text" placeholder="郑东新区建业总部港">
+                    </li>
+                    <li @click="handleClick('sex')">服务对象：
+                        <span @click="handlepay">{{this.sex}}</span> 
+                        <i class="iconfont icon-smallxiangyou"></i>
+                    </li>
+                    <li>联系人：
+                        <input type="text">
+                    </li>
+                    <li>联系电话：
+                        <input type="text">
+                    </li>
+                </ul>
+                <div class="remark">
+                    <div class="remark-wraper">
+                    <span>备注信息：</span><textarea name="" id=""></textarea>
+                    </div>
+                </div>
+            </mt-tab-container-item>
+<!--已有场地 end  -->
+
+<!--没有场地   -->
+            <mt-tab-container-item id="2">
+               <ul class="item-wraper">
+                    <li @click="handleClick('time')">预约时间：s
+                        <span></span>
+                        <i class="iconfont icon-smallxiangyou"></i>
+                    </li>
+                    <li @click="handleClick('location')">预约地点：
+                        <span>{{'河南省，'+this.modal1+'市'}}</span>
+                        <i class="iconfont icon-smallxiangyou"></i>
+                    </li>
+                    <li>时长：
+                        <input type="text" placeholder="全天">
+                    </li>
+                    <li>聚会人数：
+                        <input type="text" placeholder="10-20人">
+                    </li>
+                    <li>联系人：
+                        <input type="text">
+                    </li>
+                    <li>联系电话：
+                        <input type="text">
+                    </li>
+                </ul>
+                <div class="remark">
+                    <span>备注信息：</span><textarea name="" id=""></textarea>
+                </div>
+            </mt-tab-container-item>
+<!--没有场地 end  -->
+<!--弹出层  -->
+                <mt-popup v-model="popupVisible" popup-transition="popup-fade" position="bottom">
+                    <div class="show-time" v-if="this.modal == 'time'">
+                        time
+                    </div>
+                    <div class="show-city" v-else-if="this.modal == 'location'">
+                        <h3>选择城市：</h3>
+                        <p>请选择下列有壹圈圈（派对）服务的城市</p>
+                        <ul class="choose-city">
+                            <li @click="chooseClick('郑州')">郑州</li>
+                            <li @click="chooseClick('安阳')">安阳</li>
+                            <li @click="chooseClick('洛阳')">洛阳</li>
+                            <li @click="chooseClick('南阳')">南阳</li>
+                            <li @click="chooseClick('信阳')">信阳</li>
+                        </ul>
+                        <p>更多城市敬请期待</p>
+                        <ul class="choose-city">
+                            <li>郑州</li>
+                            <li>安阳</li>
+                            <li>洛阳</li>
+                            <li>南阳</li>
+                            <li>信阳</li>
+    
+                            <li>洛阳</li>
+                            <li>南阳</li>
+                            <li>信阳</li>
+                        </ul>
+                        <div class="explain">
+                            <p>壹圈圈派对正在努力开发更多城市，以方便顾客，欢迎更多城市梦想合伙人的加入！</p>
+                            <p>可发送意向信息至邮箱：service@yqqparty.com</p>
+                        </div>
+                    </div>
+                    <div class="show-sex" v-else-if="this.modal == 'sex'">
+                        <h3>请选择性别：</h3>
+                        <mt-picker :slots="slots" @change="onValuesChange" @click="handlepay">
+                            
+                        </mt-picker>
+                    </div>
+                </mt-popup>
+                <!--弹出层  end-->
+        </mt-tab-container>
+<!--场地  -->
+<!--支付  -->
+    <div class="pay" >
+        确认支付
+    </div>
+    
+<!--支付  end-->
+    </div>
+</template>
+
+<script>
+import headTop from '../../components/head/head';
+import { Popup } from 'mint-ui';
+import { Navbar, TabItem } from 'mint-ui';
+import { Picker } from 'mint-ui';
+
+export default {
+    data() {
+        return {
+            popupVisible: false,
+            selected: '1',
+            index: '',
+            modal: '',
+            modal1: '',
+            slots: [
+                {
+                    values: [
+                        '男',
+                        '女'
+                    ]
+                }
+            ],
+            sex:''
+        }
+    },
+    components: {
+        headTop
+    },
+    mounted: function () {
+
+    },
+    created() {
+
+    },
+    methods: {
+        handleClick: function (param) {
+            this.modal = param;
+            console.log(this.modal)
+            this.popupVisible = true;
+
+        },
+        choosePlace:function(param){
+            this.modal = param;
+            console.log(this.modal)
+        },
+        chooseClick: function (param) {
+            this.modal1 = param;
+            console.log(this.modal)
+            this.popupVisible = false;
+
+        },
+        onValuesChange(picker,values) {
+            this.sex=values[0];
+            console.log(this.sex)
+        },
+        handlepay:function(){
+
+        },
+       
+
+    }
+}
+</script>
+
+
+<style>
+.cartpackage .goods {
+    height: 3.066667rem;
+   
+    overflow: hidden;
+    box-sizing: border-box;
+    padding: .533333rem .4rem;
+}
+
+.cartpackage .goods .imgbox {
+    width: 2rem;
+    border-radius: .133333rem;
+    border: 1px solid #ece5f4;
+    margin-right: .4rem;
+}
+
+.cartpackage .goods .imgbox img {
+    width: 100%;
+}
+
+.cartpackage .goods .des {
+    width: 6.745rem;
+    box-sizing: border-box;
+    padding: .266667rem 0;
+}
+
+.cartpackage .goods .des .title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: .4rem;
+    color: #492b67;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    white-space: normal!important;
+    line-height: .506667rem
+}
+
+.cartpackage .goods .des .ctype {
+    color: #aea2ba;
+    font-size: .36rem;
+    line-height: .8rem;
+}
+
+.cartpackage .goods .des .price {
+    float: right;
+    color: #de3163;
+    font-size: .4rem;
+}
+
+.cartpackage .addgoods {
+    color: #b0a4bc;
+    font-size: .36rem;
+    text-align: right;
+    padding: 0 .4rem;
+    line-height: 1.2rem;
+    border-top: 1px solid #ece5f4
+}
+
+.cartpackage .order-price {
+    padding:0 .4rem;
+    box-sizing: border-box;
+    font-size: .4rem;
+    overflow: hidden;
+    background: #f1eef6;
+}
+
+.cartpackage .order-price p {
+    width: 50%;
+    display: block;
+    float: left;
+    color: #b0a4bc;
+    box-sizing: border-box;
+    line-height: 1.2rem;
+}
+
+.cartpackage .order-price .needpay {
+    text-align: right;
+    border-left: 1px solid #ece5f4;
+}
+
+.cartpackage .order-price .needpay span {
+    color: #de3163;
+}
+
+
+
+
+
+
+
+
+
+
+/*  */
+
+.cartpackage .mint-navbar {
+    padding: .533333rem 1.6rem;
+    height: 2.133333rem;
+    box-sizing: border-box;
+}
+
+.cartpackage .mint-navbar .mint-tab-item {
+
+    padding: 0
+}
+
+.cartpackage .mint-navbar .mint-tab-item.is-selected {
+    margin: 0;
+    border: 0;
+}
+
+.cartpackage .mint-navbar .mint-tab-item.is-selected .mint-tab-item-label {
+    background: #b0a4bc;
+    color: #fff;
+}
+
+.cartpackage .mint-tab-item-label {
+    height: 1.066667rem;
+    line-height: 1.066667rem;
+    color: #b0a4bc;
+    font-size: .45rem;
+    background: #f1eef6;
+}
+
+.cartpackage .y .mint-tab-item-label {
+    border-top-left-radius: .133333rem;
+    border-bottom-left-radius: .133333rem;
+}
+
+.cartpackage .n .mint-tab-item-label {
+    border-top-right-radius: .133333rem;
+    border-bottom-right-radius: .133333rem;
+}
+
+
+
+
+
+
+
+
+
+
+/* 显示ul列表 */
+
+.cartpackage .mint-tab-container {
+    
+}
+
+.cartpackage .mint-tab-container-item .item-wraper li {
+
+    line-height:1.2rem;
+    font-size: .4rem;
+    color: #492b67;
+    box-sizing: border-box;
+    border-top: 1px solid #e8ddf2;
+    padding: 0 .4rem;
+}
+
+.cartpackage .mint-tab-container-item .item-wraper li span {
+    color: #b0a4bc;
+    font-size: .4rem;
+    min-width: 1rem
+}
+
+.cartpackage .mint-tab-container-item .item-wraper li i {
+    float: right;
+    color: #b0a4bc;
+    font-size: .48rem;
+}
+
+.cartpackage .mint-tab-container-item .item-wraper li input {
+    border: 0;
+    color: #b0a4bc;
+    font-size: .4rem;
+}
+.cartpackage  ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+    color:    #b0a4bc;
+    font-size: .4rem
+  }
+ .cartpackage  :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color:    #b0a4bc;
+    font-size: .4rem
+  }
+ .cartpackage  ::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color:    #b0a4bc;
+    font-size: .4rem
+  }
+ .cartpackage  :-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color:    #b0a4bc;
+    font-size: .4rem
+
+  }
+  .cartpackage   .remark{
+        font-size: .36rem;
+        color: #b0a4bc;
+        line-height: .733333rem;
+        
+        overflow: hidden;
+        padding: .4rem;
+        
+        border-top: 1px solid #e8ddf2;
+    }
+ .cartpackage    .remark-wraper{
+        background: #f1eef6;
+        border-radius: .133333rem;
+        padding: .266667rem 0 0 .266667rem;
+        box-sizing: border-box;
+    }
+.cartpackage     .remark span{
+        position: relative;
+         top: -2.2rem; 
+    }
+    
+ .cartpackage    .remark textarea{
+        border: 0;
+        height: 2.5rem;
+        width: 7rem;
+        padding: 0 .266667rem;
+        box-sizing: border-box;
+        color: #b0a4bc;
+        font-size: .36rem;
+        line-height: .733333rem;
+       
+         background: #f1eef6; 
+    }
+
+/*弹出层  */
+
+.cartpackage .mint-popup {
+    width: 100%;
+}
+
+
+/*时间  */
+
+.cartpackage .show-city , .show-sex{
+    padding: .4rem;
+    line-height: .666667rem;
+}
+
+.cartpackage .show-city , .show-sex h3 {
+    font-size: .4rem;
+    color: #492b67;
+}
+
+.cartpackage .show-city p {
+    color: #b0a4bc;
+    font-size: .36rem;
+}
+
+.cartpackage .show-city .choose-city {
+    overflow: hidden;
+}
+
+.cartpackage .show-city .choose-city li {
+    width: 1.8rem;
+    border: 1px solid #b0a4bc;
+    border-radius: .133333rem;
+    text-align: center;
+    float: left;
+    margin-right: .4rem;
+    margin-bottom: .4rem;
+    font-size: .36rem;
+    color: #b0a4bc;
+}
+
+.cartpackage .show-city .explain {
+    line-height: .4rem;
+    margin-top: .4rem;
+}
+
+
+/*地点  */
+
+
+
+
+/*支付  */
+.cartpackage .pay{
+    height: 1.306667rem;
+    line-height: 1.306667rem;
+    color: #fff;
+    font-size: .466667rem;
+    text-align: center;
+    background: linear-gradient(to right, #926eb7,#de3193);
+    
+}
+</style>

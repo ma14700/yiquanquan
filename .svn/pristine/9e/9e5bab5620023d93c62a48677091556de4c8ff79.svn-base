@@ -1,0 +1,288 @@
+<template>
+  <div class="classify">
+    <head-top></head-top>
+    <!--搜素框  -->
+    <div class="search-wrap" :class="{'fixed':showIcon}">
+      <mt-search v-model="value" placeholder="请输入关键词" cancel-text="" class="search" >
+      </mt-search>
+      <i class="iconfont icon-fanhui goback"></i>
+    </div>
+    <!--搜素框  end-->
+    <div class="classify-wraper">
+      <mt-navbar v-model="index">
+        <mt-tab-item v-for="(item,index) in goodsClassify" :id="index-1" :key="index">{{item.name}}</mt-tab-item>
+      </mt-navbar>
+  
+      <!-- tab-container -->
+      <mt-tab-container v-model="index">
+        <mt-tab-container-item  v-for="(item,index) in goodsClassify" :id="index-1" :key="index">
+          
+          <div class="wraper"  v-for="n in item.children" :key="n.id" @click="goShopList(n.id)">
+            <div class="imgbox">
+              <img  alt="" :src="n.thumbImg">
+            </div>
+            <p>{{n.name}}</p>
+          </div>
+        </mt-tab-container-item>
+       
+      </mt-tab-container>
+  
+    </div>
+  </div>
+</template>
+
+<script>
+import { Header } from 'mint-ui';
+import { Search } from 'mint-ui';
+import { Navbar, TabItem } from 'mint-ui';
+import headTop from '../../components/head/head';
+export default {
+  data() {
+    return {
+      index:'3',
+      selected: '3',
+      value: '',
+      scroll: '',
+      goodsClassify:[],
+      goodsDetailClassify:[],
+    }
+  },
+  mounted() {
+     
+    },
+  created() {
+    this.$http.get('/api/goodCat/catlist').then(res=>{
+        console.log(res);
+        this.goodsClassify=res.data;
+        this.goodsDetailClassify=res.data.children;
+        console.log(this.goodsClassify);
+        
+        
+      })
+      this.index = -1
+  },
+  components: {
+    headTop
+  },
+  computed: {
+    showIcon: function () {
+      this.changeShow();
+      return this.scroll > 65;
+    }
+
+  },
+  watch:{
+    // index(value,oldvalue){
+    //   console.log(value)
+    //   console.log(oldvalue)
+    // }
+  },
+  mounted() {
+    window.addEventListener('scroll', this.changeShow)
+  },
+  methods: {
+    handleClose() {
+
+    },
+    changeShow() {
+      this.scroll = document.body.scrollTop;
+    },
+    goShopList(geohash){
+      let catid = geohash-3
+      this.$router.push({path:'/shoplist', query:{catid}})
+    }
+  }
+}
+</script>
+
+
+<style>
+.classify {
+  background: #fffeff;
+}
+
+
+
+
+/*搜索框  */
+.classify div.search-wrap{
+  position: relative;
+  z-index: 100;
+  width: 100%;
+}
+.classify .mint-search {
+  height: auto;
+  position: relative;
+  width: 100%;
+  box-shadow: 0 0 1px 0 #eeecf1;
+}
+
+.classify  div.fixed {
+  position: fixed;
+  top: 0;
+}
+
+.classify  .mint-searchbar {
+  background-color: #fff;
+  position: relative;
+}
+
+.classify  .mint-searchbar-inner {
+  background-color: #eeecf1;
+  position: relative;
+  right: -.933333rem;
+  padding: 0;
+  border-radius: .133333rem;
+  border: none;
+  height: .933333rem;
+  width: 8.4rem;
+  display: block;
+  flex: inherit;
+}
+
+.classify  .mint-searchbar-inner .mintui-search {
+  font-size: .48rem;
+  position: absolute;
+  right: .4rem;
+  color: #b0a4bc;
+  top: 50%;
+  margin-top: -.24rem;
+}
+
+.classify  .mint-searchbar-core {
+  width: 80%;
+  padding-left: .36rem;
+  background: rgba(255, 255, 255, 0);
+  color: #b0a4bc
+}
+
+ ::-webkit-input-placeholder {
+  /* WebKit, Blink, Edge */
+  color: #b0a4bc;
+  font-size: .4rem
+}
+
+ :-moz-placeholder {
+  /* Mozilla Firefox 4 to 18 */
+  color: #b0a4bc;
+  font-size: .4rem
+}
+
+ ::-moz-placeholder {
+  /* Mozilla Firefox 19+ */
+  color: #b0a4bc;
+  font-size: .4rem
+}
+
+ :-ms-input-placeholder {
+  /* Internet Explorer 10-11 */
+  color: #b0a4bc;
+  font-size: .4rem
+}
+
+.classify  .search-wrap {
+  position: relative;
+}
+
+.classify  .search-wrap .goback {
+  position: absolute;
+  top: 50%;
+  z-index: 100;
+  left: .3rem;
+  color: #b0a4bc;
+  font-size: .64rem;
+  margin-top: -.32rem;
+}
+
+
+
+/*  */
+
+.classify  .classify-wraper {
+  overflow: hidden;
+  height: 100%;
+}
+
+
+
+/*navbar  */
+
+.classify  .mint-navbar {
+  width: 3.466667rem;
+  float: left;
+  box-sizing: border-box;
+  display: block;
+  overflow: hidden;
+}
+
+.classify  .mint-navbar .mint-tab-item {
+  color: #b0a4bc;
+  font-size: .4rem;
+  width: 3.466667rem;
+  height: 1.2rem;
+  padding: 0;
+  box-sizing: border-box;
+  border-left: 1px solid #ece5f4;
+
+  border-bottom: 1px solid #ece5f4;
+}
+
+.classify  .mint-navbar .mint-tab-item:first-child {
+  border-top: 1px solid #ece5f4;
+}
+
+.classify  .mint-navbar .mint-tab-item:last-child {}
+
+.classify  .mint-tab-item-label {
+  line-height: 1.2rem;
+  font-size: .4rem;
+}
+
+.classify  .mint-navbar .mint-tab-item.is-selected {
+  color: #fff;
+  text-decoration: none;
+  border: none;
+  background: #b0a4bc;
+  margin: 0;
+  padding: 0;
+}
+
+
+
+
+/*container  */
+
+.classify  .mint-tab-container {
+  width: 6.533333rem;
+  padding: .2rem;
+  box-sizing: border-box;
+  border-left: 1px solid #ece5f4;
+}
+
+.classify  .wraper {
+  width: 2.65rem;
+  box-sizing: border-box;
+  float: left;
+  margin: .2rem;
+  text-align: center;
+  line-height: .48rem;
+  font-size: .36rem;
+  color: #492b67
+}
+
+.classify  .wraper .imgbox {
+  width: 100%;
+  border-radius: .133333rem;
+  border: 1px solid #ece5f4;
+  box-sizing: border-box;
+  overflow: hidden;
+  margin-bottom: .2rem;
+  height: 2.65rem;
+}
+
+.classify  .wraper .imgbox img {
+  width: 100%;
+}
+
+.classify  .wraper p {}
+</style>

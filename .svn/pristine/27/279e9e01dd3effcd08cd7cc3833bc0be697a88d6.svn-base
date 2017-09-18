@@ -1,0 +1,8 @@
+export const ADD_CART = 'ADD_CART'
+export const REDUCE_CART = 'REDUCE_CART'
+export const INIT_BUYCART = 'INIT_BUYCART'
+export const CLEAR_CART = 'CLEAR_CART'
+export const ADD_COLLECTION = 'ADD_COLLECTION'
+export const REDUCE_COLLECTION = 'REDUCE_COLLECTION'
+
+export const BUY_CART = 'BUY_CART'

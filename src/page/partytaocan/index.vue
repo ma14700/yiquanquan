@@ -1,0 +1,241 @@
+<template>
+    <div >
+        <!--头部  -->
+        <head-top></head-top>
+        <!--头部  end-->
+        <div class="goods">
+            <div class="imgbox fl">
+                <img src="../../assets/shopcart/goods.png" alt="">
+            </div>
+            <div class="des fl">
+                <p class="title">生日PARTY氢气球套餐生日PARTY氢气球套餐生日PARTY氢气球套餐生日PARTY氢气球套餐生日PARTY氢气球套餐生日PARTY氢气球套餐</p>
+                <p class="ctype">聚会趴--生日套餐
+                    <span class="price">￥500.00</span>
+                </p>
+    
+            </div>
+        </div>
+        <div class="addgoods">
+            添加更多商品
+            <i class="iconfont icon-fanhui"></i>
+        </div>
+        <div class="order-price">
+            <p>订单金额 ￥340.00</p>
+            <p class="needpay">需付定金
+                <span>￥340.00</span>
+            </p>
+        </div>
+        <mt-navbar v-model="selected">
+            <mt-tab-item id="1" class="y">已有场地</mt-tab-item>
+            <mt-tab-item id="2" class="n">没有场地</mt-tab-item>
+    
+        </mt-navbar>
+        <mt-tab-container v-model="selected">
+            <mt-tab-container-item id="1">
+                <ul>
+                    <li @click="handleClick('time')">预约时间</li>
+                    <li @click="handleClick('location')">预约地点</li>
+                </ul>
+                 <mt-popup v-model="popupVisible" position="bottom">
+
+                            <div class="yuyue-city" v-if="this.modal == 'time'">
+                                我是时间
+                            </div>
+                            <div class="yuyue-city" v-else-if="">
+                                我的地点
+                            </div>
+                </mt-popup>
+                
+            </mt-tab-container-item>
+            <mt-tab-container-item id="2">
+                bbb
+            </mt-tab-container-item>
+        </mt-tab-container>
+    </div>
+</template>
+
+<script>
+import headTop from '../../components/head/head';
+import { Popup } from 'mint-ui';
+import { Navbar, TabItem } from 'mint-ui';
+
+export default {
+    data() {
+        return {
+            popupVisible: false,
+            selected: '1',
+            index:'',
+            modal:''
+        }
+    },
+    components: {
+        headTop
+    },
+    mounted: function () {
+
+    },
+    created() {
+
+    },
+    methods: {
+        handleClick: function (param) {
+            this.modal = param;
+            console.log(this.modal)
+            this.popupVisible = true;
+        },
+
+
+    }
+}
+</script>
+
+
+<style>
+.goods {
+    height: 3.066667rem;
+    background: pink;
+    overflow: hidden;
+    box-sizing: border-box;
+    padding: .533333rem .4rem;
+}
+
+.goods .imgbox {
+    width: 2rem;
+    border-radius: .133333rem;
+    border: .013333rem solid #aea2ba;
+    margin-right: .4rem;
+}
+
+.goods .imgbox img {
+    width: 100%;
+}
+
+.goods .des {
+    width: 6.745rem;
+    box-sizing: border-box;
+    padding: .266667rem 0;
+}
+
+.goods .des .title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: .4rem;
+    color: #492b67;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    white-space: normal!important;
+    line-height: .506667rem
+}
+
+.goods .des .ctype {
+    color: #aea2ba;
+    font-size: .36rem;
+    line-height: .8rem;
+}
+
+.goods .des .price {
+    float: right;
+    color: #de3163;
+    font-size: .4rem;
+}
+
+.addgoods {
+    color: #b0a4bc;
+    font-size: .36rem;
+    text-align: right;
+    padding: 0 .4rem;
+    line-height: 1.2rem;
+}
+
+.order-price {
+    padding: 0 .4rem;
+    box-sizing: border-box;
+    font-size: .4rem;
+    overflow: hidden;
+}
+
+.order-price p {
+    width: 50%;
+    display: block;
+    float: left;
+    color: #b0a4bc;
+    box-sizing: border-box;
+}
+
+.order-price .needpay {
+    text-align: right;
+    border-left: .013333rem solid #b0a4bc;
+}
+
+.order-price .needpay span {
+    color: #de3163;
+}
+
+
+
+
+
+
+
+
+/*  */
+
+.mint-navbar {
+    padding: .533333rem 1.6rem;
+    height: 2.133333rem;
+    box-sizing: border-box;
+}
+
+.mint-navbar .mint-tab-item {
+
+    padding: 0
+}
+
+.mint-navbar .mint-tab-item.is-selected {
+    margin: 0;
+    border: 0;
+}
+
+.mint-navbar .mint-tab-item.is-selected .mint-tab-item-label {
+    background: #b0a4bc;
+    color: #fff;
+}
+
+.mint-tab-item-label {
+    height: 1.066667rem;
+    line-height: 1.066667rem;
+    color: #b0a4bc;
+    font-size: .4rem;
+}
+
+.y .mint-tab-item-label {
+    border-top-left-radius: .133333rem;
+    border-bottom-left-radius: .133333rem;
+}
+
+.n .mint-tab-item-label {
+    border-top-right-radius: .133333rem;
+    border-bottom-right-radius: .133333rem;
+}
+
+
+
+
+
+
+
+
+/*  */
+
+.mint-tab-container {
+    padding: 0 .4rem;
+}
+
+.mint-tab-container-item ul li {
+    height: 2rem;
+    line-height: 2rem;
+    font-size: .4rem;
+    background: pink;
+}
+</style>

@@ -1,0 +1,249 @@
+<template>
+    <div class="orderpay">
+        <div class="order-goods">
+            <div class="img-box">
+                <img src="../../../assets/order/goods.png" alt="">
+            </div>
+            <div class="order-text">
+                <p class="text">生日氢气球套餐生日生日氢气球套餐生日氢气球套餐生日氢气球套餐</p>
+                <p class="price">￥500.00
+                    <span>800.00</span>
+                </p>
+            </div>
+    
+        </div>
+        <div class="stage">
+            <p class="stage-pay">阶段1：已完成</p>
+            <p class="stage-detail">商品定金
+                <span>￥200.00</span>
+            </p>
+        </div>
+        <div class="stage">
+            <p class="stage-pay">阶段2：待支付</p>
+            <p class="stage-detail">商品尾款
+                <span>￥300.00</span>
+            </p>
+             <p class="stage-detail">定金优惠
+                <span>－￥300.00</span>
+            </p>
+            
+        </div>
+        <div class="stage staging"> 
+             <p class="stage-pay">待付尾款：
+                <i>￥300.00</i>
+            </p> 
+        </div>
+        <div class="others">
+            
+            <p class="pay-detail" @click="showDetail">套餐所含商品
+                <i class="iconfont " :class="[test?'icon-arrow_down':'icon-smallxiangyou']"></i>
+            </p>
+            <!--隐藏的商品详细  -->
+            <div class="goods-detail" :class="[test?'goods-detail-block':'goods-detail']">
+                <div class="order-goods" v-for="n in 3" :key="n">
+                    <div class="img-box">
+                        <img src="../../../assets/order/goods.png" alt="">
+                    </div>
+                    <div class="order-text">
+                        <p class="text">生日氢气球套餐生日生日氢气球套餐生日氢</p>
+                        <p class="price">￥500.00
+                            <span>800.00</span>
+                        </p>
+                        <p class="num">×1</p>
+                    </div>
+                </div>
+            </div>
+            <!--end  -->
+            
+        </div>
+        <div class="others">
+            
+            <p class="pay-detail">加选商品
+                <i class="iconfont icon-smallxiangyou"></i>
+            </p>
+            
+            
+        </div>
+        
+        
+        <ul class="order-detail">
+            <li>订单编号：12345678901234567890</li>
+            <li>下单时间：2017-07-17 17:13:45</li>
+            <li>服务地址：郑州市金水区建业总部港</li>
+            <li>服务时间：2017-08-10 09:00</li>
+        </ul>
+        <div class="pay">
+            支付尾款
+        </div>
+    </div>
+</template>
+<script>
+export default {
+    data() {
+        return {
+            test:false,
+        }
+    },
+    methods: {
+        showDetail(){
+            this.test=!this.test;
+        }
+    }
+}
+</script>
+<style>
+/*不显示center内容  */
+.center{
+    background: #fff;
+}
+.makecard,
+.footGuide,
+.mypic,
+.myorder,
+.mymsg,
+footer {
+    display: none;
+}
+
+.orderpay {
+     background: #ece5f4;
+}
+
+.orderpay .order-goods {
+    overflow: hidden;
+    padding:.4rem;
+    border-bottom: 1px solid #ece5f4;
+    background: #fff;
+}
+
+.orderpay .order-goods .img-box {
+    width: 2.666667rem;
+    height: 2.666667rem;
+    overflow: hidden;
+    float: left;
+    border-radius: .133333rem;
+    border: 1px solid #ece5f4;
+    margin-right: .266667rem;
+}
+
+.orderpay .order-goods .img-box img {
+    width: 100%;
+}
+
+.orderpay .order-goods .order-text {
+    width: 6.133333rem;
+    float: left;
+
+    font-size: .4rem;
+    box-sizing: border-box;
+    padding: .4rem 0;
+}
+
+.orderpay .order-text .text {
+    color: #492b67;
+    line-height: .533333rem;
+}
+
+.orderpay .order-text .price {
+    color: #de3163;
+    margin-top: .4rem;
+    font-size: .48rem;
+}
+
+.orderpay .order-text .price span {
+    font-size: .36rem;
+    color: #c5bcce;
+    text-decoration: line-through;
+}
+.orderpay .order-text .num{
+    float: right;
+    color: #c5bcce
+}
+/*  */
+.orderpay .stage {
+    font-size: .4rem;
+    background: #fff; 
+    
+    padding:  .4rem;
+    border-bottom: 1px solid #ece5f4;
+}
+.orderpay .stage.staging .stage-pay {
+    margin-bottom:0;
+}
+.orderpay .stage.staging .stage-pay i{
+    float: right;
+    color: #de3163;
+}
+.orderpay .stage .stage-pay {
+    color: #492b67;
+    margin-bottom:.266667rem;
+}
+
+.orderpay .stage .stage-detail {
+    color: #b0a4bc;
+    line-height: .533333rem;
+}
+
+.orderpay .stage .stage-detail span {
+    float: right;
+}
+
+.orderpay .others{
+   margin-top: .266667rem;
+    
+}
+
+.orderpay .others .pay-detail {
+    background: #fff;
+    font-size: .4rem;
+    color: #492b67;
+    line-height: 1.266667rem;
+    padding: 0 .4rem;
+    border-bottom: 1px solid #ece5f4;
+}
+
+.orderpay .others p i {
+    float: right;
+    font-size: .58rem;
+}
+
+.orderpay .others .others-money i {
+    color: #de3163;
+}
+
+.orderpay .others .pay-detail i {
+    color: #b0a4bc;
+}
+
+.orderpay .order-detail {
+    padding: .4rem;
+    margin-bottom: 1.25rem;
+    background: #fff;
+    margin-top: .266667rem;
+}
+
+.orderpay .order-detail li {
+    font-size: .36rem;
+    color: #b0a4bc;
+    line-height: .6rem;
+}
+
+.orderpay .pay {
+    height: 1.306667rem;
+    background: linear-gradient(to right, #926eb7, #de3193);
+    text-align: center;
+    line-height: 1.306667rem;
+    color: #fff;
+    font-size: .48rem;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    
+}
+.orderpay .goods-detail{
+    display: none;
+}
+.orderpay .goods-detail-block{
+    display: block;
+}
+</style>

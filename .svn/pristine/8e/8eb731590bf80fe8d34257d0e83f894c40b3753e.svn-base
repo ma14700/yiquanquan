@@ -1,0 +1,199 @@
+<template>
+  <div>
+<head-top></head-top>
+<!--搜素框  -->
+<div class="search-wrap">
+  <mt-search v-model="value" placeholder="请输入关键词" cancel-text="" class="search">
+  </mt-search> 
+    <i class="iconfont icon-fanhui goback"></i>
+</div> 
+<!--搜素框  end-->
+
+  <mt-navbar v-model="selected">
+  <mt-tab-item id="1">派对装饰套餐1</mt-tab-item>
+  <mt-tab-item id="2">派对装饰套餐2</mt-tab-item>
+  <mt-tab-item id="3">派对装饰套餐3</mt-tab-item>
+</mt-navbar>
+
+<!-- tab-container -->
+<mt-tab-container v-model="selected">
+  <mt-tab-container-item id="1">
+    <div class="wraper" :key="n" v-for="n in 10">
+      <div class="imgbox"><img src="./taocan1.jpg" alt=""></div>
+      <p>套餐一套餐一</p>
+    </div>
+  </mt-tab-container-item>
+  <mt-tab-container-item id="2">
+    <div class="wraper" :key="n" v-for="n in 5">
+      <div class="imgbox"><img src="./taocan1.jpg" alt=""></div>
+      <p>套餐2套餐2</p>
+    </div>
+  </mt-tab-container-item>
+  <mt-tab-container-item id="3">
+    <div class="wraper" :key="n" v-for="n in 6">
+      <div class="imgbox"><img src="./taocan1.jpg" alt=""></div>
+      <p>套餐3套餐3</p>
+    </div>
+  </mt-tab-container-item>
+</mt-tab-container>
+  </div>
+</template>
+
+<script>
+import { Header } from 'mint-ui';
+import { Search } from 'mint-ui';
+import { Navbar, TabItem } from 'mint-ui';
+import headTop from '../../components/head/head';
+export default {
+  data(){
+    return{
+      selected:'1',
+      value:''
+    }
+  },
+  created(){
+
+  },
+  components:{
+      headTop 
+  },
+  methods:{
+    handleClose(){
+
+    } 
+    
+  }
+}
+</script>
+
+
+<style>
+
+/*搜索框  */
+
+  .mint-search{
+    height:auto;
+    position: relative;
+    width:100%;
+    z-index:100;
+    margin-bottom: .2rem;
+  }
+  .fixed{
+    position: fixed;
+    top: 0;
+  }
+  .mint-searchbar{
+    background-color: #eeecf1;
+    position: relative;
+  }
+
+  .mint-searchbar-inner{
+    background-color: rgba(255, 255, 255, 0);
+    position: relative;
+    padding: 0;
+    border-radius: .133333rem;
+    border:none;
+    height: .666667rem
+  }
+  .mint-searchbar-inner .mintui-search{
+    font-size: .48rem;
+    position: absolute;
+    right: .4rem;
+    color: #b0a4bc;
+    top: 50%;
+    margin-top:-.24rem;
+  }
+  .mint-searchbar-core{
+    width: 80%;
+    margin-left: .866667rem;
+    background: rgba(255, 255, 255, 0);
+    color: #b0a4bc
+    
+  }
+  ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+    color:    #b0a4bc;
+    font-size: .4rem
+  }
+  :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color:    #b0a4bc;
+    font-size: .4rem
+  }
+  ::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color:    #b0a4bc;
+    font-size: .4rem
+  }
+  :-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color:    #b0a4bc;
+    font-size: .4rem
+
+  }
+  .search-wrap{
+    position: relative;
+
+  }
+  .search-wrap .goback{
+    position: absolute;
+    top: 50%;
+    z-index: 100;
+    left: .4rem;
+    color: #b0a4bc;
+    font-size: .4rem;
+    margin-top: -.2rem;
+  }
+/*navbar  */
+.mint-navbar{
+  width: 3.466667rem;
+  float: left;
+  box-sizing: border-box;
+  display: block;
+  border: .013333rem solid #ece5f4;
+  
+}
+.mint-navbar .mint-tab-item{
+    color: #b0a4bc;
+    font-size: .36rem;
+    width: 3.466667rem;
+    height: 1.2rem;
+    padding: 0;
+    border-bottom: .013333rem solid #ece5f4;
+    box-sizing: border-box;
+}
+.mint-navbar .mint-tab-item:last-child{
+  border-bottom:none
+}
+.mint-tab-item-label{
+  line-height: 1.2rem
+}
+.mint-navbar .mint-tab-item.is-selected{
+  color: #fff;
+  text-decoration: none;
+  border: none;
+  background:#b0a4bc; 
+}
+/*container  */
+.mint-tab-container{
+  width: 6.533333rem;
+  padding: .2rem;
+  box-sizing: border-box;
+}
+.wraper{
+  width: 2.653333rem;
+  box-sizing: border-box;
+  float: left;
+  margin: .2rem;
+  text-align: center;
+  line-height: .44rem;
+  font-size: .36rem;
+  color: #492b67
+}
+.wraper .imgbox{
+  width: 100%;
+  border-radius: .133333rem;
+  border: .013333rem solid #ece5f4;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+.wraper .imgbox img{
+  width: 100%;
+}
+</style>

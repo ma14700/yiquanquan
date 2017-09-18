@@ -1,0 +1,139 @@
+import App from '../App'
+import Error from '@/components/Error'
+
+const home = r => require.ensure([], () => r(require('../page/home')), 'home')
+const homelist = r => require.ensure([], () => r(require('../page/home/children/homelist')), 'homelist')
+const party = r => require.ensure([], () => r(require('../page/party')), 'party')
+const shopcart = r => require.ensure([], () => r(require('../page/shopcart')), 'shopcart')
+const center = r => require.ensure([], () => r(require('../page/center')), 'center')
+const Qsearch = r => require.ensure([], () => r(require('../page/Qsearch')), 'Qsearch')
+const shoplist = r => require.ensure([], () => r(require('../page/shoplist')), 'shoplist')
+const shopdetail = r => require.ensure([], () => r(require('../page/shopdetail')), 'shopdetail')
+const cartpackage = r => require.ensure([], () => r(require('../page/cartpackage')), 'cartpackage')
+const partydetail = r => require.ensure([], () => r(require('../page/partydetail')), 'partydetail')
+const editprofile = r => require.ensure([], () => r(require('../page/center/children/editprofile')), 'editprofile ')
+const myorder = r => require.ensure([], () => r(require('../page/center/children/myorder')), 'myorder ')
+    // const mycollect = r => require.ensure([], () => r(require('../page/center/children/mycollect')), 'mycollect ')
+const eticket = r => require.ensure([], () => r(require('../page/center/children/eticket')), 'eticket ')
+const mycoupons = r => require.ensure([], () => r(require('../page/center/children/mycoupons')), 'mycoupons ')
+const orderpay = r => require.ensure([], () => r(require('../page/center/children/orderpay')), 'orderpay ')
+const comment = r => require.ensure([], () => r(require('../page/center/children/comment')), 'comment ') //评论
+const orderdetail = r => require.ensure([], () => r(require('../page/center/children/orderdetail')), 'orderdetail ') //评论
+const shopmeal = r => require.ensure([], () => r(require('../page/shopmeal')), 'shopmeal')
+const mealdetail = r => require.ensure([], () => r(require('../page/mealdetail')), 'mealdetail')
+const info = r => require.ensure([], () => r(require('../page/mealdetail/children/index')), 'info')
+const partyangel = r => require.ensure([], () => r(require('../page/partyangel')), 'partyangel')
+const grabsingle = r => require.ensure([], () => r(require('../page/grabsingle')), 'grabsingle')
+const startindent = r => require.ensure([], () => r(require('../page/grabsingle/children/startindent')), 'startindent')
+const indenting = r => require.ensure([], () => r(require('../page/grabsingle/children/indenting')), 'indenting')
+const completeindent = r => require.ensure([], () => r(require('../page/grabsingle/children/completeindent')), 'completeindent')
+const indentcenter = r => require.ensure([], () => r(require('../page/grabsingle/children/indentcenter')), 'indentcenter')
+const grabtest = r => require.ensure([], () => r(require('../page/grabsingle/children/grabtest')), 'grabtest')
+const shopstore = r => require.ensure([], () => r(require('../page/shopstore')), 'shopstore')
+
+export default [{
+        path: '',
+        redirect: '/home'
+    },
+    {
+        path: '/home',
+        component: home,
+        children: [{
+            path: '/home/homelist',
+            component: homelist,
+        }]
+    },
+    {
+        path: '/party',
+        component: party
+    },
+    {
+        path: '/shopstore',
+        component: shopstore
+    },
+    {
+        path: '/shopcart', //购物车
+        component: shopcart,
+    },
+    {
+        path: '/center',
+        component: center,
+
+        children: [
+            { path: 'editprofile', component: editprofile }, //编辑资料
+            { path: 'myorder', component: myorder, }, //我的订单
+            // { path: 'mycollect', component: mycollect }, //我的收藏
+            { path: 'eticket', component: eticket }, //我的电子票
+            { path: 'mycoupons', component: mycoupons }, //我的优惠券
+            { path: 'orderpay', component: orderpay }, //我的订单支付尾款
+            { path: 'comment', component: comment }, //评论
+            { path: 'orderdetail', component: orderdetail }, //我的订单-购买n个单品或一个单品详情
+        ]
+    },
+
+    {
+        path: '/Qsearch',
+        component: Qsearch
+    },
+    {
+        path: '/shoplist',
+        component: shoplist
+    },
+    {
+        path: '/shopdetail',
+        component: shopdetail
+    },
+    {
+        path: '/cartpackage',
+        component: cartpackage
+    },
+    // {
+    //     path: '/mycollect',
+    //     component: mycollect
+    // },
+    {
+        path: '/partydetail',
+        component: partydetail
+    },
+    {
+        path: '/shopmeal',
+        component: shopmeal
+    },
+    {
+        path: '/mealdetail',
+        component: mealdetail,
+        children: [{
+            path: 'info',
+            component: info
+        }]
+    },
+    {
+        path: '/partyangel',
+        component: partyangel
+    },
+    {
+        path: '/grabsingle',
+        component: grabsingle,
+        redirect: '/grabsingle/startindent',
+        children: [{
+            path: 'startindent',
+            component: startindent
+        }, {
+            path: 'indenting',
+            component: indenting
+        }, {
+            path: 'completeindent',
+            component: completeindent
+        }, {
+            path: 'indentcenter',
+            component: indentcenter
+        }, {
+            path: 'grabtest',
+            component: grabtest
+        }]
+    },
+    {
+        path: '*',
+        component: Error
+    }
+]

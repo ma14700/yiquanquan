@@ -1,0 +1,823 @@
+<template>
+    <div class="shopdetail">
+        <!--头部  -->
+        <head-top></head-top>
+        <!--头部  end-->
+        <!--商品轮播  -->
+        <mt-swipe :auto="4000">
+            <mt-swipe-item v-for="(item,index) in detailImg" :key="item.index">
+                <img v-lazy.container="item" alt="">
+            </mt-swipe-item>
+        </mt-swipe>
+        <!--商品轮播 end  -->
+        <!--商品信息  -->
+        <div class="goods">
+            <div class="goods-name">
+                <p>
+                    <span>{{goodsDetail.goodName | dot}}</span>
+                    <i class="iconfont icon-dingzhifenxiang"></i>
+                </p>
+            </div>
+            <div class="goods-price">
+                <p>¥{{goodsDetail.goodSalePrice | two}}
+                    <del>{{goodsDetail.goodPrice | two}}</del>
+                    <span>销量{{goodsDetail.goodVirtualSales}}件</span>
+                </p>
+            </div>
+        </div>
+        <!--商品信息  end-->
+        <div class="provider">
+            <p>
+                <i class="iconfont icon-shangpin"></i>
+                本商品由
+                <span>{{goodsDetail.goodBrand}}派对商城</span>提供
+            </p>
+        </div>
+        <div class="choose">
+            <p @click="handleClick">选择商品规格和数量
+                <i class="iconfont icon-smallxiangyou"></i>
+            </p>
+            <!-- 弹出层 -->
+            <mt-popup v-model="popupVisible" position="bottom">
+                <div class="choose-wraper">
+                    <div class="title blank-leaving">
+                        <div class="picture">
+                            <img v-lazy.container="detailImg[0]" alt="">
+                        </div>
+                        <div class="pic-name">
+                            <div class="pic-title">{{goodsDetail.goodName | dot}}</div>
+                            <p v-if="!this.colorId || !this.sizeId">¥{{goodsDetail.goodSalePrice | two}}
+                                <span>库存{{goodsDetail.goodNum}}件</span>
+                            </p>
+                            <p v-else>¥{{modelDetail.skuPrice | two}}
+                                <span v-show="!stockShow">库存{{modelDetail.skuQuantity}}件</span>
+                            </p>
+                        </div>
+                    </div>
+                    <!-- 选择颜色 -->
+                    <div class="color">
+                        <p>{{colorChoose.name}}：</p>
+                        <ul class="color-choose">
+                            <li :class="{isChoosed: iscolorindex==index}" @click="changeChoose(index)" v-for="(item,index) in colorChoose.value" :key="item.id">{{item.name}}</li>
+
+                        </ul>
+                    </div>
+                    <!-- 选择尺码 -->
+                    <div class="color">
+                        <p>{{sizeChoose.name}}：</p>
+                        <ul class="color-choose">
+                            <li :class="{isChoosed: issizeindex==index}" @click="changeSize(index)" v-for="(item,index) in sizeChoose.value" :key="item.id">{{item.name}}</li>
+                        </ul>
+                    </div>
+                    <div class="number">
+                        <span>购买数量：</span>
+                        <div class="count">
+                            <button @click="reduce">-</button>
+                            <input type="text" v-model="value" v-on:blur="freeChangeQuentity">
+                            <button @click="add">+</button>
+                        </div>
+                    </div>
+                    <div class="buy">
+                        <div class="jcar fl" @click="addToCart()">加入购物车</div>
+                        <div class="nbuy fl" @click="nowBuy(skuId)">立即购买</div>
+                    </div>
+                </div>
+            </mt-popup>
+        </div>
+        <!--商品详情  -->
+        <div class="goods-detail" v-html="this.detailContent">
+        </div>
+        <!--商品详情 end  -->
+        <!--加入购物车  -->
+        <div class="shopcar">
+            <p class="buy_msg" v-show="successTip">已选择:{{colormsg}},{{sizemsg}},添加成功，在购物车等你哦</p>
+            <div class="shopcar-l fl">
+                <div tag="div" class="car-icon fl" @click="goShopCart(goodsDetail.id)">
+                    <i class="iconfont icon-gouwuche"></i>
+                    <p>购物车</p>
+                    <span class="little-circle" v-show="littleCircle"></span>
+                </div>
+                <div class="star-icon fl" v-if="!goodsDetail.goodIsFavrite" @click="collectgood(goodsDetail.id,goodsDetail.goodName,goodsDetail.goodPrice)">
+                    <i class="iconfont icon-shouCang"></i>
+                    <p>收藏</p>
+                </div>
+                <div class="star-icon fl star-choose" @click="uncollect(goodsDetail.id,goodsDetail.goodName,goodsDetail.goodPrice)" v-if="goodsDetail.goodIsFavrite">
+                    <i class="iconfont icon-huabanfuben"></i>
+                    <p>已收藏</p>
+                </div>
+            </div>
+            <div class="shopcar-r fl">
+
+                <div class="join-car fl" @click="addCart">加入购物车</div>
+
+                <div class="now-buy fl" @click="addCart">立即购买</div>
+
+            </div>
+        </div>
+        <!--加入购物车  end-->
+        <div class="detail-collect" v-show="collect">
+            <div class="detail-collect-content" v-if="collectState == 1">
+                收藏成功
+            </div>
+            <div class="detail-collect-content" v-else>
+                取消收藏
+            </div>
+        </div>
+        <footer class="footer"></footer>
+    </div>
+</template>
+
+<script>
+import { Swipe, SwipeItem } from 'mint-ui';
+import { Popup } from 'mint-ui';
+import headTop from '../../components/head/head';
+import { mapMutations, mapState } from 'vuex'
+export default {
+    data() {
+        return {
+            littleCircle: false,
+            popupVisible: false,//弹出层
+            successTip: false,//提示添加成功信息
+            goodsDetail: '',//商品详情
+            detailContent: '',//商品详情内容区
+            modelDetail: [], //弹出层传输sku
+            stockShow: false,//库存显示
+            goodsChoose: '',//商品选择
+            colorChoose: '',//商品颜色选择
+            sizeChoose: '',//商品尺码选择
+            iscolorindex: '-1',
+            issizeindex: '-1',
+            value: 1,
+            colormsg: '',
+            sizemsg: '',
+            star: true,
+            Id: '',
+            detailImg: [], //轮播图
+            urll: '',
+            colorId: '', //颜色接口参数
+            sizeId: '',  //尺寸接口参数
+            skuId: '',//加入购物车需要的id
+            thumbnailImg: '',//弹出层缩略图
+            collect: false,
+            collectState: 1,
+            isClearSettleAccounts: false,
+            selectOperaType: ''
+
+        }
+    },
+    created() {
+        this.Id = this.$route.query.id;
+        this.$http.get('/api/good/goodinfo?Id=' + this.Id).then(res => {
+            console.log(res);
+        
+            this.goodsDetail = res.data;
+            console.log(this.goodsDetail.goodIsFavrite);
+            this.detailImg = res.data.goodPicUrl.split(",");
+            this.detailContent = res.data.goodContent;
+            this.goodsChoose = JSON.parse(res.data.goodSkuMemo);
+            this.colorChoose = this.goodsChoose[0];
+            this.sizeChoose = this.goodsChoose[1];
+        }).catch(err => {
+            console.log(err);
+        });
+        this.$http.get('api/good/goodscan?Id=' + this.Id).then(res => {
+            console.log("访问量+1")
+        })
+
+    },
+    components: {
+        headTop
+    },
+    computed: {
+        ...mapState([
+            'addMoreGood'
+        ]),
+
+    },
+    watch: {
+        iscolorindex(value) {
+            if (this.sizeId) {
+                this.$http.post('/api/good/sku?goodId=' + this.goodsDetail.id + '&prop=' + this.colorId + ';' + this.sizeId).then(res => {
+                    this.modelDetail = res.data;
+                    this.skuId = this.modelDetail.id;
+                })
+            }
+        },
+        issizeindex(value) {
+
+            if (this.colorId) {
+                this.$http.post('/api/good/sku?goodId=' + this.goodsDetail.id + '&prop=' + this.colorId + ';' + this.sizeId).then(res => {
+                    this.modelDetail = res.data;
+                    this.skuId = this.modelDetail.id;
+
+                })
+            }
+        }
+    },
+    methods: {
+        ...mapMutations([
+            'SETTLE_ACCOUNTS', 'CLEAR_SETTLE_ACCOUNTS'
+        ]),
+        goShopCart(id) {
+            this.$router.push({ path: '/shopcart' })
+        },
+        handleClick: function() {
+            this.popupVisible = true
+        },
+        // 选择颜色
+        changeChoose: function(index) {
+            this.iscolorindex = index;
+            this.colormsg = this.colorChoose.value[index].name;
+            this.colorId = this.colorChoose.value[index].id;
+            console.log(this.colorId)
+        },
+        // 选择尺码
+        changeSize: function(index) {
+            this.issizeindex = index;
+            this.sizemsg = this.sizeChoose.value[index].name;
+            this.sizeId = this.sizeChoose.value[index].id;
+            console.log(this.colorId)
+            console.log(this.issizeindex)
+        },
+        freeChangeQuentity() {
+            if (this.value > this.modelDetail.skuQuantity) {
+                alert("库存不足")
+            }
+
+        },
+        reduce() {
+            if (this.value > 1) {
+                this.value--;
+                this.selectOperaType = 2
+            }
+        },
+        add() {
+            if (this.value < this.modelDetail.skuQuantity) {
+                this.value++;
+                this.selectOperaType = 1
+            }
+        },
+        // 外部加入购物车
+        addCart() {
+            this.popupVisible = true;
+        },
+        // 弹出层里加入购物车
+        addToCart() {
+            if (this.colormsg && this.sizemsg && this.value != 0) {
+                this.popupVisible = false;
+                this.littleCircle = true;
+                this.successTip = true;
+                var self = this;
+                setTimeout(function() {
+                    self.successTip = false
+                }, 1000);
+
+                this.$http.post('/api/shopCart/shopcart/', {
+                    "SkuInfoId": this.skuId,
+                    "CartNum": this.value,
+                    "CartGoodId": this.goodsDetail.id,
+                    "OperaType": this.selectOperaType,
+                    "CreateType": 1
+                }).then(res => {
+                    console.log(res);
+                })
+
+
+            }
+        },
+        // 收藏商品
+        collectgood: function(id, goodName, goodPrice) {
+            this.goodsDetail.goodIsFavrite = !this.goodsDetail.goodIsFavrite;
+            this.collectState = 1;
+            this.collect = true;
+            var self = this;
+            setTimeout(function() {
+                self.collect = false
+            }, 1000);
+            this.$http.post('api/userFavorite/tofavrite/', { "FavType": 3, "FavToId": id }).then(res => {
+                console.log(res);
+            })
+        },
+        // 取消收藏
+        uncollect: function(id, goodName, goodPrice) {
+            this.goodsDetail.goodIsFavrite = !this.goodsDetail.goodIsFavrite;
+            this.collectState = 0;
+            this.collect = true;
+            var self = this;
+            setTimeout(function() {
+                self.collect = false
+            }, 1000);
+            this.$http.post('api/userfavorite/userfavdel', { "Id": 0, "FavType": 3, "FavToId": id }).then(res => {
+                console.log(res);
+            })
+        },
+        //立即购买
+        nowBuy(id) {
+                console.log(this.addMoreGood);
+            if (this.colormsg && this.sizemsg) {
+                if(this.addMoreGood.length !=0 && this.addMoreGood[0].moreGood){
+                    this.$router.push({ path: '/cartpackage?id='+this.addMoreGood[0].packageOrderId });
+                }else{
+                    this.$router.push({ path: '/cartgoodorder' });
+                }
+                
+                if (this.isClearSettleAccounts) {
+                    this.CLEAR_SETTLE_ACCOUNTS(0);//清除 从商品下单退回到详情页面 商品结算列表
+                }
+                this.SETTLE_ACCOUNTS({
+                    SkuInfoId: this.skuId,
+                    CartNum: this.value,
+                    CartGoodId: this.goodsDetail.id,
+                    goodName: this.goodsDetail.goodName,
+                    goodTotalPrice: this.goodsDetail.goodSalePrice * this.value,
+                    goodImgUrl: this.detailImg[0],
+                })
+
+
+            }
+
+        }
+
+
+    },
+    // 检测那个路由过来
+    beforeRouteEnter(to, from, next) {
+
+        next(vm => {
+            vm.url = from.path;
+            console.log(vm.url);
+            if (vm.url == '/cartgoodorder') {
+                vm.isClearSettleAccounts = true;
+            }
+        })
+    },
+    filters: {
+        //保留两位小数点
+        two: function(value) {
+
+            if (!value) { return '' };
+            return value.toFixed(2);
+        },
+        dot: function(value) {
+            if (!value) {
+                return value
+            } else {
+                if (value.length > 35) {
+                    return value.slice(0, 35) + '...'
+                } else {
+                    return value
+                }
+            }
+        }
+    }
+}    
+</script>
+
+
+<style>
+/*轮播  */
+
+.detail-collect-content {
+    width: 3.666667rem;
+    height: 0.8666667rem;
+    line-height: 0.866667rem;
+    color: #fff;
+    margin: 0 auto;
+    border: 1px solid #333;
+    border-radius: 5px;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 999;
+}
+
+.detail-collect {
+    background: transparent;
+    height: 0.866667rem;
+    line-height: 0.8667rem;
+    position: fixed;
+    text-align: center;
+    bottom: 1.333333rem;
+    width: 100%;
+}
+
+.shopdetail {
+    position: relative;
+    background: #ece5f4;
+}
+
+.shopdetail .mint-swipe {
+    height: 7.333333rem;
+    background: #333;
+    border-bottom: 1px solid #ece5f4;
+}
+
+.shopdetail .mint-swipe-item img {
+    width: 100%;
+    height: 100%;
+}
+
+.shopdetail .mint-swipe-indicator {
+    opacity: .8;
+    background-color: #b0a4bc;
+}
+
+.shopdetail .mint-swipe-indicator.is-active {
+    background-color: #492b67;
+}
+
+
+
+
+
+
+
+
+
+
+/*商品名  */
+
+.shopdetail .goods {
+    padding: .4rem;
+    line-height: .666667rem;
+    background: #fff;
+}
+
+.shopdetail .goods-name {
+    font-size: .4rem;
+    color: #492b67;
+}
+
+.shopdetail .goods-name i {
+    float: right;
+    color: #baafc4;
+}
+
+.shopdetail .goods-name span {}
+
+.shopdetail .goods-name span:first-child {
+    width: 90%;
+    display: inline-block;
+}
+
+
+
+
+
+
+
+
+
+
+
+/*商品价格  */
+
+.shopdetail .goods-price {
+    color: #de3163;
+    font-size: .4rem;
+    font-weight: 700;
+}
+
+.shopdetail .goods-price del {
+    color: #baafc4;
+    margin-left: .266667rem;
+    font-size: .36rem;
+    text-decoration: line-through;
+    font-weight: normal
+}
+
+.shopdetail .goods-price span {
+    float: right;
+    color: #baafc4;
+    font-weight: normal;
+}
+
+
+
+
+
+
+
+
+
+
+/*供应商  */
+
+.shopdetail .provider {
+    box-shadow: 1px 0 1px 0 #eee;
+    color: #baafc4;
+    font-size: .36rem;
+    height: 1rem;
+    line-height: 1rem;
+    padding: 0 .4rem;
+    background: #fff;
+}
+
+.shopdetail .provider i {
+    font-size: .4rem;
+}
+
+.shopdetail .provider span {
+    margin: 0 .133333rem;
+}
+
+
+
+
+
+
+
+
+
+
+/*选择商品  */
+
+.shopdetail .choose {
+    color: #492b67;
+    font-size: .4rem;
+    padding: .4rem .4rem;
+    position: relative;
+    background: #fff;
+    margin: .266667rem 0;
+}
+
+.shopdetail .choose i {
+    font-size: .52rem;
+    float: right;
+    color: #baafc4;
+}
+
+
+
+
+
+
+
+
+
+
+/*商品详情  */
+
+.shopdetail .goods-detail img {
+    width: 100%;
+}
+
+
+
+
+
+
+
+
+
+/*加入购物车  */
+
+.shopdetail .shopcar {
+
+    width: 100%;
+    height: 1.333333rem;
+
+    position: fixed;
+    bottom: 0
+}
+
+.shopdetail .shopcar-l {
+    width: 3.4rem;
+    padding: .2rem 0;
+    box-sizing: border-box;
+    height: 100%;
+    text-align: center;
+    color: #aea2ba;
+    font-size: .36rem;
+    background: #fff;
+}
+
+.shopdetail .shopcar-l i {
+    font-size: .533333rem;
+}
+
+.shopdetail .shopcar-l .car-icon {
+    width: 50%;
+    position: relative;
+    border-right: 1px solid #c5bcce;
+}
+
+.shopdetail .shopcar-l .car-icon .little-circle {
+    width: .213333rem;
+    height: .213333rem;
+    border-radius: 100%;
+    background: #db3062;
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 55%;
+}
+
+.shopdetail .shopcar-l .star-icon {
+    width: 49%;
+}
+
+.shopdetail .shopcar-l .star-choose i {
+    color: #db3062;
+}
+
+.shopdetail .shopcar-l p {
+    line-height: .5rem;
+}
+
+.shopdetail .shopcar-r {
+    width: 6.6rem;
+    text-align: center;
+
+    font-size: .48rem;
+    color: #fff;
+    height: 100%;
+}
+
+.shopdetail .shopcar-r .join-car {
+    width: 50%;
+    background: linear-gradient(to right, #c09ee2, #a17cc7);
+    padding: .4rem 0;
+}
+
+.shopdetail .shopcar-r .now-buy {
+    padding: .4rem 0;
+    width: 50%;
+    background: linear-gradient(to top right, #926eb7, #de3193);
+}
+
+
+
+
+
+
+
+
+
+
+
+/*选择商品规格详情  */
+
+.shopdetail .mint-popup {
+    width: 100%;
+    height: auto;
+}
+
+.shopdetail .title {
+    height: 2.2rem;
+}
+
+.shopdetail .picture {
+    width: 2.666667rem;
+    border: 1px solid #ece5f4;
+    box-sizing: border-box;
+    float: left;
+    margin-top: -.6rem;
+    border-radius: .133333rem;
+    overflow: hidden;
+    height: 2.666667rem;
+}
+
+.shopdetail .picture img {
+    width: 100%;
+}
+
+.shopdetail .pic-name {
+    padding: .4rem;
+    float: left;
+    font-size: .4rem;
+    box-sizing: border-box;
+    width: 6.5rem;
+}
+
+.shopdetail .pic-name .pic-title {}
+
+.shopdetail .pic-name p {
+    color: #de3163;
+    line-height: .66rem;
+    font-weight: 700;
+}
+
+.shopdetail .pic-name p del {
+    color: #c4bccc;
+    font-size: .32rem;
+    margin-left: .266667rem;
+    text-decoration: line-through;
+    font-weight: normal;
+}
+
+.shopdetail .pic-name p span {
+    float: right;
+    color: #b0a4bc;
+    font-weight: normal;
+    font-size: .32rem;
+}
+
+.shopdetail .color {
+
+    border-top: 1px solid #ece5f4;
+    padding: .4rem;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.shopdetail .color p {
+
+    margin-bottom: .3rem
+}
+
+.shopdetail .color-choose li {
+    float: left;
+    line-height: .666667rem;
+    width: 1.6rem;
+    height: .666667rem;
+    box-sizing: border-box;
+    border: 1px solid #b0a4bc;
+    text-align: center;
+    border-radius: .133333rem;
+    margin-right: .4rem;
+    color: #b0a4bc;
+    margin-bottom: .266667rem;
+}
+
+.shopdetail .color-choose .isChoosed {
+    background: #976ab4;
+    color: #fff;
+}
+
+.shopdetail .number {
+    line-height: .733333rem;
+    padding: .4rem .533333rem .466667rem .4rem;
+    position: relative;
+    border-top: 1px solid #ece5f4;
+    overflow: hidden;
+}
+
+.shopdetail .number span {
+    display: block;
+    float: left;
+}
+
+.shopdetail .number .count {
+    width: 3.066667rem;
+    height: .733333rem;
+    line-height: .733333rem;
+    border-radius: .133333rem;
+    border: 1px solid #aea2ba;
+    color: #492b67;
+    overflow: hidden;
+    float: right;
+}
+
+.shopdetail .number .count input,
+button {
+    float: left;
+    height: .733333rem;
+    border: 0;
+    width: 33%;
+    background: #fff;
+    color: #aea2ba;
+    font-size: .52rem;
+}
+
+.shopdetail .number .count input {
+    box-sizing: border-box;
+    padding-left: .3rem;
+    font-size: .4rem;
+    color: #492b67;
+}
+
+.shopdetail .buy {
+    width: 100%;
+    height: 1.306667rem;
+    position: relative;
+    text-align: center;
+    line-height: 1.306667rem;
+    color: #fff;
+    font-size: .48rem;
+}
+
+.shopdetail .buy_msg {
+    position: absolute;
+    bottom: 2rem;
+    background: lightblue;
+    left: 50%;
+    margin-left: -3rem;
+    width: 6rem;
+    text-align: center;
+
+    line-height: 1rem;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.8);
+    font-size: .48rem;
+    border-radius: .2rem;
+}
+
+.shopdetail .jcar {
+    width: 50%;
+    background: linear-gradient(to right, #c2a0e4, #9f7ac5);
+}
+
+.shopdetail .nbuy {
+    width: 50%;
+    background: linear-gradient(to right, #926eb7, #de3193);
+}
+</style>

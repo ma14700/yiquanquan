@@ -1,0 +1,317 @@
+<template>
+  <div>
+    <head-top></head-top>
+    <div class="indenting">
+      <div class="indenting-head"><i class="iconfont icon-duihao1"></i>抢单成功</div>
+      <div class="indenting-content">
+        <div class="indenting-p">订单编号：1212541254124541</div>
+        <div class="indenting-p">联系人：张女士</div>
+        <div class="indenting-p">联系电话：15484454415</div>
+        <div class="indenting-p">服务地址：郑州市金水区</div>
+        <div class="indenting-p">服务时间：2017-01-28 15:30</div>
+        <div class="indenting-p">下单时间：2017-01-27 15:30</div>
+      </div>
+      <div class="indenting-combodetail">
+        <div class="indenting-combodetail-head">套餐详情<span><i class="iconfont icon-smallxiangyou"></i></span></div>
+        <div class="indenting-combodetail-content">
+          <div class="indenting-combodetail-contenthead clearfix">
+            <div class="indenting-combodetail-contentleft">
+              <img src="../../../assets/qiqiu.png" alt="">
+            </div>
+            <div class="indenting-combodetail-contentright">
+              <p>生日PARTY氢气球套餐生日PARTY氢气球套餐生日PARTY氢气球套餐生日PARTY氢气球套餐</p>
+              <p>￥500.00 <span>800</span></p>
+            </div>
+          </div>
+          <div class="indenting-combodetail-contentcenter">
+            <div class="indenting-combodetail-combohead">套餐内所含商品</div>
+            <div class="indenting-combodetail-combocontent">
+              气球气球气球气球气球气球<span>x2</span>
+            </div>
+            <div class="indenting-combodetail-combocontent">
+              气球气球气球气球气球气球<span>x2</span>
+            </div>
+            <div class="indenting-combodetail-combocontent">
+              气球气球气球气球气球气球<span>x2</span>
+            </div>
+          </div>
+          <div class="indenting-combodetail-contentcenter">
+            <div class="indenting-combodetail-combohead">加选商品：</div>
+            <div class="indenting-combodetail-combocontent">
+              气球气球气球气球气球气球<span>x2</span>
+            </div>
+            <div class="indenting-combodetail-combocontent">
+              气球气球气球气球气球气球<span>x2</span>
+            </div>
+            <div class="indenting-combodetail-combocontent">
+              气球气球气球气球气球气球<span>x2</span>
+            </div>
+          </div>
+        </div>
+        <div class="indenting-combodetail-back"></div>
+        <div class="indenting-combodetail-footer">
+          <div class="indenting-combodetail-footercontent">
+            定金总额：<span>￥200.00</span>
+          </div>
+          <div class="indenting-combodetail-footercontent">
+            已付定金：<span>￥200.00</span>
+          </div>
+          <div class="indenting-combodetail-footercontent">
+            优惠劵满减：<span>-￥200.00</span>
+          </div>
+          <div class="indenting-combodetail-footercontent indentcolor">
+            代付尾款：<span>-￥200.00</span>
+          </div>
+        </div>
+      </div>
+      <div class="indenting-combobutton">
+        <div class="indenting-combodecorate" @click="decoratecomplete()">上门装饰</div>
+      </div>
+    </div>
+    <footer></footer>
+    <mt-popup v-model="popupVisible"  popup-transition="popup-fade">
+      <div class="decorate">
+        <div class="decorate-head"><i class="iconfont icon-duihao1"></i>装饰完成</div>
+        <div class="decorate-content">
+          <img src="../../../assets/grab1.png" alt="">
+          <p>提醒客户支付尾款</p>
+          <div class="decorate-query" @click="decoratequery">确定</div>
+        </div>
+      </div>
+    </mt-popup>
+  </div>
+</template>
+<script>
+    import headTop from '../../../components/head/head'
+    import { Popup } from 'mint-ui';
+    export default {
+        data(){
+            return{
+              popupVisible:false,
+            }
+        },
+        mounted(){
+
+        },
+        methods:{
+            decoratecomplete(){
+              this.popupVisible = true;
+            },
+            decoratequery(){
+              this.popupVisible = false;
+            }
+        },
+        components:{
+            headTop
+        }
+    }
+</script>
+<style>
+    .indenting-combodetail-back{
+      background: #f3eef7;
+      width: 10.6rem;
+      margin-left:-0.4rem;
+      height: .266667rem;
+    }
+    .decorate{
+      width: 9.2rem;
+      height: 6.666667rem;
+    }
+    .decorate-head{
+      width: 100%;
+      height: 1.333333rem;
+      line-height: 1.333333rem;
+      background: linear-gradient(to right,#5c8de4,#656bca)
+    }
+    .decorate-content{
+      width: 100%;
+    }
+    .decorate-content img{
+      width: 2.133333rem;
+      height: 2.133333rem;
+      margin: 0 auto;
+      display: block;
+      margin-top: .266667rem;
+    }
+    .decorate-content{
+      width: 100%;
+      text-align: center;
+      height: 1.333333rem;
+      line-height: 1.333333rem;
+      color: #6190e2;
+      font-size: .506667rem;
+    }
+    .decorate-query{
+      width: 5.333333rem;
+      height: 1.2rem;
+      line-height: 1.2rem;
+      color: #fff;
+      font-size: .506667rem;
+      text-align: center;
+      background: linear-gradient(to right,#5c8de4,#de3193);
+      border-radius: 5px;
+      margin: 0 auto;
+    }
+    .indentcolor{
+      color: #492b67 !important;
+      font-weight: 600;
+    }
+    .indentcolor span{
+      color: #de3163;
+      font-weight: 600;
+    }
+    footer{
+      padding-bottom: 2rem;
+    }
+    .indenting{
+        width: 100%;
+        background: #f3eef7;
+        overflow: hidden;
+    }
+    .indenting-head,.decorate-head{
+      width: 100%;
+      height: 1.333333rem;
+      line-height: 1.333333rem;
+      text-align: center;
+      font-size: .506667rem;
+      color: #fff;
+      background: linear-gradient(to left,#656bca,#5c8de4);
+    }
+    .indenting-head i{
+      font-size: .506667rem !important;
+      padding-right: 5px;
+    }
+    .indenting-content{
+      width: 100%;
+      background: #fff;
+      padding-top: .266667rem;
+      box-sizing: border-box;
+      padding: .266667rem .4rem .466667rem 0.4rem;
+    }
+    .indenting-p{
+      font-size: .373333rem;
+      color: #492b67;
+      height: .666667rem;
+      line-height: .666667rem;
+    }
+    .indenting-combodetail{
+      width: 100%;
+      margin-top: .4rem;
+      box-sizing: border-box;
+      padding: 0 .4rem;
+      padding-bottom: 1.066667rem;
+      background: #fff;
+    }
+    .indenting-combodetail-head{
+      width: 100%;
+      height: 1.2rem;
+      line-height: 1.2rem;
+      font-size: .426667rem;
+      color: #492b67;
+      background: #fff;
+    }
+    .indenting-combodetail-head span{
+      float: right;
+    }
+    .indenting-combodetail-contenthead{
+      width: 100%;
+    }
+    .indenting-combodetail-contenthead img{
+      width: 2.666667rem;
+      height: 2.666667rem;
+      border-radius: 10px;
+      border:1px solid #ece5f4;
+    }
+    .indenting-combodetail-contentleft{
+      float: left;
+      margin-right: .4rem;
+       width: 2.666667rem;
+    }
+    .indenting-combodetail-contentright{
+      float: left;
+      width: 65%;
+      color: #492b67;
+      margin-top: .533333rem;
+      font-size: .373333rem;
+   
+  
+    }
+    .indenting-combodetail-contentright>p:nth-of-type(1){
+       word-break:break-all;  
+          display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+      line-height: .426667rem;
+    }
+    .indenting-combodetail-contentright>p:nth-of-type(2){
+      color: #de3163;
+      font-size: .4rem;
+      font-weight: 600;
+      margin-top: .4rem;
+    }
+    .indenting-combodetail-contentright>p:nth-of-type(2)>span{
+      font-size: 12px;
+      color: #cac2d2;
+      text-decoration: line-through;
+      padding-left: .266667rem;
+      font-weight: normal;
+    }
+    .indenting-combodetail-combohead{
+      width: 9.2rem;
+      margin: 0 auto;
+      background: #f3eef7;
+      height: 1.066667rem;
+      line-height: 1.066667rem;
+      color: #b0a4bc;
+      padding-left: .4rem;
+      box-sizing: border-box;
+      margin-bottom: 0.4rem;
+      margin-top: 0.4rem;
+    }
+    .indenting-combodetail-combocontent{
+      width: 100%;
+      height: 1.066667rem;
+      line-height: 1.066667rem;
+      font-size: 12px;
+      color: #b5aac0;
+      box-sizing: border-box;
+       padding:0 0.4rem; 
+    }
+    .indenting-combodetail-combocontent span{
+      display: inline-block;
+      float:right;
+    }
+    .indenting-combodetail-footer{
+      margin-top: .266667rem;
+    }
+    .indenting-combodetail-footercontent{
+      width: 100%;
+      height: .72rem;
+      line-height: .72rem;
+      font-size: .346667rem;
+      color: #b5aac0;
+    }
+    .indenting-combodetail-footercontent span{
+      display: inline-block;
+      float:right;
+    }
+    .indenting-combobutton{
+      width: 100%;
+      height: 1.92rem;
+    }
+    .indenting-combodecorate{
+      width: 5.266667rem;
+      height: 1.2rem;
+      line-height: 1.2rem;
+      background: linear-gradient(to right,#5c8de4,#de3193);
+      margin:0 auto;
+      text-align: center;
+      color: #fff;
+      font-size: .48rem;
+      border-radius: 10px;
+      margin-top: .4rem;
+    }
+</style>
+
+

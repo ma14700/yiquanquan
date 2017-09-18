@@ -1,0 +1,268 @@
+<template>
+    <div>
+    <!--头部  -->
+    <head-top></head-top>
+    <!--头部  end-->
+    <!--提示信息  -->
+      <div class="msg blank-leaving">
+        <p><i class="iconfont icon-ionfontxiangqingye-"></i>库存紧张，尽快购买哦！</p>
+      </div>
+    <!--提示信息  end-->
+    <div class="goods">
+      <span class="edit">完成</span>
+      <ul>
+        <li :key="good" v-for="good in testData" class="good-wraper">
+          <div class="check"><i class="iconfont " :class="[isCheck?'icon-duihao':'icon-duihao1']" @click="checked"></i></div>
+          <div class="imgbox">
+            <img src="./../../assets/shopcart/goods.png" alt="">
+          </div>
+          <div class="des-text">
+              <div class="count">
+                    <button>-</button>
+                    <input type="text" value="1">
+                    <button>+</button>
+              </div>
+
+              <p class="size">{{good.color}}；{{good.size}}</p>
+              <div class="delete">
+                  删除
+              </div>
+          </div>
+        </li>
+      </ul>
+
+    </div>
+    <!--底部购买  -->
+    <footer class="fot"></footer>
+      <div class="buy">
+          <div class="all-choose blank-leaving">
+            <i class="iconfont icon-duihao1"></i>全选
+            <span class="total">总计：<i class="total-pay">￥800.00</i></span>
+          </div>
+          <div class="pay">
+            结算<span class="pay-num">(1)</span>
+          </div>
+      </div>
+    <!--底部购买 end  -->
+    </div>
+</template>
+
+<script>
+import headTop from '../../components/head/head'
+export default {
+    data() {
+        return {
+            isCheck:false,
+    testData: [
+        {
+          "name": "生日PARTY氢气球套餐生日PARTY氢气球套餐生日PARTY氢气球套餐",
+          "price": 500,
+          "oldPrice": 888,
+          "description": "",
+          "sellCount": 229,
+          "rating": 100,
+          "num":15,
+          "size":"均码",
+          "color":"红色",
+          "info": "一碗皮蛋瘦肉粥，总是我到粥店时的不二之选。香浓软滑，饱腹暖心，皮蛋的Q弹与瘦肉的滑嫩伴着粥香溢于满口，让人喝这样的一碗粥也觉得心满意足",
+          "icon": "http://fuss10.elemecdn.com/c/cd/c12745ed8a5171e13b427dbc39401jpeg.jpeg?imageView2/1/w/114/h/114",
+          "image": "http://fuss10.elemecdn.com/c/cd/c12745ed8a5171e13b427dbc39401jpeg.jpeg?imageView2/1/w/750/h/750"
+        },
+        {
+          "name": "扁豆焖面",
+          "price": 666,
+          "oldPrice": 999,
+          "description": "",
+          "sellCount": 188,
+          "rating": 96,
+          "num":1,
+          "size":"S",
+          "color":"粉色",
+          "info": "",
+          "icon": "http://fuss10.elemecdn.com/c/6b/29e3d29b0db63d36f7c500bca31d8jpeg.jpeg?imageView2/1/w/114/h/114",
+          "image": "http://fuss10.elemecdn.com/c/6b/29e3d29b0db63d36f7c500bca31d8jpeg.jpeg?imageView2/1/w/750/h/750"
+        },
+        {
+          "name": "葱花饼",
+          "price": 286,
+          "oldPrice": 566,
+          "description": "",
+          "sellCount": 124,
+          "rating": 85,
+          "info": "",
+          "num":5,
+          "size":"均码",
+          "color":"紫色",
+          "icon": "http://fuss10.elemecdn.com/f/28/a51e7b18751bcdf871648a23fd3b4jpeg.jpeg?imageView2/1/w/114/h/114",
+          "image": "http://fuss10.elemecdn.com/f/28/a51e7b18751bcdf871648a23fd3b4jpeg.jpeg?imageView2/1/w/750/h/750"
+        },
+        {
+          "name": "牛肉馅饼",
+          "price": 299,
+          "oldPrice": 365,
+          "description": "",
+          "sellCount": 114,
+          "rating": 91,
+          "info": "",
+          "num":6,
+          "size":"M",
+          "color":"黄色",
+          "icon": "http://fuss10.elemecdn.com/d/b9/bcab0e8ad97758e65ae5a62b2664ejpeg.jpeg?imageView2/1/w/114/h/114",
+          "image": "http://fuss10.elemecdn.com/d/b9/bcab0e8ad97758e65ae5a62b2664ejpeg.jpeg?imageView2/1/w/750/h/750"
+        },
+       
+      ]
+        }
+    },
+    components: {
+        headTop
+    },
+    created() {
+     
+    },
+    methods: {
+        checked:function(){
+        this.isCheck = !this.isCheck;
+        }
+    }
+}
+</script>
+<style>
+.msg{
+  line-height: 1.333333rem;
+  color: #b0a4bc;
+  font-size: .36rem;
+}
+.msg .icon-ionfontxiangqingye-{
+  margin-right:.4rem ;
+}
+.goods{
+ 
+  position: relative;
+}
+.edit{
+  position: absolute;
+  right: .4rem;
+  top: -.9rem;
+  font-size: .4rem;
+  color: #b0a4bc
+}
+.good-wraper{
+  height: 2.133333rem;
+  padding: .533333rem 0;
+  overflow: hidden;
+}
+
+.check{
+    padding-left: .4rem;
+}
+.check i{
+  line-height: 2rem;
+  display: block;
+  float: left;
+  font-size: .45rem;
+  color: #b0a4bc;
+}
+
+.imgbox{
+  border: 1px solid #b0a4bc;
+  border-radius: .133333rem;
+  width: 2rem;
+  float: left;
+  margin: 0 .4rem;
+}
+.imgbox img{
+  width: 100%;
+}
+.des-text{
+  float: left;
+  width: 6.297rem;
+ 
+  position: relative;
+}
+
+.des-text .size{
+  color: #b0a4bc;
+  font-size: .36rem;
+  line-height: .6rem;
+}
+.des-text .count{
+    width: 3.066667rem;
+    height: .733333rem;
+    line-height: .733333rem;
+    border-radius: .133333rem;
+    border: 1px solid #aea2ba;
+    margin: .4rem 0;
+    color: #492b67;
+    overflow: hidden;
+}
+
+.des-text .count input , button{
+    float: left;
+    height: .733333rem;
+    border:  0;
+    width: 33%;
+    background: #fff;
+    color: #aea2ba;
+
+}
+.des-text .count input {
+    box-sizing: border-box;
+    padding: 0 .3rem;
+}
+.des-text .delete{
+    position: absolute;
+    right: 0;
+    top:0;
+    width: 1.733333rem;
+    height:100%;
+    color: #fff;
+    line-height:2.133333rem;
+    font-size: .466667rem;
+    text-align: center;
+    background: #b0a4bc;
+}
+/*底部  */
+.fot{
+  height: 1.306667rem;
+  width: 100%;
+}
+.buy{
+  height: 1.306667rem;
+  width: 100%;
+  position: fixed;
+  background: #fff;
+  bottom: 0;
+  line-height: 1.306667rem;
+}
+.all-choose{
+  display: block;
+  float: left;
+ font-size: .4rem;
+  color: #b0a4bc;
+  
+  width: 7.2rem;
+  box-sizing: border-box;
+}
+.all-choose .iconfont{
+  margin-right: .4rem;
+  font-size: .45rem;
+}
+.all-choose .total{
+  float: right;
+  font-size: .45rem;
+  
+}
+.all-choose .total .total-pay{
+    color: #de3163;
+    font-size: .36rem;
+}
+.pay{
+  width: 2.8rem;
+  background:linear-gradient(to right, #946cb6 , #da3494);
+  float: left;
+  text-align: center;
+  font-size: .45rem;
+  color: #fff;
+}
+</style>

@@ -1,0 +1,157 @@
+import {
+    ADD_CART,
+    REDUCE_CART,
+    INIT_BUYCART,
+    CLEAR_CART,
+    SETTLE_ACCOUNTS,
+    GIT_SETTLE_ACCOUNTS,
+    SETTLE_PACKAGE_ACCOUNTS,
+    GIT_SETTLE_PACKAGE_ACCOUNTS,
+    CLEAR_PACKAGE,
+    BUY_CART,
+    DETAIL_ORDER
+
+} from './mutation-types'
+import { setStore, getStore, removeStore } from '../config/mUtils'
+export default {
+    //加入购物车
+    [ADD_CART](state, {
+        skuId, //商品id
+        goodName, //商品名字
+    }) {
+        let cart = state.cartList;
+        let item = cart[skuId] = (cart[skuId] || {});
+
+        if (item[skuId]) {
+            item[skuId]['num']++;
+
+        } else {
+            item[skuId] = {
+                'num': 1,
+                "id": skuId,
+                "name": goodName,
+            }
+        }
+
+
+        state.cartList = {...cart };
+        //存入localStorage
+        setStore('buyCart', state.cartList);
+        console.log(state.cartList);
+
+    },
+    //移出购物车
+
+    //网页初始化时从本地缓存获取购物车列表
+
+    //结算商品
+    [SETTLE_ACCOUNTS](state, {
+        SkuInfoId,
+        CartNum,
+        CartGoodId,
+        goodName,
+        goodTotalPrice,
+        goodImgUrl,
+        OrderType
+    }) {
+        let Accounts = state.settleAccounts;
+        let item = Accounts[CartGoodId] = (Accounts[CartGoodId] || {});
+        item[CartGoodId] = {
+                "SkuInfoId": SkuInfoId,
+                "CartNum": CartNum,
+                "CartGoodId": CartGoodId,
+                "goodName": goodName,
+                "goodTotalPrice": goodTotalPrice,
+                "goodImgUrl": goodImgUrl,
+                "OrderType": 2
+            }
+            // Accounts.push({
+            //     "SkuInfoId": SkuInfoId,
+            //     "CartNum": CartNum,
+            //     "CartGoodId": CartGoodId,
+            //     "goodName": goodName,
+            //     "goodTotalPrice": goodTotalPrice,
+            //     "goodImgUrl": goodImgUrl,
+            //     "OrderType": 2
+            // })
+        state.settleAccounts = {...Accounts };
+        setStore('settleAccounts', state.settleAccounts);
+        console.log(state.settleAccounts);
+    },
+    //
+    [GIT_SETTLE_ACCOUNTS](state) {
+        let test = getStore('settleAccounts')
+        if (test) {
+            state.settleAccounts = JSON.parse(test);
+        }
+
+    },
+    //结算套餐
+    [SETTLE_PACKAGE_ACCOUNTS](state, {
+        packageId,
+        discountPrice,
+        downPayment,
+        imgUrl,
+        name,
+        summary,
+        OrderType
+    }) {
+        let packageAccounts = state.settlePackageAccounts;
+        let item = packageAccounts[packageId] = (packageAccounts[packageId] || {});
+        item[packageId] = {
+                'packageId': packageId,
+                "discountPrice": discountPrice,
+                "downPayment": downPayment,
+                "imgUrl": imgUrl,
+                "name": name,
+                "summary": summary,
+                "OrderType": 1
+            }
+            // state.settlePackageAccounts.push({
+            //     'packageId': packageId,
+            //     "discountPrice": discountPrice,
+            //     "downPayment": downPayment,
+            //     "imgUrl": imgUrl,
+            //     "name": name,
+            //     "summary": summary,
+            //     "OrderType": 1
+            // })
+        state.settlePackageAccounts = {...packageAccounts };
+        setStore('settlePackageAccounts', state.settlePackageAccounts);
+        console.log(state.settlePackageAccounts);
+    },
+    //
+    [GIT_SETTLE_PACKAGE_ACCOUNTS](state) {
+        let aaa = getStore('settlePackageAccounts');
+        if (aaa) {
+            state.settlePackageAccounts = JSON.parse(aaa);
+        }
+
+    },
+    //清除本地套餐储存
+    [CLEAR_PACKAGE](state, packageId) {
+
+        state.settlePackageAccounts[packageId] = null;
+        state.settlePackageAccounts = {...state.settlePackageAccounts };
+        setStore("settlePackageAccounts", state.settlePackageAccounts)
+        console.log("aaa")
+    },
+    [DETAIL_ORDER](state, {
+        id,
+        goodName,
+        goodPrice
+    }) {
+        let orderParam = state.orderParam;
+        let item = orderParam[id] = (orderParam[id] || {});
+        item[id] = {
+            "id": id,
+            "goodName": goodName,
+            "goodPrice": goodPrice
+        }
+        state.orderParam = {...orderParam };
+        //存入localStorage
+        setStore('myorderParam', state.orderParam);
+        console.log(state.orderParam);
+    },
+
+}

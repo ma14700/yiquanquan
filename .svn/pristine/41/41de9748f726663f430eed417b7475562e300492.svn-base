@@ -1,0 +1,38 @@
+
+<template>
+  <div class="myCollect">
+       组件,,,
+  </div>
+</template>
+
+<script>
+import{mapState,mapMutations} from 'vuex';
+export default {
+    data(){
+        return{
+            
+        }
+    },
+    props:[
+        'goodCollectList'
+    ],
+    computed:{
+        ...mapState([
+            'collectList'
+        ])
+    },
+    created() {
+       
+        console.log(this.goodCollectList)
+
+    },
+    mounted(){
+         
+    },
+    
+}
+</script>
+
+<style>
+
+</style>

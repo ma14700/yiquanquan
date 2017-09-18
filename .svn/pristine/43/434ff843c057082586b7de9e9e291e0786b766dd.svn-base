@@ -1,0 +1,38 @@
+<template>
+  <div>
+      <transition name="router-fade" mode="out-in">
+        <router-view></router-view>
+      </transition>
+      <foot-grab></foot-grab>
+  </div>
+</template>
+<script>
+     import footGrab from '../../components/footer/footGrab'
+    export default {
+        data(){
+            return{
+
+            }
+        },
+        mounted(){
+
+        },
+        methods:{
+
+        },
+        components:{
+            footGrab
+        }
+    }
+  
+</script>
+<style>
+    .router-fade-enter-active, .router-fade-leave-active {
+            transition: opacity .1s;
+        }
+	.router-fade-enter, .router-fade-leave-active {
+	  	opacity: 0;
+	}
+</style>
+
+

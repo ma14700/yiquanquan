@@ -1,0 +1,514 @@
+<template>
+  <div>
+    <head-top></head-top>
+    <div class="homeContent">
+        <div class="homeSearch">
+          <span>郑州<i class="iconfont icon-arrow_down"></i></span>
+          <img src="../../assets/home/logo.png" alt="">
+          <span @click="homesearch"><i class="iconfont icon-sousuo1"></i></span>
+        </div>
+        <div class="homeHeader">
+            <mt-swipe :auto="0">
+              <mt-swipe-item><img src="../../assets/home/swper1.png" alt=""></mt-swipe-item>
+              <mt-swipe-item>2</mt-swipe-item>
+              <mt-swipe-item>3</mt-swipe-item>
+            </mt-swipe>
+        </div>
+        <div class="homeNavigation clearfix">
+            <div class="navigation-head">
+              您对派对的计划？
+            </div>
+            <ul class="navigation-content">
+              <li class="navigation-icon"><a href=""><i class="iconfont icon-baobao"></i><span class="navigation-icon-font">宝宝宴</span></a></li>
+              <li class="navigation-icon"><a href=""><i class="iconfont icon-baobao"></i><span class="navigation-icon-font">宝宝宴</span></a></li>
+              <li class="navigation-icon"><a href=""><i class="iconfont icon-baobao"></i><span class="navigation-icon-font">宝宝宴</span></a></li>
+              <li class="navigation-icon"><a href=""><i class="iconfont icon-baobao"></i><span class="navigation-icon-font">宝宝宴</span></a></li>
+              <li class="navigation-icon"><a href=""><i class="iconfont icon-baobao"></i><span class="navigation-icon-font">宝宝宴</span></a></li>
+              <li class="navigation-icon"><a href=""><i class="iconfont icon-baobao"></i><span class="navigation-icon-font">宝宝宴</span></a></li>
+              <li class="navigation-icon"><a href=""><i class="iconfont icon-baobao"></i><span class="navigation-icon-font">宝宝宴</span></a></li>
+              <li class="navigation-icon"><a href=""><i class="iconfont icon-baobao"></i><span class="navigation-icon-font">宝宝宴</span></a></li>
+            </ul>
+        </div>
+        <div class="homeHotparty">
+          <div class="homeHotparty-head" >
+            <i class="iconfont icon-huatong"  ></i>
+            <span>热门潮趴</span>
+            <span>More<i class="iconfont icon-smallxiangyou"  ></i></span>
+          </div>
+          <div class="homeHotparty-content clearfix">
+             <router-link tag="div" class="homeHotparty-contentimg" :class="'homeHotparty-contentimg'+item.id" v-for="item in swiperimg"  :key="item.id" :to="'/partydetail/' + item.id">
+              <img :src="item.img">
+              <span>{{item.title}}</span>
+             </router-link> 
+          </div>
+        </div>
+        <div class="partyteach">
+          <div class="homeHotparty-head" >
+            <i class="iconfont icon-2"  ></i>
+            <span>派对策划师</span>
+            <span>More<i class="iconfont icon-smallxiangyou"  ></i></span>
+          </div>
+          <div class="partyteach-content">
+            <div class="partyteach-content-center">
+              <router-link class="partyteachContent" v-for="item in swiperimg" :key="item.id" tag="li" :to="'/partyangel/' + item.id">
+                <div class="partyteachContentImg">
+                  <img :src="item.img">
+                </div>
+                <div class="partyteachContentname">{{item.name}}</div>
+                <div class="partyteachContentintroduce">
+                  {{item.introduce}}
+                </div>
+              </router-link>
+            </div>
+          </div>
+        </div>
+        <div class="comborecommend">
+          <div class="homeHotparty-head" >
+            <i class="iconfont icon-taocanleixing"  ></i>
+            <span>套餐推荐</span>
+            <span>More<i class="iconfont icon-smallxiangyou"  ></i></span>
+          </div>
+          <div class="homeHotparty-content clearfix">
+            <div class="comboImg1 homeHotparty-contentimg">
+              <img src="../../assets/home/combo1.png" alt="">
+            </div>
+            <div class="comboImg2 homeHotparty-contentimg">
+              <img src="../../assets/home/combo2.png" alt="">
+            </div>
+            <div class="comboImg3 homeHotparty-contentimg">
+              <img src="../../assets/home/combo3.png" alt="">
+            </div>
+          </div>
+          <div class="combo-content">
+            <div class="combo-content-center">
+              <div class="comboContent">
+                <div class="comboContentImg">
+                  <img src="../../assets/home/comblun1.png" alt="">
+                  <div class="comboContentfoot">
+                    疯狂酒吧趴
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer></footer>
+    <foot-Guide selected="home"></foot-Guide>  
+  </div>
+</template>
+
+<script>
+  import { TabContainer, TabContainerItem } from 'mint-ui';
+  import { Swipe, SwipeItem } from 'mint-ui';
+  import headTop from '../../components/head/head'
+  import footGuide from '../../components/footer/footGuide'
+import { mapMutations, mapState } from 'vuex'
+  export default {
+    data(){
+      return{
+        active: "tab-container1",
+        scrolled:false,
+        scroll:'',
+        swiperimg:[
+          {
+            id:1,
+            img:'http://www.yqqparty.com/index/images/198-1.jpg',
+            name:'马戈',
+            introduce:'前端工程师，今天写博客，写的不错，hahahah'
+          },
+          {
+            id:2,
+            img:'http://www.yqqparty.com/index/images/198-2.jpg',
+            name:'dnf',
+            introduce:'《地下城与勇士》是一款韩国网络游戏公司NEOPLE开发的免费角色扮演2D游戏，由三星电子发行，并于2005年8月在韩国正式发布',
+          },
+          {
+            id:3,
+             img:'http://www.yqqparty.com/index/images/198-3.jpg',
+             name:'英雄联盟',
+             introduce:'《地下城与勇士》是一款韩国网络游戏公司NEOPLE开发的免费角色扮演2D游戏，由三星电子发行，并于2005年8月在韩国正式发布',
+          },
+          {
+            id:4,
+            title:'面具主题派对',
+            img:'http://www.yqqparty.com/index/images/198-4.jpg',
+            name:'炉石传说',
+            introduce:'《地下城与勇士》是一款韩国网络游戏公司NEOPLE开发的免费角色扮演2D游戏，由三星电子发行，并于2005年8月在韩国正式发布',
+          },
+          {
+            id:5,
+            title:'疯狂酒吧趴',
+            img:'http://www.yqqparty.com/index/images/198-4.jpg',
+            name:'兰帝魅晨',
+            introduce:'《地下城与勇士》是一款韩国网络游戏公司NEOPLE开发的免费角色扮演2D游戏，由三星电子发行，并于2005年8月在韩国正式发布',
+          },
+        ]
+
+      }
+    },
+    created(){
+      
+    },
+    computed: {
+           
+        },
+    components:{
+      footGuide,
+      headTop
+    },
+    methods:{
+       handleScroll() {
+         this.scrolled = window.scrollY > 500;
+      },
+      homesearch(){
+        this.$router.push({path:'/Hsearch'})
+      }
+    },
+    beforeDestroyed(){
+      window.removeEventListener()('scroll', this.handleScroll);
+    }
+  }
+</script>
+<style>
+.homeSearch{
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0px;
+  background: linear-gradient(to right, rgba(190, 168, 212, 0.7),rgba(231, 134, 192, 0.7));
+  height: 1.066667rem;
+  z-index: 100;
+}
+ .homeSearch span:nth-of-type(1){
+  float: left;
+  line-height: 1.066667rem;
+  color: #fff;
+  font-size: .375rem;
+  margin-left: .4rem;
+  width: 2rem;
+}
+.homeSearch span:nth-of-type(1) i{
+  font-size: .325rem;
+  padding-left: .2rem;
+}
+ .homeSearch span:nth-of-type(2){
+  float: right;
+  line-height: 1.066667rem;
+  color: #fff;
+  font-size: .426667rem;
+  margin-right: .4rem;
+ }
+ .homeSearch span:nth-of-type(2) i{
+   font-size: .533333rem;
+ }
+.homeSearch img{
+  width: 1.933333rem; 
+  height: .853333rem;
+  margin: 0 auto;
+  display: block;
+  margin-top: .106667rem;
+  float: left;
+  margin-left: 2rem;
+} 
+.homereturnTop{
+  width: 1rem;
+  height: 1rem;
+  position: fixed;
+  right: 0px;
+  bottom: 2rem;
+}
+.homeTopscroll{
+  background: red;
+}
+::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+
+::-webkit-scrollbar-track {
+    background-color: #fff;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #fff
+}
+
+::-webkit-scrollbar-button {
+    background-color: #fff
+}
+
+::-webkit-scrollbar-corner {
+    background-color: #fff;
+}
+footer{
+  width: 100%;
+  height: 70px;
+}
+.notSend{
+  background: red;
+}
+.send{
+  background: green;
+}
+
+  .homeContent{
+    width: 100%;
+    background: #f3eef7;
+    overflow-x: hidden;
+  }
+  .homeHeader{
+    width: 100%;
+    height:6.666667rem;
+    background: #fff;
+  }
+  .homeHeader img{
+    width: 100%;
+  }
+  .mint-swipe-indicator.is-active{
+    background: #9c154b;
+  }
+  .mint-swipe-indicator{
+    background: #b4bac1;
+  }
+  .navigation-head{
+    width: 100%;
+    height: 1.733333rem;
+    line-height: 1.733333rem;
+    text-align: center;
+    font-size: .4rem;
+    color: #492b67;
+    background: #fff;
+  }
+  .homeNavigation{
+    background: #fff;
+  }
+  .navigation-content{
+    -moz-box-sizing: border-box;  
+    -webkit-box-sizing: border-box; 
+    -o-box-sizing: border-box; 
+    -ms-box-sizing: border-box; 
+    box-sizing: border-box;
+    padding:0 0.3125rem;
+    width: 100%;
+    text-align: center;
+    background: #fff;
+  }
+  .navigation-icon{
+    width: 25%;
+    height: 1.92rem;
+    float: left;
+    position: relative;
+    color:#492b67;
+  }
+  .navigation-icon-font{
+    display:block;
+    padding-top: 10px;
+    color: #b0a4bc;
+  }
+  .navigation-icon i{
+    display: block;
+    font-size: .666667rem !important; 
+    color:#482a66;
+  }
+  .homeHotparty,.partyteach,.comborecommend{
+    width: 100%;
+    -moz-box-sizing: border-box;  
+    -webkit-box-sizing: border-box; 
+    -o-box-sizing: border-box; 
+    -ms-box-sizing: border-box; 
+    box-sizing: border-box;
+    padding:0 0.4rem;
+    margin-top: 0.4rem;
+    background: #fff;
+  }
+  .partyteach{
+    padding-bottom: .533333rem;
+  }
+  .homeHotparty-head{
+    height: 1.333333rem;
+    line-height: 1.333333rem;
+  }
+  .homeHotparty-head>i{
+    font-size: .4rem;
+    color: #492b67;
+  }
+  .homeHotparty-head>span{
+    padding-left: 12px;
+    font-size: .4rem;
+    color:#492b67;
+    position: relative;
+    top:0px;
+  }
+  .homeHotparty-head>span:nth-of-type(2){
+    font-size: .4rem;
+    color: #e8ddf2;
+    float: right;
+  }
+  .homeHotparty-content{
+    width: 100%;
+   
+  }
+  .homeHotparty-contentimg{
+    float: left;
+    margin-bottom: .266667rem;
+  }
+  .homeHotparty-contentimg1,comboImg1{
+    width: 9.2rem;
+    height: 5.333333rem;
+  }
+  .comboImg1>img{
+    width: 9.2rem;
+    border-radius: 5px;
+  }
+  .comboImg2{
+    width: 3.466667rem;
+    height: 3.466667rem;
+  }
+  .comboImg2>img{
+    width: 3.466667rem;
+    height: 3.466667rem;
+  }
+  .comboImg3{
+    width: 5.466667rem;
+    height: 3.466667rem;
+    float: right !important;
+  }
+  .comboImg3>img{
+    width: 5.466667rem;
+    height: 3.466667rem;
+  }
+  .homeHotparty-contentimg1>img{
+    width: 9.2rem;
+    border-radius: 5px;
+    height: 5.333333rem;
+  }
+  .homeHotparty-contentimg2{
+    width: 5.466667rem;
+    height: 3.466667rem;
+  }
+  .homeHotparty-contentimg2>img{
+    width: 5.466667rem;
+    border-radius: 5px;
+    height: 3.466667rem;
+  }
+  .homeHotparty-contentimg3{
+    width: 3.466667rem;
+    height: 3.466667rem;
+    float: right;
+  }
+  .homeHotparty-contentimg3>img{
+    width: 3.466667rem;
+    border-radius: 5px;
+    height: 3.466667rem;
+  }
+  .homeHotparty-contentimg4{
+    width: 4.4rem;
+    
+  }
+  .homeHotparty-contentimg4>img{
+    width: 4.4rem;
+    border-radius: 5px;
+     height: 3.466667rem;
+  }
+  .homeHotparty-contentimg5{
+    width: 4.5rem;
+   
+    float:right;
+  }
+  .homeHotparty-contentimg5>img{
+    width: 4.5rem;
+    border-radius: 5px;
+    height: 3.466667rem;
+  }
+  .homeHotparty-contentimg>span{
+    display: inline-block;
+    font-size: 12px;
+    margin-top: 10px;
+    color: #7a6490;
+    text-overflow:ellipsis; white-space:nowrap; overflow:hidden;
+  }
+  .combo-content{
+    width: 100%;
+    height: 3.733333rem;
+    overflow-x: scroll;
+    overflow-y: hidden;
+  }
+  .combo-content-center{
+    width: 1500%;
+    overflow: hidden;
+  }
+  .partyteach-content{
+    width: 100%;
+    height: 4.966667rem;
+    overflow-x: scroll;
+    overflow-y: hidden;
+  }
+  .partyteach-content-center{
+    width: 1500%;
+    overflow: hidden;
+  }
+  .comboContent{
+    position: relative;
+  }
+  .comboContent img{
+    width: 2.4rem;
+    height: 3.733333rem;
+    margin-right: .266667rem;
+  }
+  .comboContentfoot{
+    width: 2.4rem;
+    text-align: center;
+    height: .533333rem;
+    line-height: .533333rem;
+    position: absolute;
+    bottom: 0px;
+    color: #333333;
+    background: rgba(255, 255, 255, 0.7);
+    text-overflow:ellipsis; white-space:nowrap; overflow:hidden;
+  }
+  /* .partyteachContentImg{
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    margin: 0 auto;
+  } */
+  .partyteachContent img{
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    margin: 0 auto;
+    display: block;
+    margin-top: .4rem;
+    margin-bottom: 15px;
+  }
+  .partyteachContent{
+    width: 2.733333rem;
+    height: 100%;
+    margin-right: .3rem;
+    float: left;
+    border:1px solid #ece5f4;
+    padding-bottom: .4rem;
+  }
+  .partyteachContentname{
+    height: .6rem;
+    width: 100%;
+    text-align: center;
+    font-size: 12px;
+    line-height: 0.6rem;
+    color: #492b67;
+    margin-bottom: .133333rem;
+  }
+  .partyteachContentintroduce{
+    padding: 0 15px;
+      overflow : hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+    color: #b0a4bc;
+  }
+</style>
+
+

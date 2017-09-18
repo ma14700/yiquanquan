@@ -1,0 +1,1035 @@
+<template>
+    <div class="cartpackage">
+        <!--头部  -->
+        <head-top></head-top>
+        <!--头部  end-->
+        <!--套餐  -->
+        <div v-if="packageData">
+            <div class="goods">
+                <div class="imgbox fl">
+                    <img :src="packageData.imgUrl" alt="">
+                </div>
+                <div class="des fl">
+                    <p class="title">{{packageData.name}}</p>
+                    <p class="ctype">
+                        <i>{{packageData.summary}}</i>
+                        <span class="price">{{packageData.discountPrice | two}}</span>
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+        <!--套餐 end  -->
+        <router-link tag="div" to="Qsearch" class="addgoods">
+            添加更多商品
+            <i class="iconfont icon-smallxiangyou"></i>
+        </router-link>
+
+        <div class="order-price" v-if="packageData">
+            <p>订单金额 {{packageData.discountPrice | two}}</p>
+            <p class="needpay">需付定金
+                <span>{{packageData.downPayment | two}}</span>
+            </p>
+        </div>
+        <!--场地  -->
+        <mt-navbar v-model="selected">
+            <mt-tab-item id="1" class="y" @click="choosePlace('y')">已有场地</mt-tab-item>
+            <mt-tab-item id="2" class="n" @click="choosePlace('n')">没有场地</mt-tab-item>
+
+        </mt-navbar>
+        <mt-tab-container v-model="selected">
+            <!--已有场地   -->
+            <mt-tab-container-item id="1">
+                <form>
+                    <ul class="item-wraper">
+
+                        <li @click="handleClick('time')">预约时间：
+                            <span> <input type="text" v-model="place"> </span>
+                            <i class="iconfont icon-smallxiangyou"></i>
+                        </li>
+                        <li @click="handleClick('location')">预约地点：
+                            <span>{{'河南省，'+this.modal1+'市'}}</span>
+                            <i class="iconfont icon-smallxiangyou"></i>
+                        </li>
+                        <li>详细地址：
+                            <input type="text" placeholder="郑东新区建业总部港">
+                        </li>
+                        <li @click="handleClick('sex')">服务对象：
+                            <span @click="handlepay">{{this.sex}}</span>
+                            <i class="iconfont icon-smallxiangyou"></i>
+                        </li>
+                        <li>联系人：
+                            <input type="text">
+                        </li>
+                        <li>联系电话：
+                            <input type="text" v-model="phone">
+                        </li>
+                    </ul>
+                    <div class="remark">
+                        <div class="remark-wraper">
+                            <span>备注信息：</span>
+                            <textarea name="" id="" v-model="BuyerMessage"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </mt-tab-container-item>
+            <!--已有场地 end  -->
+
+            <!--没有场地   -->
+            <mt-tab-container-item id="2">
+                <ul class="item-wraper">
+
+                    <li @click="handleClick('time')">预约时间：
+                        <span> <input type="text" v-model="place"> </span>
+                        <i class="iconfont icon-smallxiangyou"></i>
+
+                    </li>
+                    <li @click="handleClick('location')">预约地点：
+                        <span>{{'河南省，'+this.modal1+'市'}}</span>
+                        <i class="iconfont icon-smallxiangyou"></i>
+                    </li>
+                    <li>时长：
+                        <input type="text" placeholder="全天">
+                    </li>
+                    <li>聚会人数：
+                        <input type="text" placeholder="10-20人">
+                    </li>
+                    <li>联系人：
+                        <input type="text">
+                    </li>
+
+                    <li>联系电话：
+                        <input type="text" v-model="phone">
+                    </li>
+                </ul>
+                <div class="remark">
+                    <span>备注信息：</span>
+                    <textarea name="" id=""></textarea>
+                </div>
+            </mt-tab-container-item>
+            <!--没有场地 end  -->
+            <!--弹出层  -->
+            <mt-popup v-model="popupVisible" popup-transition="popup-fade" position="bottom">
+                <div class="show-time" v-if="this.modal == 'time'">
+                    <h3>请选择预约时间:</h3>
+                    <div class="advance">
+                        <p>
+                            <i class="iconfont icon-ionfontxiangqingye-"></i>
+                            <span>开放15天档期选择</span>
+                        </p>
+                        <ul>
+                            <li :class="{isStutas:true}">
+                                <i>●</i>可预约</li>
+                            <li>
+                                <i>●</i>已约满</li>
+                        </ul>
+                    </div>
+                    <div class="youchoose-wraper">
+                        <div class="youchoose">您选择的时间是：</div>
+                        <datepicker v-model="date" language="ch">
+
+                        </datepicker>
+                    </div>
+
+                    <div class="advance-hour">
+                        <p>
+                            <i class="iconfont icon-ionfontxiangqingye-"></i>派对使者上门装饰时间，需提前一小时</p>
+                        <ul>
+                            <li v-for="(h,index) in hours" :key="index" @click="chooseHours(index)" :class="{isHours:isChooseHours==index}">{{h}}</li>
+                        </ul>
+                    </div>
+                    <div class="confirm-hour" @click="comfirmTime">确认</div>
+                </div>
+                <div class="show-city" v-else-if="this.modal == 'location'">
+                    <h3>选择城市：</h3>
+                    <p>请选择下列有壹圈圈（派对）服务的城市</p>
+                    <ul class="choose-city">
+                        <li @click="chooseClick('郑州')">郑州</li>
+                        <li @click="chooseClick('安阳')">安阳</li>
+                        <li @click="chooseClick('洛阳')">洛阳</li>
+                        <li @click="chooseClick('南阳')">南阳</li>
+                        <li @click="chooseClick('信阳')">信阳</li>
+                    </ul>
+                    <p>更多城市敬请期待</p>
+                    <ul class="choose-city">
+                        <li>郑州</li>
+                        <li>安阳</li>
+                        <li>洛阳</li>
+                        <li>南阳</li>
+                        <li>信阳</li>
+
+                        <li>洛阳</li>
+                        <li>南阳</li>
+                        <li>信阳</li>
+                    </ul>
+                    <div class="explain">
+                        <p>壹圈圈派对正在努力开发更多城市，以方便顾客，欢迎更多城市梦想合伙人的加入！</p>
+                        <p>可发送意向信息至邮箱：service@yqqparty.com</p>
+                    </div>
+                </div>
+                <div class="show-sex" v-else-if="this.modal == 'sex'">
+                    <h3>请选择性别：</h3>
+                    <mt-picker :slots="slots" @change="onValuesChange" @click="handlepay">
+
+                    </mt-picker>
+                </div>
+
+            </mt-popup>
+            <!--弹出层  end-->
+        </mt-tab-container>
+        <!--场地  -->
+        <!--支付  -->
+        <div class="pay" @click="confirmPay(success)">
+            确认支付
+        </div>
+
+        <!--支付  end-->
+        <div class="alert-msg" v-if="showAlert">{{alertMsg}}</div>
+    </div>
+</template>
+
+<script>
+import headTop from '../../components/head/head';
+import { Popup } from 'mint-ui';
+import { Navbar, TabItem } from 'mint-ui';
+import { Picker } from 'mint-ui';
+import datepicker from 'vue-date'
+import { MessageBox } from 'mint-ui';
+import { mapState, mapMutations } from 'vuex'
+export default {
+    data() {
+        return {
+            popupVisible: false,
+            selected: '1',
+            index: '',
+            modal: '',
+            modal1: '',
+            slots: [
+                {
+                    values: [
+                        '男',
+                        '女'
+                    ]
+                }
+            ],
+            sex: '',
+            date: '2017-08-31',
+            hours: [
+                "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00"
+            ],
+            isChooseHours: '0',
+            success: true,//确认订单
+            place: '',//预约时间
+            phone: '',//联系电话
+            BuyerMessage: '',//用户留言
+            alertMsg: '',//提示填写电话等信息
+            showAlert: false,
+            //
+            packageData: '',//套餐数据
+        }
+    },
+    components: {
+        headTop,
+        datepicker
+    },
+    mounted: function() {
+
+    },
+    created() {
+        this.getPackageData();
+        this.getNowDate();
+    },
+    computed: {
+        ...mapState([
+            'settleAccounts', 'settlePackageAccounts'
+        ])
+    },
+    methods: {
+        ...mapMutations([
+            'SETTLE_ACCOUNTS', 'GIT_SETTLE_ACCOUNTS', 'SETTLE_PACKAGE_ACCOUNTS', 'GIT_SETTLE_PACKAGE_ACCOUNTS'
+        ]),
+        //获取当前日期
+        getNowDate() {
+            let now = new Date();
+            let month = now.getMonth() + 1;
+            let day = now.getDate();
+            if (month < 10 && day < 10) {
+                month = '0' + month;
+                day = '0' + day;
+            }
+            this.date = now.getFullYear() + "-" + month + '-' + day
+        },
+        //获取套餐数据
+        getPackageData() {
+            this.GIT_SETTLE_PACKAGE_ACCOUNTS();
+            this.packageData = this.settlePackageAccounts[this.$route.query.id][this.$route.query.id];
+            console.log(this.packageData)
+            // this.$http.get('api/partypkg/partypkginfo?id=' + this.$route.query.id).then(res => {
+
+            //     this.packageData = res.data;
+            // })
+        },
+        
+        // 点击显示对应的弹出层
+        handleClick: function(param) {
+            this.modal = param;
+            this.popupVisible = true;
+
+        },
+        // 选择城市
+        choosePlace: function(param) {
+            this.modal = param;
+        },
+        // 选择具体城市
+        chooseClick: function(param) {
+            this.modal1 = param;
+            this.popupVisible = false;
+        },
+        // 选择性别
+        onValuesChange(picker, values) {
+            this.sex = values[0];
+        },
+        handlepay: function() {
+
+        },
+        //选择小时
+        chooseHours(index) {
+            this.isChooseHours = index;
+        },
+        //确认时间
+        comfirmTime() {
+            this.popupVisible = false;
+            this.place = this.date + ' ' + this.hours[this.isChooseHours] + ':00';
+
+
+        },
+        // 确认支付
+        confirmPay(result) {
+            this.$http.post('api/order/create', {
+                "ReceiveId": 2,
+                "BuyerMessage": this.BuyerMessage,
+                "OrderType": 1,
+                "OrderToSex": 1,
+                "OrderHaveVenues": 1,
+                "OrderPromiseMoney": this.packageData.downPayment,
+                "OrderPormiseDate": this.place,
+                "OrderCity": '郑州市',
+                "OrderAreaId": 1533,
+                "OrderPersions": '10-15人',
+                "OrderTimeLong": '10小时',
+                "PartyId": 3,
+                "TempLists": [],
+            }, {
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                }
+            ).then(res => {
+                console.log(res);
+            })
+
+            // 验证正则还没写
+            if (!this.place || !this.phone) {
+                if (!this.place) {
+                    this.alertMsg = '请选择预约时间';
+                } else if (!this.phone) {
+                    this.alertMsg = '请填写联系电话';
+                }
+                this.showAlert = true;
+                var self = this;
+                setTimeout(function() {
+                    self.showAlert = false
+                }, 1000);
+            } else {
+
+
+
+
+                //
+                this.success = false;
+                if (this.success) {
+                    MessageBox({
+                        title: '支付成功',
+                        message: '您的订单会尽快给您处理',
+                        confirmButtonText: '完成'
+                    }).alert().then(action => {
+
+                    });
+
+                } else {
+                    MessageBox({
+                        title: '支付失败',
+                        message: '支付遇到问题，请尝试重新支付',
+                        showCancelButton: true,
+                        confirmButtonText: '重新支付'
+                    }).confirm().then(action => {
+
+                    });
+
+                }
+            }
+
+
+
+
+        },
+
+
+    },
+    filters: {
+        //保留两位小数点
+        two: function(value) {
+
+            if (!value) { return '' };
+            return '¥' + value.toFixed(2);
+        }
+
+    }
+}
+</script>
+
+
+<style>
+.cartpackage .goods {
+    height: 3.066667rem;
+
+    overflow: hidden;
+    box-sizing: border-box;
+    padding: .533333rem .4rem;
+}
+
+.cartpackage .goods .imgbox {
+    width: 2rem;
+    border-radius: .133333rem;
+    border: 1px solid #ece5f4;
+    margin-right: .4rem;
+    height: 2rem;
+    overflow: hidden;
+}
+
+.cartpackage .goods .imgbox img {
+    width: 100%;
+}
+
+.cartpackage .goods .des {
+    width: 6.7rem;
+    box-sizing: border-box;
+    padding: .266667rem 0;
+}
+
+.cartpackage .goods .des .title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: .4rem;
+    color: #492b67;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    white-space: normal!important;
+    line-height: .506667rem;
+    min-height: 1rem;
+}
+
+.cartpackage .goods .des .ctype {
+    color: #aea2ba;
+    font-size: .36rem;
+    line-height: .8rem;
+}
+
+.cartpackage .goods .des .ctype i {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+    max-width: 4.8rem;
+    float: left;
+}
+
+.cartpackage .goods .des .price {
+    float: right;
+    color: #de3163;
+    font-size: .4rem;
+}
+
+.cartpackage .addgoods {
+    color: #b0a4bc;
+    font-size: .36rem;
+    text-align: right;
+    padding: 0 .4rem;
+    line-height: 1.2rem;
+    border-top: 1px solid #ece5f4
+}
+
+.cartpackage .order-price {
+    padding: 0 .4rem;
+    box-sizing: border-box;
+    font-size: .4rem;
+    overflow: hidden;
+    background: #f1eef6;
+}
+
+.cartpackage .order-price p {
+    width: 50%;
+    display: block;
+    float: left;
+    color: #b0a4bc;
+    box-sizing: border-box;
+    line-height: 1.2rem;
+}
+
+.cartpackage .order-price .needpay {
+    text-align: right;
+    border-left: 1px solid #ece5f4;
+}
+
+.cartpackage .order-price .needpay span {
+    color: #de3163;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*  */
+
+.cartpackage .mint-navbar {
+    padding: .533333rem 1.6rem;
+    height: 2.133333rem;
+    box-sizing: border-box;
+}
+
+.cartpackage .mint-navbar .mint-tab-item {
+
+    padding: 0
+}
+
+.cartpackage .mint-navbar .mint-tab-item.is-selected {
+    margin: 0;
+    border: 0;
+}
+
+.cartpackage .mint-navbar .mint-tab-item.is-selected .mint-tab-item-label {
+    background: #b0a4bc;
+    color: #fff;
+}
+
+.cartpackage .mint-tab-item-label {
+    height: 1.066667rem;
+    line-height: 1.066667rem;
+    color: #b0a4bc;
+    font-size: .45rem;
+    background: #f1eef6;
+}
+
+.cartpackage .y .mint-tab-item-label {
+    border-top-left-radius: .133333rem;
+    border-bottom-left-radius: .133333rem;
+}
+
+.cartpackage .n .mint-tab-item-label {
+    border-top-right-radius: .133333rem;
+    border-bottom-right-radius: .133333rem;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* 显示ul列表 */
+
+.cartpackage .mint-tab-container {}
+
+.cartpackage .mint-tab-container-item .item-wraper li {
+
+    line-height: 1.2rem;
+    font-size: .4rem;
+    color: #492b67;
+    box-sizing: border-box;
+    border-top: 1px solid #e8ddf2;
+    padding: 0 .4rem;
+}
+
+.cartpackage .mint-tab-container-item .item-wraper li span {
+    color: #b0a4bc;
+    font-size: .4rem;
+    min-width: 1rem
+}
+
+.cartpackage .mint-tab-container-item .item-wraper li i {
+    float: right;
+    color: #b0a4bc;
+    font-size: .48rem;
+}
+
+.cartpackage .mint-tab-container-item .item-wraper li input {
+    border: 0;
+    color: #b0a4bc;
+    font-size: .4rem;
+}
+
+.cartpackage ::-webkit-input-placeholder {
+    /* WebKit, Blink, Edge */
+    color: #b0a4bc;
+    font-size: .4rem
+}
+
+.cartpackage :-moz-placeholder {
+    /* Mozilla Firefox 4 to 18 */
+    color: #b0a4bc;
+    font-size: .4rem
+}
+
+.cartpackage ::-moz-placeholder {
+    /* Mozilla Firefox 19+ */
+    color: #b0a4bc;
+    font-size: .4rem
+}
+
+.cartpackage :-ms-input-placeholder {
+    /* Internet Explorer 10-11 */
+    color: #b0a4bc;
+    font-size: .4rem
+}
+
+.cartpackage .remark {
+    font-size: .36rem;
+    color: #b0a4bc;
+    line-height: .733333rem;
+
+    overflow: hidden;
+    padding: .4rem;
+
+    border-top: 1px solid #e8ddf2;
+}
+
+.cartpackage .remark-wraper {
+    background: #f1eef6;
+    border-radius: .133333rem;
+    padding: .266667rem 0 0 .266667rem;
+    box-sizing: border-box;
+}
+
+.cartpackage .remark span {
+    position: relative;
+    top: -2.2rem;
+}
+
+.cartpackage .remark textarea {
+    border: 0;
+    height: 2.5rem;
+    width: 7rem;
+    padding: 0 .266667rem;
+    box-sizing: border-box;
+    color: #b0a4bc;
+    font-size: .36rem;
+    line-height: .733333rem;
+
+    background: #f1eef6;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*弹出层  */
+
+.cartpackage .mint-popup {
+    width: 100%;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* 时间 */
+
+.show-time {
+    height: 11rem;
+    padding: .4rem 0;
+}
+
+.show-time h3 {
+    font-size: .48rem;
+    color: #492b67;
+    padding: 0 .4rem;
+}
+
+.show-time .advance {
+    overflow: hidden;
+    line-height: .733333rem;
+    font-size: .4rem;
+    color: #b0a4bc;
+    margin-bottom: .4rem;
+    padding: 0 .4rem;
+}
+
+.show-time .advance p {
+    float: left;
+}
+
+.show-time .advance p i {
+    margin-right: .2rem;
+}
+
+.show-time .advance ul {
+    float: left;
+}
+
+.show-time .advance ul li {
+    float: left;
+    margin-left: .4rem;
+}
+
+.show-time .advance ul li.isStutas {
+    color: #492b67
+}
+
+.show-time .advance ul li i {
+    margin-right: .2rem
+}
+
+.show-time .youchoose-wraper {
+    height: 1rem;
+    padding: 0 .4rem;
+}
+
+.show-time .youchoose {
+    float: left;
+    margin-left: .8rem;
+    font-size: .4rem;
+    line-height: 1rem;
+    color: #b0a4bc;
+}
+
+.input-wrapper[_v-6c618eea] {
+    width: 4.333333rem;
+    height: 1rem;
+    padding: 0;
+}
+
+.input[_v-6c618eea] {
+    line-height: 1rem;
+    font-size: .4rem;
+    color: #492b67;
+}
+
+.advance-hour {
+    padding: 0 0.4rem;
+    margin-top: .533333rem;
+    color: #b0a4bc;
+    font-size: .36rem;
+    overflow: hidden;
+}
+
+.advance-hour p i {
+    margin-right: .2rem;
+}
+
+.advance-hour ul {
+    padding: .266667rem 0;
+    box-sizing: border-box;
+}
+
+.advance-hour ul li {
+    float: left;
+    width: 1.6rem;
+    text-align: center;
+    height: .666667rem;
+    line-height: .666667rem;
+    border: 1px solid #b0a4bc;
+    border-radius: .133333rem;
+    margin-right: .24rem;
+    margin-bottom: .24rem;
+    box-sizing: border-box;
+}
+
+.advance-hour ul li.isHours {
+    border: 1px solid #492b67;
+    color: #492b67;
+}
+
+.confirm-hour {
+    width: 100%;
+    height: 1.306667rem;
+    background: linear-gradient(to right, #926eb7, #de3193);
+    text-align: center;
+    line-height: 1.306667rem;
+    color: #fff;
+    font-size: .48rem;
+    position: absolute;
+    bottom: 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* 年份月份颜色 */
+
+.panel-header[_v-6c618eea] {
+    color: #492b67;
+}
+
+.type-year[_v-6c618eea],
+.type-month[_v-6c618eea],
+.date-list[_v-6c618eea] {
+    color: #492b67;
+}
+
+.year-list li.selected[_v-6c618eea],
+.month-list li.selected[_v-6c618eea] {
+    background-color: #492b67;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* 面板颜色 */
+
+.date-list li .message.selected .bg[_v-6c618eea] {
+    background-color: #492b67;
+}
+
+.date-list li .message.selected span[_v-6c618eea] {
+    color: #b0a4bc;
+}
+
+.weeks .preMonth[_v-6c618eea],
+.date-list .preMonth[_v-6c618eea],
+.weeks .nextMonth[_v-6c618eea],
+.date-list .nextMonth[_v-6c618eea] {
+    color: #b0a4bc;
+}
+
+.weeks li[_v-6c618eea],
+.date-list li[_v-6c618eea] {
+    color: #492b67;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*地点  */
+
+.cartpackage .show-city,
+.show-sex {
+    padding: .4rem;
+    line-height: .666667rem;
+}
+
+.cartpackage .show-city,
+.show-sex h3 {
+    font-size: .4rem;
+    color: #492b67;
+}
+
+.cartpackage .show-city p {
+    color: #b0a4bc;
+    font-size: .36rem;
+}
+
+.cartpackage .show-city .choose-city {
+    overflow: hidden;
+}
+
+.cartpackage .show-city .choose-city li {
+    width: 1.8rem;
+    border: 1px solid #b0a4bc;
+    border-radius: .133333rem;
+    text-align: center;
+    float: left;
+    margin-right: .4rem;
+    margin-bottom: .4rem;
+    font-size: .36rem;
+    color: #b0a4bc;
+}
+
+.cartpackage .show-city .explain {
+    line-height: .4rem;
+    margin-top: .4rem;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*地点  */
+
+
+/*支付  */
+
+.cartpackage .pay {
+    height: 1.306667rem;
+    line-height: 1.306667rem;
+    color: #fff;
+    font-size: .466667rem;
+    text-align: center;
+    background: linear-gradient(to right, #926eb7, #de3193);
+}
+
+
+
+
+
+
+
+
+
+
+/* 支付成功 */
+
+.mint-msgbox-title {
+    color: #b0a4bc;
+    font-size: .533333rem;
+    font-weight: normal;
+}
+
+.mint-msgbox-message {
+    color: #b0a4bc;
+}
+
+.mint-msgbox-btn.mint-msgbox-confirm {
+    color: #492b67;
+    font-size: .48rem;
+}
+
+.mint-msgbox-btn.mint-msgbox-cancel {
+    color: #b0a4bc;
+    font-size: .48rem;
+}
+
+
+
+
+
+
+
+
+/* alert-msg */
+
+.alert-msg {
+    position: fixed;
+    height: 1rem;
+    width: 6rem;
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    font-size: .4rem;
+    text-align: center;
+    line-height: 1rem;
+    top: 50%;
+    left: 50%;
+    transform: translate3d(-50%, -50%, 0);
+    border-radius: 0.2rem;
+    transition: .2s;
+}
+</style>

@@ -1,0 +1,31 @@
+    <script type="text/javascript">
+        function GetQueryString(name) {
+            var reg = new RegExp("(^|&)" + name.toLowerCase() + "=([^&]*)(&|$)");
+            var url = window.location.search == "" ? window.location.hash : window.location.search;
+            url.replace('?from=singlemessage', '').replace('?from=timeline', '').replace('?from=groupmessage', '')
+                .replace('&isappinstalled=0', '').replace('&isappinstalled=1', '');
+            var r = url.toLowerCase().substr(1).match(reg);
+            if (r != null) return unescape(r[2]); return null;
+        }
+        var ua = navigator.userAgent.toLowerCase();
+        var isWeixin = ua.indexOf('micromessenger') != -1;
+        var isAndroid = ua.indexOf('android') != -1;
+        var isIos = (ua.indexOf('iphone') != -1) || (ua.indexOf('ipad') != -1);
+        var code = GetQueryString('code');
+        var s = GetQueryString('s');
+        if (isWeixin) {
+            if (s != "callback") {
+                if (code == null) {
+                    window.location.href = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx55db828f70eaded0&redirect_uri=http%3A%2F%2Fpro.yunyiku.com%2Fapi%2Fcode.aspx"
+                        + encodeURIComponent('?returnUrl=' + encodeURIComponent(window.location.href.replace('?from=singlemessage', '')
+                        .replace('?from=timeline', '').replace('?from=groupmessage', '').replace('&isappinstalled=0', '')
+                        .replace('&isappinstalled=1', ''))) + "&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect";
+                }
+            }
+        }
+    </script>
+
+
+
+
+    <script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>

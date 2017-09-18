@@ -1,0 +1,24 @@
+[
+    {
+        "prop_name":"颜色分类",
+        "prop_id":1002,
+        "prop_vals":
+        [
+            {"Val_Name":"桔红色","Val_Id":"1002:2"},
+            {"Val_Name":"乳白色","Val_Id":"1002:3"},
+            {"Val_Name":"玫红色","Val_Id":"1002:4"},
+            {"Val_Name":"浅蓝色","Val_Id":"1002:5"},
+            {"Val_Name":"黄色","Val_Id":"1002:6"}
+        ]
+    },
+    {
+        "prop_name":"数量套餐",
+        "prop_id":1003,
+        "prop_vals":
+        [
+            {"Val_Name":"1-5","Val_Id":"1003:7"},
+            {"Val_Name":"5-10","Val_Id":"1003:8"},
+            {"Val_Name":"15-20","Val_Id":"1003:9"}
+        ]
+    }
+]

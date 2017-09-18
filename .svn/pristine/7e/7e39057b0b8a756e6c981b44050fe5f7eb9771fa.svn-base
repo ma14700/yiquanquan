@@ -1,0 +1,43 @@
+<template>
+  <div>
+      <!--头部  -->
+        <head-top></head-top>
+        <!--头部  end-->
+      <transition name="router-fade" mode="out-in">
+        <router-view></router-view>
+      </transition>
+  </div>
+</template>
+
+
+<script>
+import headTop from '../../components/head/head';
+
+export default {
+    
+    components: {
+        headTop,
+    },
+}
+</script>
+
+
+<style>
+
+
+.router-fade-enter-active,
+.router-fade-leave-active {
+    transition: opacity .3s;
+}
+
+.router-fade-enter,
+.router-fade-leave-active {
+    opacity: 0;
+}
+
+
+
+
+
+/*编辑资料  */
+</style>

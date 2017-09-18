@@ -1,0 +1,217 @@
+<template>
+    <div class="allorder">
+        <mt-navbar v-model="selected">
+            <mt-tab-item id="1">全部</mt-tab-item>
+            <mt-tab-item id="2">待付款</mt-tab-item>
+            <mt-tab-item id="3">待收货</mt-tab-item>
+            <mt-tab-item id="4">待发货</mt-tab-item>
+            <mt-tab-item id="5">待评价</mt-tab-item>
+        </mt-navbar>
+    
+        <!-- tab-container -->
+        <mt-tab-container v-model="selected">
+            <mt-tab-container-item id="1">
+                <div class="mygoods"  v-for="n in 3" :key="n">
+                    <div class="goods-img">
+                        <img src="../../../assets/shopcart/goods.png" alt="">
+                    </div>
+                    <div class="goods-text">
+                        <p>生日套餐生日套餐生日套餐生日套餐生日套餐生日套餐生 日套餐生日套餐生日套餐生日套餐生日套餐生日套餐
+                        </p>
+    
+                    </div>
+                    <div class="goods-price">
+                        <p class="status">卖家未发货</p>
+    
+                        <p class="nowpriice">￥800.00</p>
+                        <p class="oldprice">￥800.00</p>
+                        <p class="num">×1</p>
+    
+                    </div>
+                    <div class="mystatus">
+                        
+                        <span>确认发货</span>
+                        <span class="waitting">等待发货</span>
+                    </div>
+                </div>
+    
+            </mt-tab-container-item>
+            <mt-tab-container-item id="2">
+                <!--待付款  -->
+                <div class="mygoods">
+                    <div class="goods-img">
+                        <img src="../../../assets/shopcart/goods.png" alt="">
+                    </div>
+                    <div class="goods-text">
+                        <p>生日套餐生日套餐生日套餐生日套餐生日套餐生日套餐生 日套餐生日套餐生日套餐生日套餐生日套餐生日套餐
+                        </p>
+    
+                    </div>
+                    <div class="goods-price">
+                        <p class="status">待支付尾款</p>
+    
+                        <p class="nowpriice">￥800.00</p>
+                        <p class="oldprice">￥800.00</p>
+                        <p class="num">×1</p>
+    
+                    </div>
+                    <div class="mystatus">
+                        
+                        <span>查看进度</span>
+                        <router-link to="/center/orderpay"><span class="waitting">支付尾款</span></router-link>
+                    </div>
+                </div>
+                <!--待付款 end  -->
+            </mt-tab-container-item>
+            <mt-tab-container-item id="3">
+                <div class="blankpage">
+                        <p>暂时没有订单</p>
+                </div>
+            </mt-tab-container-item>
+            <mt-tab-container-item id="4">
+                待发货
+            </mt-tab-container-item>
+            <mt-tab-container-item id="5">
+                待评价
+            </mt-tab-container-item>
+        </mt-tab-container>
+    </div>
+</template>
+<script>
+import { Navbar, TabItem } from 'mint-ui';
+export default {
+    data() {
+        return {
+            selected: '1',
+        }
+    },
+    methods: {
+    
+    }
+}
+</script>
+
+<style>
+/*不显示center内容  */
+
+.footGuide,
+.mypic,
+.myorder,
+.mymsg,
+footer {
+    display: none;
+}
+
+.allorder .mint-navbar .mint-tab-item.is-selected {
+    border-bottom: 1px solid #492b67;
+    color: #492b67;
+    margin: 0;
+}
+
+.allorder .mint-navbar .mint-tab-item {
+    padding: 0;
+    height: 1.17333rem;
+    color: #b0a4bc;
+
+}
+
+.allorder .mint-navbar .mint-tab-item .mint-tab-item-label {
+    line-height: 1.17333rem;
+    font-size: .4rem;
+
+}
+
+
+.mygoods {
+    height: 5.2rem;
+    margin: 0.26rem 0;
+    padding: 0.4666rem .3rem;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.goods-img {
+    width: 2.66rem;
+    height: 2.66rem;
+    border: 1px solid #b0a4bc;
+    border-radius: 0.1333rem;
+    float: left;
+    overflow: hidden;
+}
+.goods-img img{
+    width: 100%;
+}
+.goods-text {
+    float: left;
+    width: 4.5rem;
+    padding: 0.8rem .2rem;
+    box-sizing: border-box
+}
+
+.goods-text p {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    white-space: normal!important;
+    line-height: .506667rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: .4rem;
+    color: #492b67;
+}
+
+.goods-price {
+    position: relative;
+    color: #492b67;
+    box-sizing: border-box;
+    text-align: right;
+    line-height: .48rem;
+    height: 2.66rem;
+  
+}
+
+.goods-price .status {
+    color: #de3163;
+    font-size: .4rem;
+    margin-bottom: .4rem;
+}
+
+.goods-price .oldprice {
+    text-decoration: line-through;
+    color: #b0a4bc;
+    line-height:
+}
+
+.mystatus{
+    width: 100%;
+    height: 1rem;
+    margin-top: .4rem;
+    padding-top: .4rem;
+    border-top: 1px solid #c5bcce;
+}
+.mystatus span{
+    line-height: .64rem;
+    border: 1px solid #b0a4bc;
+    display: inline-block;
+    float: right;
+    margin-left: .26rem;
+    padding: 0 .3rem;
+    border-radius: .1333rem;
+    color: #b0a4bc;
+}
+.mystatus .waitting{
+    color: #de3163;
+    border-color: #de3163;
+}
+/*  */
+.blankpage{
+    min-height: 14.8rem;
+    
+    text-align: center;
+    font-size: .4rem;
+    color: #b0a4bc
+}
+.blankpage p{
+   line-height: 14rem
+}
+</style>

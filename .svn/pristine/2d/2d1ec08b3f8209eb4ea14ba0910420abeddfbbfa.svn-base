@@ -1,0 +1,272 @@
+<template>
+    <div class="center">
+        <!--头部  -->
+        <head-top></head-top>
+        <!--头部  end-->
+        <!--头像背景  -->
+        <div class="mypic">
+            <div class="img-box" @click="goEditProfile">
+                <img src="../../assets/center/mypic1.jpg" alt="">
+            </div>
+            <p class="myname">小女孩</p>
+        </div>
+        <!--头像背景 end  -->
+        <!--我的订单  -->
+
+        <div class="myorder">
+            <p class="order-text" @click="goMyOrder">我的订单
+                <span>查看全部订单</span>
+            </p>
+            <ul class="order-con">
+                <li>
+                    <i class="iconfont icon-fukuan"></i>
+                    <p>待付款</p>
+                </li>
+                <li>
+                    <i class="iconfont icon-che1"></i>
+                    <p>待发货</p>
+                </li>
+                <li>
+                    <i class="iconfont icon-shoudaodelibao"></i>
+                    <p>待收货</p>
+                </li>
+                <li>
+                    <i class="iconfont icon-pingjia"></i>
+                    <p>待评价</p>
+                </li>
+                <li>
+                    <i class="iconfont icon-shouhoubaozhang"></i>
+                    <p>退款/售后</p>
+                </li>
+            </ul>
+        </div>
+        <!--我的订单 end  -->
+        
+        <ul class="mymsg">
+            <li @click="goMyCollect">我的收藏
+                <i class="iconfont icon-smallxiangyou"></i>
+            </li>
+            <li @click="goMyCoupons">我的优惠券
+                <i class="iconfont icon-smallxiangyou"></i>
+            </li>
+            <li @click="goEticket">我的电子票
+                <i class="iconfont icon-smallxiangyou"></i>
+            </li>
+        </ul>
+        <!--  -->
+        <p class="makecard">制作邀请函
+            <i class="iconfont icon-smallxiangyou"></i>
+        </p>
+        <!--  -->
+
+        <ul class="mymsg">
+            <li>个人资料
+                <i class="iconfont icon-smallxiangyou"></i>
+            </li>
+            <li>联系客服：0371-1234567</li>
+            <li>意见反馈
+                <i class="iconfont icon-smallxiangyou"></i>
+            </li>
+            <li>关于我们
+                <i class="iconfont icon-smallxiangyou"></i>
+            </li>
+        </ul>
+
+        <footer class="footer"></footer>
+        <foot-Guide></foot-Guide>
+        <transition name="router-fade" mode="out-in">
+            <router-view>
+
+            </router-view>
+        </transition>
+    </div>
+</template>
+
+<script>
+import headTop from '../../components/head/head';
+import footGuide from '../../components/footer/footGuide'
+import myCollect from '../../components/center/myCollect'
+export default {
+    data() {
+        return {
+            goodCollectList: '',
+        }
+    },
+    components: {
+        headTop,
+        footGuide,
+        myCollect
+    },
+    created() {
+        //我的收藏--商品
+        this.$http.get('api/userFavorite/userfavlist?favType=3').then(res => {
+            console.log(res);
+            this.goodCollectList = res.data;
+
+        }).catch(err => {
+            console.log(err)
+        })
+    },
+    
+    methods: {
+        goEditProfile() {
+            this.$router.push('/center/editprofile');
+        },
+        goMyOrder() {
+            this.$router.push('/center/myorder');
+        },
+        goMyCollect() {
+            this.$router.push('/mycollect');
+        },
+        goMyCoupons() {
+            this.$router.push('/center/mycoupons');
+        },
+        goEticket() {
+            this.$router.push('/center/eticket');
+        }
+    }
+}
+</script>
+
+
+<style>
+.center {
+    background: #ece5f4;
+}
+
+.router-fade-enter-active,
+.router-fade-leave-active {
+    transition: opacity .3s;
+}
+
+.router-fade-enter,
+.router-fade-leave-active {
+    opacity: 0;
+}
+
+.center .mypic {
+    height: 5.066667rem;
+    background: linear-gradient(to right, #9869b4, #d93595);
+    box-sizing: border-box;
+    padding: .666667rem 0;
+}
+
+.center .mypic .img-box {
+    width: 2.333333rem;
+    height: 2.333333rem;
+    overflow: hidden;
+    border-radius: 50%;
+    margin: 0 auto;
+}
+
+.center .mypic .img-box img {
+    width: 100%;
+}
+
+.center .mypic .myname {
+    text-align: center;
+    color: #fff;
+    font-size: .48rem;
+    line-height: 1.2rem;
+}
+
+
+
+/* order */
+
+.center .myorder {
+    box-sizing: border-box;
+
+    overflow: hidden;
+}
+
+.center .myorder .order-text {
+    padding: 0 .4rem;
+    line-height: 1.333333rem;
+    font-size: .4rem;
+    color: #492b67;
+    border-bottom: 1px solid #eeecf1;
+    background: #fff;
+}
+
+.center .myorder .order-text span {
+    float: right;
+    font-size: .36rem;
+    color: #b0a4bc;
+}
+
+.center .order-con {
+    padding: .4rem;
+    overflow: hidden;
+    margin-bottom: .4rem;
+    background: #fff;
+}
+
+.center .order-con li {
+    float: left;
+    width: 20%;
+    text-align: center;
+    line-height: .733333rem;
+    font-size: .4rem;
+    color: #492b67;
+    border-right: 1px solid #eeecf1;
+    box-sizing: border-box;
+}
+
+.center .order-con li:last-child {
+    border-right: none;
+    position: relative;
+    right: -.1rem;
+}
+
+.center .order-con li i {
+    font-size: .6rem;
+    color: #b0a4bc;
+}
+
+.center .mymsg {
+
+
+
+    background: #fff;
+}
+
+.center .mymsg li {
+    box-sizing: border-box;
+    padding: 0 .4rem;
+    line-height: 1.333333rem;
+    font-size: .4rem;
+    color: #492b67;
+    border-bottom: 1px solid #eeecf1;
+}
+
+.center .mymsg li:last-child {
+    border-bottom: 0;
+}
+
+.center .makecard {
+    box-sizing: border-box;
+    padding: 0 .4rem;
+    line-height: 1.333333rem;
+    font-size: .4rem;
+    color: #492b67;
+    background: #fff;
+    margin: .266667rem 0;
+}
+
+.center .makecard i {
+    float: right;
+    color: #b0a4bc;
+    font-size: .52rem;
+}
+
+.center .mymsg li i {
+    float: right;
+    color: #b0a4bc;
+    font-size: .52rem;
+}
+
+
+
+/*编辑资料  */
+</style>

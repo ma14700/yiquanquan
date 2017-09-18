@@ -1,0 +1,479 @@
+<template>
+  <div class="shopcart">
+    <!--头部  -->
+    <head-top></head-top>
+    <!--头部  end-->
+    <!--提示信息  -->
+    <div class="msg ">
+      <p>
+        <i class="iconfont icon-ionfontxiangqingye-"></i>库存紧张，尽快购买哦！</p>
+    </div>
+    <!--提示信息  end-->
+    <!--商品  -->
+    <div class="goods ">
+      <span class="edit" @click="changeStatus">{{this.edit}}</span>
+      <!-- <span class="edit">完成</span> -->
+      <ul>
+        <li v-for="(good, index) in cartList" class="good-wraper" :key="index">
+          <a class="check" href="javascript:void 0">
+            <i class="iconfont " :class="[good.isChecked?'icon-duihao':'icon-duihao1']" @click="selectGood(good,index)"></i>
+          </a>
+          <div class="imgbox">
+            <img :src="good.goodFirstPicUrl" alt="">
+          </div>
+          <!-- 默认样式 -->
+          <div class="des-text " :class="[delShow?'delete-hide':'delete-show']">
+            <p class="title">{{good.goodName}}</p>
+            <p class="size">{{good.skuPropName}}</p>
+            <p class="price">￥{{good.skuPrice}}
+              <del>￥{{good.skuPrice}}</del>
+              <span class="num">×{{good.cartNum}}</span>
+            </p>
+          </div>
+          <!--编辑样式  -->
+          <div class="shopedit" :class="[delShow?'delete-show':'delete-hide']">
+            <div class="count">
+              <button @click="addQuentity(good,-1,index)">-</button>
+              <input type="text" :value="good.cartNum">
+              <button @click="reduceQuentity(good,1)">+</button>
+            </div>
+
+            <p class="size">{{good.skuPropName}}</p>
+            <div class="delete" @click="delGood(good,index)">
+              删除
+            </div>
+          </div>
+        </li>
+      </ul>
+
+    </div>
+
+    <!--商品  end-->
+    <!--底部购买  -->
+
+    <div class="buy">
+      <div class="all-choose blank-leaving">
+
+        <a href="javascript:void 0" @click="selectAll" v-show="quanxuan">
+          
+            <i class="iconfont " :class="[isSelectAll?'icon-duihao':'icon-duihao1']"></i>全选
+          
+        </a>
+        <a href="javascript:void 0" @click="unSelectAll" v-show="!quanxuan">
+          
+            <i class="iconfont " :class="[isSelectAll?'icon-duihao':'icon-duihao1']"></i>取消全选
+          
+        </a>
+        <span class="total">总计：
+          <i class="total-pay">￥{{totalPrice | two}}</i>
+        </span>
+      </div>
+      <div class="pay">
+        结算
+        <span class="pay-num">({{totalNum}})</span>
+      </div>
+    </div>
+    <!--底部购买 end  -->
+
+    <!--底部  -->
+    <footer class="footer"></footer>
+    <footer class="footer"></footer>
+    <foot-guide></foot-guide>
+
+    <!--底部 end  -->
+  </div>
+</template>
+
+<script>
+import { mapState, mapMutations } from 'vuex'
+import headTop from '../../components/head/head'
+import footGuide from '../../components/footer/footGuide'
+export default {
+  data() {
+
+    return {
+      
+      quanxuan:true,
+      isSelectAll: false, 
+      readyToDelIndex:-1,   
+      delShow: false,
+      edit: '编辑',
+      value: 1,
+      cartList: []
+    }
+  },
+  computed: {
+
+    // 总数
+    totalNum:function(){
+      let totalnum = 0;
+      this.cartList.forEach(function(good){
+        if(good.isChecked){
+          totalnum += parseInt(good.cartNum);
+        }
+      })
+     
+      return totalnum;
+    },
+    // 总价
+    totalPrice:function(){
+      let totalprice = 0;
+      this.cartList.forEach(function(good){
+        if(good.isChecked){
+          totalprice += good.cartNum * good.skuPrice;
+        }
+      })
+      return totalprice;
+    }
+  },
+  components: {
+    headTop,
+    footGuide,
+  },
+  created() {
+     this.$http.get('/api/shopCart/shopcartlist?pageIndx=1&pageSize=30').then(res => {
+            
+            this.cartList = res.data;
+            console.log(res.data);
+            
+
+        }).catch(err => {
+            console.log(err)
+        })
+  },
+  methods: {
+    ...mapMutations([
+      'ADD_CART', 'REDUCE_CART',
+    ]),
+    // 选择商品
+    selectGood: function (goodObj, index) {
+
+      if (goodObj.isChecked == void 0) {
+        this.$set(goodObj, "isChecked", true);
+      } else {
+        goodObj.isChecked = !goodObj.isChecked;
+      }
+      this.isCheckAll();
+    },
+    //
+    test:function(){
+      
+    },
+    // 全选
+    selectAll: function () {
+      this.isSelectAll = true;
+      this.quanxuan =false;
+      this.cartList.forEach((good) => {
+        good.isChecked = true;
+        
+      });
+      
+    },
+    unSelectAll:function(){
+      this.quanxuan =true;
+      this.isSelectAll = false;
+      this.cartList.forEach((good) => {
+        good.isChecked = false;
+        
+      });
+    },
+    //是否选中全部
+    isCheckAll:function(){
+      let flag =true;
+      this.cartList.forEach(function(good){
+          if(!good.isChecked){
+            flag =false;
+          }
+      });
+      if(!flag){
+        this.isSelectAll = false;
+        this.quanxuan =true;
+      }else{
+        this.isSelectAll = true;
+        this.quanxuan =false;
+      }
+    } ,
+    //删除商品
+    delGood:function(good,_index){
+        this.readyToDelIndex = _index;
+        this.cartList.splice(this.readyToDelIndex,1);
+    },
+    //改变数量
+    addQuentity:function(good,val,_index){
+        if(good.cartNum == 1 && val==-1){
+          this.readyToDelIndex= _index;
+          
+        }else{
+          good.cartNum --;
+        }
+    },
+    reduceQuentity:function(good, _index){
+        good.cartNum ++;
+    },
+    // 编辑状态
+    changeStatus() {
+
+      this.delShow = !this.delShow;
+      let a = "编辑";
+      let b = "完成";
+      if(this.edit==a){
+        this.edit=b
+      }else{
+        this.edit=a;
+      }
+      
+    },
+    
+  },
+  filters: {
+        //保留两位小数点
+        two: function (value) {
+
+            if (!value) { return '' };
+            return value.toFixed(2);
+        }
+
+    }
+}
+</script>
+
+<style>
+.shopcart .msg {
+  line-height: 1.333333rem;
+  color: #b0a4bc;
+  font-size: .4rem;
+  padding: 0 .4rem;
+}
+
+.shopcart .msg .icon-ionfontxiangqingye- {
+  margin-right: .2rem;
+  font-size: .4rem
+}
+
+.shopcart .goods {
+
+  position: relative;
+}
+
+.shopcart .edit {
+  position: absolute;
+  right: .4rem;
+  top: -.9rem;
+  font-size: .4rem;
+  color: #b0a4bc
+}
+
+.shopcart .good-wraper {
+  padding: .533333rem 0;
+  overflow: hidden;
+  border-top: 1px solid #eeecf1;
+}
+
+
+.shopcart .check i {
+  line-height: 2.4rem;
+  display: block;
+  float: left;
+  font-size: .56rem;
+  color: #b0a4bc;
+  margin-left: .4rem;
+}
+
+.shopcart .imgbox {
+  border: 1px solid #ece5f4;
+  border-radius: .133333rem;
+  width: 2rem;
+  float: left;
+  margin: .2rem .4rem;
+  height: 2rem;
+  overflow: hidden;
+}
+
+.shopcart .imgbox img {
+  width: 100%;
+}
+
+
+
+
+
+
+
+/*  */
+
+.shopcart .des-text {
+
+  float: left;
+  width: 6.1rem;
+  box-sizing: border-box;
+  padding-right: .4rem;
+}
+
+.shopcart .des-text .title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: .4rem;
+  color: #492b67;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  white-space: normal!important;
+  line-height: .506667rem;
+}
+
+.shopcart .delete-show {
+  display: block;
+}
+
+.shopcart .delete-hide {
+  display: none;
+}
+
+.shopcart .des-text .size {
+  color: #b0a4bc;
+  font-size: .36rem;
+  line-height: .6rem;
+}
+
+.shopcart .des-text .price {
+  line-height: .6rem;
+  color: #de3163;
+  font-size: .4rem;
+}
+
+.shopcart .des-text .price del {
+  color: #b0a4bc;
+  font-size: .32rem;
+  margin-left: .4rem;
+  text-decoration: line-through;
+}
+
+.shopcart .des-text .price .num {
+  float: right;
+  color: #b0a4bc;
+}
+
+
+
+
+
+
+
+/*  */
+
+.shopcart .shopedit {
+  float: left;
+  width: 6.175rem;
+
+  position: relative;
+}
+
+.shopcart .shopedit .size {
+  color: #b0a4bc;
+  font-size: .36rem;
+  line-height: .6rem;
+  width: 4rem;
+}
+
+.shopcart .shopedit .count {
+  width: 3.066667rem;
+  height: .733333rem;
+  line-height: .733333rem;
+  border-radius: .133333rem;
+  border: 1px solid #aea2ba;
+  margin: .2rem 0;
+  color: #492b67;
+  overflow: hidden;
+}
+
+.shopcart .shopedit .count input,
+button {
+  float: left;
+  height: .733333rem;
+  border: 0;
+  width: 33%;
+  background: #fff;
+  color: #aea2ba;
+  font-size: .52rem;
+}
+
+.shopcart .shopedit .count input {
+  box-sizing: border-box;
+  padding-left:.3rem;
+  font-size: .4rem;
+  color: #492b67;
+}
+
+.shopcart .shopedit .delete {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 1.733333rem;
+  height: 100%;
+  color: #fff;
+  line-height: 2.133333rem;
+  font-size: .466667rem;
+  text-align: center;
+  background: #b0a4bc;
+}
+
+
+
+
+
+
+
+/*底部  */
+
+.shopcart .fot {
+  height: 1.306667rem;
+  width: 100%;
+}
+
+.shopcart .buy {
+  height: 1.306667rem;
+  width: 100%;
+  position: fixed;
+  background: #fff;
+  bottom: 1.466667rem;
+  line-height: 1.306667rem;
+  box-shadow: 1px 0 0 0 #ece5f4;
+}
+
+.shopcart .all-choose {
+  display: block;
+  float: left;
+  font-size: .4rem;
+  color: #b0a4bc;
+
+  width: 7.2rem;
+  box-sizing: border-box;
+}
+.shopcart .all-choose a{
+  color: #b0a4bc;
+}
+.shopcart .all-choose .iconfont {
+  margin-right: .4rem;
+  font-size: .56rem;
+}
+
+.shopcart .all-choose .total {
+  float: right;
+  font-size: .45rem;
+}
+
+.shopcart .all-choose .total .total-pay {
+  color: #de3163;
+  font-size: .45rem;
+  font-weight: 700;
+}
+
+.shopcart .pay {
+  width: 2.8rem;
+  background: linear-gradient(to right, #946cb6, #da3494);
+  float: left;
+  text-align: center;
+  font-size: .45rem;
+  color: #fff;
+}
+</style>

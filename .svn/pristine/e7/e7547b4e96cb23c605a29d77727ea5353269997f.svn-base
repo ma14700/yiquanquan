@@ -1,0 +1,372 @@
+<template>
+  <div>
+<!--头部  -->
+    <head-top></head-top>
+<!--头部  end-->
+<!--商品轮播  -->
+    <mt-swipe :auto="4000">
+        <mt-swipe-item><img src="./slide1@2x.png" alt=""></mt-swipe-item>
+        <mt-swipe-item><img src="./slide1@2x.png" alt=""></mt-swipe-item>
+        <mt-swipe-item><img src="./slide1@2x.png" alt=""></mt-swipe-item>
+    </mt-swipe>
+<!--商品轮播 end  -->
+<!--商品信息  -->
+<div class="goods">
+
+    <div class="goods-name">
+        <p><span>【惊喜】</span>生日PARTY氢气球套餐<i class="iconfont icon-dingzhifenxiang"></i></p>
+        
+    </div>
+
+    <div class="goods-price">
+        <p>￥500.00<del>800.00</del><span>销量350件</span></p>
+    </div>
+
+    <div class="provider">
+        <p>
+            <i class="iconfont icon-shangcheng"></i>
+            本商品由<span>壹圈圈派对商城</span>提供
+        </p>
+    </div>
+    <div class="choose">
+        <p @click="handleClick">选择商品规格和数量<i class="iconfont icon-fanhui"></i></p>
+        <mt-popup v-model="popupVisible" position="bottom">
+            <div class="choose-wraper">
+               <div class="title blank-leaving">
+                   <div class="picture"><img src="./taocan1.jpg" alt=""></div>
+                   <div class="pic-name">【惊喜】生日PARTY氢气球套餐
+                       <p>￥500.00<del>800.00</del></p>
+                   </div>
+               </div>
+               <div class="color">
+                    <p>颜色：</p>
+                    <ul class="color-choose">
+                        <li :class="[choose?'isChoosed':'']" @click="changeChoose">红色</li>
+                        <li>白色</li>
+                        <li>紫色</li>
+                    </ul>
+               </div>
+               <div class="color">
+                    <p>尺码：</p>
+                    <ul class="color-choose">
+                        <li>S</li>
+                        <li>M</li>
+                        <li>L</li>
+                    </ul>
+               </div>
+               <div class="number">
+                    <span>购买数量：</span> 
+                    <div class="num">
+                        <i>-</i>
+                        <i>1</i>
+                        <i>+</i>
+                    </div>    
+               </div>
+               <div class="buy">
+                    <div class="jcar fl">加入购物车</div>
+                    <div class="nbuy fl">立即购买</div>
+               </div>
+            </div>
+        </mt-popup>
+        
+  
+  
+
+    </div>
+
+</div>
+<!--商品信息  end-->
+<!--商品详情  -->
+<div class="goods-detail">
+    <img src="./slide1@2x.png" alt="">
+    <img src="./slide1@2x.png" alt="">
+    <img src="./slide1@2x.png" alt="">
+    <img src="./slide1@2x.png" alt="">
+</div>
+<!--商品详情 end  -->
+
+<!--加入购物车  -->
+  <div class="shopcar">
+      <div class="shopcar-l fl">
+        <div class="car-icon fl">
+            <i class="iconfont icon-gouwuche"></i>
+            <p>购物车</p>
+        </div>
+        <div class="star-icon fl">
+            <i class="iconfont icon-shouCang"></i>
+            <p>收藏</p>
+        </div>
+      </div>
+      <div class="shopcar-r fl">
+        <div class="join-car fl">加入购物车</div>
+        <div class="now-buy fl">立即购买</div>
+      </div>
+  </div>
+<!--加入购物车  end-->
+    <footer class="footer"></footer>
+  </div>
+
+</template>
+
+<script>
+    import { Swipe, SwipeItem } from 'mint-ui';
+    import { Popup } from 'mint-ui';
+    import headTop from '../../components/head/head';
+    
+    export default{
+        data(){
+            return{
+                popupVisible:false,
+                choose:true,
+            }
+        },
+        created(){
+
+        },
+        components:{
+            headTop 
+        },
+        methods:{
+            handleClose(){
+
+            },
+            handleClick: function() {
+                this.popupVisible = true
+            },
+            changeChoose :function(){
+                this.choose=!this.choose;
+            }
+        }
+    }    
+</script>
+
+
+<style>
+/*轮播  */
+.mint-swipe{
+    height:7.333333rem;
+    background: #333
+}
+.mint-swipe-item img{
+    width: 100%;
+}
+.mint-swipe-indicator{
+    opacity:.8 ;
+    background-color: #b0a4bc;
+}
+.mint-swipe-indicator.is-active{
+    background-color: #492b67;
+}
+/*商品名  */
+.goods{
+    padding: .4rem;
+    line-height: .666667rem;
+}
+.goods-name{
+    font-size: .4rem;
+    color: #492b67;
+}
+.goods-name i{
+    float: right;
+    color: #baafc4;
+}
+.goods-name span{
+    margin-left: -.2rem
+}
+/*商品价格  */
+.goods-price{
+    color:#de3163 ;
+    font-size:.36rem ;
+
+}
+.goods-price del{
+    color: #baafc4;
+    margin-left: .266667rem;
+    font-size: .32rem;
+    text-decoration: line-through;
+}
+.goods-price span{
+    float: right;
+    color: #baafc4;
+}
+/*供应商  */
+.provider{
+
+    color:#baafc4;
+    font-size: .36rem;
+}
+.provider i{
+    font-size: .4rem;
+
+}
+.provider span{
+    margin: 0 .133333rem;
+}
+/*选择商品  */
+.choose{
+    color: #492b67;
+    font-size: .4rem;
+    padding: .533333rem 0;
+}
+.choose i{
+    
+    float: right;
+    color:#baafc4; 
+}
+/*商品详情  */
+.goods-detail img{
+    width: 100%;
+}
+/*加入购物车  */
+.shopcar{
+    
+    width: 100%;
+    height: 1.333333rem;
+    overflow: hidden;
+    position: fixed;
+    bottom: 0
+}
+.shopcar-l{
+    width: 3.4rem;
+    padding: .2rem 0;
+    box-sizing: border-box;
+    height: 100%;
+    text-align: center;
+    color: #aea2ba;
+    font-size: .36rem;
+    background: #fff;
+}
+.shopcar-l i{
+    font-size: .533333rem;
+}
+.shopcar-l .car-icon{
+    width: 50%;
+}
+.shopcar-l .star-icon{
+    width: 50%;
+}
+.shopcar-l p{
+    line-height: .5rem;
+}
+
+.shopcar-r{
+    width: 6.6rem;
+    text-align: center;
+   
+    font-size: .48rem;
+    color: #fff;
+    height: 100%;
+    
+}
+.shopcar-r .join-car{
+    width: 50%;
+    background: linear-gradient(to right, #c09ee2 , #a17cc7);
+    padding: .4rem 0;
+}
+.shopcar-r .now-buy{
+     padding: .4rem 0;
+    width: 50%;
+    background: linear-gradient(to top right, #926eb7 , #de3193);
+}
+
+
+/*选择商品规格详情  */
+.mint-popup{
+    width: 100%;
+    height: 9.8rem;
+}
+.title{
+    height: 2.4rem;
+}
+.picture{
+    width: 2.666667rem;
+    border: .013333rem solid #aea2ba;
+    box-sizing: border-box;
+    float: left;
+    margin-top: -.6rem;
+    border-radius: .133333rem;
+    overflow: hidden;
+}
+.picture img{
+    width: 100%;
+}
+.pic-name{
+    padding: .4rem ;
+    float: left;
+    font-size: .4rem;
+}
+.pic-name p{
+    color: #de3163;
+}
+.pic-name p del {
+    color: #c4bccc;
+    font-size: .32rem;
+    margin-left: .266667rem;
+    text-decoration: line-through;
+}
+.color{
+    height: 2.2rem;
+    border-top: 1px solid #eeecf1;
+    padding: .4rem;
+    box-sizing: border-box;
+}
+.color p{
+    margin-top: -.24rem;
+    margin-bottom: .3rem
+}
+.color-choose li{
+    float: left;
+    line-height: .666667rem;
+    width: 1.6rem;
+    height: .666667rem;
+    box-sizing: border-box;
+    border: 1px solid #b0a4bc;
+    text-align: center;
+    border-radius: .133333rem;
+    margin-right: .4rem
+}
+.isChoosed{
+    background: #61477b;
+    color: #fff;
+    border-color:#61477b;
+}
+.number{
+    line-height: .733333rem;
+    padding: .4rem .533333rem .466667rem .4rem;
+    position: relative;
+    border-top: .013333rem solid #aea2ba;
+}
+.num{
+    position: absolute;
+    right: .533333rem;
+    top: .4rem;
+    width: 3.066667rem;
+    box-sizing: border-box;
+    border: .013333rem solid #aea2ba;
+    border-radius: .133333rem;
+}
+.num i{
+    display: inline-block;
+    float: none;
+    width: 30%;
+    text-align: center;
+}
+.buy{
+    width: 100%;
+    height: 1.306667rem;
+    
+    text-align: center;
+    line-height: 1.306667rem;
+    color: #fff;
+    font-size: .48rem;
+
+}
+.jcar{
+   width: 50%;
+   background: linear-gradient(to  right, #c2a0e4 , #9f7ac5);
+}
+.nbuy{
+   width: 50%; 
+   background: linear-gradient(to  right, #926eb7 , #de3193);
+}
+</style>

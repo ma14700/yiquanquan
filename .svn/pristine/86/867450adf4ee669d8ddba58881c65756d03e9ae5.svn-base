@@ -1,0 +1,77 @@
+import {
+    ADD_CART,
+    REDUCE_CART,
+    INIT_BUYCART,
+    CLEAR_CART,
+    ADD_COLLECTION,
+    REDUCE_COLLECTION,
+    BUY_CART,
+
+} from './mutation-types'
+import { setStore, getStore } from '../config/mUtils'
+export default {
+    //加入购物车
+    [ADD_CART](state, {
+        skuId, //商品id
+        goodName, //商品名字
+    }) {
+        let cart = state.cartList;
+        let item = cart[skuId] = (cart[skuId] || {});
+
+        if (item[skuId]) {
+            item[skuId]['num']++;
+
+        } else {
+            item[skuId] = {
+                'num': 1,
+                "id": skuId,
+                "name": goodName,
+            }
+        }
+
+
+        state.cartList = {...cart };
+        //存入localStorage
+        setStore('buyCart', state.cartList);
+        console.log(state.cartList);
+
+    },
+    //移出购物车
+
+    //网页初始化时从本地缓存获取购物车列表
+
+    // 加入收藏
+    [ADD_COLLECTION](state, {
+        id,
+        goodName,
+        goodPrice
+    }) {
+        let collect = state.collectionList;
+        let item = collect[id] = (collect[id] || {});
+        item[id] = {
+            "id": id,
+            "goodName": goodName,
+            "goodPrice": goodPrice
+        }
+        state.collectList = {...collect };
+        //存入localStorage
+        setStore('myCollect', state.collectList);
+        console.log(state.collectList);
+
+    },
+    //取消收藏
+    [REDUCE_COLLECTION](state, {
+        id,
+        goodName,
+        goodPrice
+    }) {
+
+        let collect = state.collectionList
+        let item = collect[id] = (collect[id] || {});
+        item[id] = null;
+        state.collectList = {...collect }
+        setStore('myCollection', state.collectList);
+        console.log(state.collectList);
+    }
+
+}

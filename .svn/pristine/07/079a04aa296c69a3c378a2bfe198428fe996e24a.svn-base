@@ -1,0 +1,550 @@
+<template>
+    <div class="shoplist">
+        <!--头部  -->
+        <head-top></head-top>
+        <!--头部  end-->
+        <!--navbar  -->
+        <mt-navbar v-model="selected" class="blank-leaving" :class="{'fixed':showIcon}">
+            <mt-tab-item id="1" @click="sortList($event)">综合</mt-tab-item>
+            <mt-tab-item id="2" @click="sortList($event)">销量</mt-tab-item>
+            <mt-tab-item id="3" @click="sortList($event)">人气</mt-tab-item>
+            <mt-tab-item id="4" @click="sortList($event)">
+                <span @click="arrowSelected">价格</span>
+                <span class="arrow">
+                    <i class="iconfont icon-shangsanjiao top" :class="[arrowshow?'arrowselected':'arrowNotselected']"></i>
+                    <i class="iconfont icon-xiasanjiao bottom" :class="[arrowshow?'arrowNotselected':'arrowselected']"></i>
+                </span>
+            </mt-tab-item>
+            <div class="list">
+                <i class="iconfont" @click="changeIcon" :class="[test?'icon-list':'icon-liebiao1gai']"></i>
+            </div>
+        </mt-navbar>
+        <!--navbar end -->
+        <!-- tab-container -->
+        <mt-tab-container v-model="selected" class="blank-leaving">
+            <mt-tab-container-item id="1">
+                <div :key="item.id" v-for="item in shopList" :class="[test?'lump-wraper':'item-wraper']" @click="goShopdetail(item.id)">
+                    <div class="img-box">
+                        <img :src="item.goodFirstPicUrl" alt="">
+                    </div>
+                    <div class="content">
+                        <p class="title">{{item.goodName}}</p>
+                        <p class="price">￥{{item.goodPrice }}
+                            <del>{{item.goodSalePrice}}</del>
+                            <i class="iconfont icon-gouwuche" @click="addCart(item.id,item.goodPrice,item.goodName,item.goods_id)"></i>
+                        </p>
+                    </div>
+                </div>
+            </mt-tab-container-item>
+            <mt-tab-container-item id="2">
+                <div :key="item.id" v-for="item in countList" :class="[test?'lump-wraper':'item-wraper']">
+                    <div class="img-box">
+                        <img :src="item.goodFirstPicUrl" alt="">
+                    </div>
+                    <div class="content">
+                        <p class="title">{{item.goodName}}</p>
+                        <p class="price">￥{{item.goodPrice }}
+                            <del>{{item.goodSalePrice}}</del>
+                            <i class="iconfont icon-gouwuche" @click="addCart(item.id,item.goodPrice,item.goodName,item.goods_id)"></i>
+                        </p>
+                    </div>
+                </div>
+            </mt-tab-container-item>
+            <mt-tab-container-item id="3">
+                <div :key="item.id" v-for="item in hotList" :class="[test?'lump-wraper':'item-wraper']">
+                    <div class="img-box">
+                        <img :src="item.goodFirstPicUrl" alt="">
+                    </div>
+                    <div class="content">
+                        <p class="title">{{item.goodName}}</p>
+                        <p class="price">￥{{item.goodPrice }}
+                            <del>{{item.goodSalePrice}}</del>
+                            <i class="iconfont icon-gouwuche" @click="addCart(item.id,item.goodPrice,item.goodName,item.goods_id)"></i>
+                        </p>
+                    </div>
+                </div>
+            </mt-tab-container-item>
+            <mt-tab-container-item id="4">
+                <div :key="item.id" v-for="item in priceList" :class="[test?'lump-wraper':'item-wraper']">
+                    <div class="img-box">
+                        <img :src="item.goodFirstPicUrl" alt="">
+                    </div>
+                    <div class="content">
+                        <p class="title">{{item.goodName}}</p>
+                        <p class="price">￥{{item.goodPrice }}
+                            <del>{{item.goodSalePrice}}</del>
+                            <i class="iconfont icon-gouwuche" @click="addCart(item.id,item.goodPrice,item.goodName,item.goods_id)"></i>
+                        </p>
+                    </div>
+                </div>
+            </mt-tab-container-item>
+        </mt-tab-container>
+        <!-- tab-container end-->
+
+        <!--固定搜索  -->
+        <div class="aside">
+            <i class="iconfont icon-sousuo search"></i>
+            <i class="iconfont icon-dingbu02 go-top" :class="{'show':showIcon}" @click="gotop"></i>
+        </div>
+
+        <!--固定搜索 end -->
+
+        <!--查看更多  -->
+        <div class="more">
+            <span class="more-text">
+                MORE/查看更多
+            </span>
+        </div>
+
+        <!--查看更多 end  -->
+        <footer class="footer"></footer>
+        <foot-Guide selected="shopstore"></foot-Guide>
+    </div>
+</template>
+
+<script>
+import { mapMutations } from 'vuex';
+import { Header } from 'mint-ui';
+import { Navbar, TabItem } from 'mint-ui';
+import headTop from '../../components/head/head';
+import footGuide from '../../components/footer/footGuide';
+export default {
+    data() {
+        return {
+            selected: '1',
+            value: '',
+            test: true,
+            scroll: '',
+            arrowshow: true,
+            // transitionName: 'ease'
+            catid: '',
+            shopList: '',//商品列表,
+            sortByType: '', // 根据何种方式排序
+            // shopList: [
+            //     {
+            //         id: 1,
+            //         count: 3433,
+            //         goodName: '生日套餐11111生日套餐生日套餐生日套餐生日套餐生日套餐',
+            //         goodPrice: '23',
+            //         goodSalePrice: '33',
+            //         hot: 7777
+
+            //     },
+            //     {
+            //         id: 2,
+            //         count: 3045,
+            //         goodName: '1生日套餐22222生日套餐生日套餐生日套餐生日套餐生日套餐',
+            //         goodPrice: '19',
+            //         goodSalePrice: '33',
+            //         hot: 8888
+
+            //     },
+            //     {
+            //         id: 3,
+            //         count: 5745,
+            //         goodName: '1生日套餐33333生日套餐生日套餐生日套餐生日套餐生日套餐',
+            //         goodPrice: '20',
+            //         goodSalePrice: '33',
+            //         hot: 1110
+
+            //     },
+            // ],
+            countlist: [],
+            hotlist: [],
+            priceuplist: [],
+            pricedownlist: []
+
+        }
+    },
+    components: {
+        footGuide,
+        headTop
+    },
+    computed: {
+        showIcon: function () {
+            this.changeShow();
+            return this.scroll > 65;
+        },
+        // 根据销量进行排序
+        countList: function () {
+            let arr = this.shopList;
+            let arr2 = this.countlist;
+            for (let i = 0; i < arr.length; i++) {
+                arr2[i] = arr[i]
+            }
+            return arr2.sort(function (a, b) {
+                return b.count - a.count;//降序               
+            })
+        },
+        //根据人气进行排序
+        hotList: function () {
+            let arr = this.shopList;
+            let arr2 = this.hotlist;
+            for (let i = 0; i < arr.length; i++) {
+                arr2[i] = arr[i]
+            }
+            return arr2.sort(function (a, b) {
+                return b.hot - a.hot;//降序               
+            })
+        },
+        //根据价格进行排序
+        priceList: function () {
+            let arr = this.shopList;
+            let arr2 = this.pricedownlist;
+            let arr3 = this.priceuplist;
+            for (let i = 0; i < arr.length; i++) {
+                arr2[i] = arr[i];
+                arr3[i] = arr[i];
+            }
+            if (this.arrowshow) {
+                return arr3.sort(function (a, b) {
+                    return a.goodPrice - b.goodPrice;//升序，价格由低到高     
+                    console.log("123")           
+                })
+            } else {
+                
+                return arr2.sort(function (a, b) {
+                    return b.goodPrice - a.goodPrice;//降序    价格由高到低   
+                    console.log("321")             
+                })
+            }
+        }
+
+
+    },
+    mounted() {
+        window.addEventListener('scroll', this.changeShow);
+
+    },
+
+    created() {
+        this.catid = this.$route.query.catid
+        console.log('/api/good/goodlist?catid=' + this.catid)
+        this.$http.get('/api/good/goodlist?catid=' + this.catid).then(res => {
+            console.log(res);
+            this.shopList = res.data;
+        }).catch(err => {
+            console.log(err)
+        })
+
+
+
+        //    this.$http.post('/api/good/goodlist',{params:{catid:this.catid}}).then(res=>{
+        //        console.log(res)
+        //    })
+    },
+
+
+    methods: {
+        // 
+        ...mapMutations(['ADD_CART']),
+        handleClose() {
+
+        },
+        //列表，块状图标转换
+        changeIcon: function () {
+            this.test = !this.test;
+        },
+        changeShow() {
+            this.scroll = document.body.scrollTop;
+        },
+        //返回顶部
+        gotop() {
+            if (document.body.scrollTop > 100) {
+                document.body.scrollTop = 0;
+            } else {
+                console.log(document.body.scrollTop);
+            }
+        },
+        //价格排序箭头
+        arrowSelected() {
+            console.log(this.arrowshow);
+            this.arrowshow = !this.arrowshow;
+            console.log(this.arrowshow);
+        },
+       
+        //添加进购物车
+        addCart(goodId, goodPrice, goodName, goods_id) {
+            this.ADD_CART({ goodId, goodPrice, goodName, goods_id })
+            console.log(this.ADD_CART);
+        },
+        goShopdetail(id){
+            let Id = id
+            this.$router.push({path:'/shopdetail', query:{Id}})
+        }
+    },
+    filters: {
+        //保留两位小数点
+        two: function (value) {
+
+            if (!value) { return '' };
+            return value.toFixed(2);
+        }
+
+    }
+}
+</script>
+
+
+<style>
+.shoplist {
+    background: #fdfdfe;
+}
+
+
+
+
+/* .ease-transition{
+    transition: all .3s ease;
+
+}
+.ease-enter, .expand-leave{
+    height: 0;
+    padding: 0 10px;
+    opacity: 0;
+} */
+
+
+/*navbar  */
+
+.shoplist .mint-navbar {
+    height: 1.2rem;
+    text-align: left;
+    display: block;
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
+    box-shadow: 0 0 1px 0 #eee;
+}
+
+.shoplist .fixed {
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+}
+
+.shoplist .mint-navbar .mint-tab-item {
+    padding: 0;
+    width: 2.2rem;
+    float: left;
+    color: #b0a4bc;
+}
+
+.shoplist .mint-navbar .mint-tab-item.is-selected {
+    border: none;
+    color: #4a2c68;
+    margin: 0;
+}
+
+.shoplist .mint-navbar .mint-tab-item-label {
+    line-height: 1.2rem;
+    font-size: .4rem;
+    position: relative;
+}
+
+.shoplist .mint-navbar .mint-tab-item-label .arrow {
+    position: absolute;
+    top: 0.2rem;
+    width: .4rem;
+    line-height: 1;
+}
+
+.shoplist .mint-navbar .mint-tab-item-label .arrow i {
+    display: inline-block;
+    font-size: .32rem;
+    position: relative;
+    right: -.1rem;
+}
+
+.shoplist .mint-navbar .mint-tab-item-label .arrow i.top {}
+
+.shoplist .arrowselected {
+    color: #4a2c68;
+}
+
+.shoplist .arrowNotselected {
+    color: #b0a4bc;
+}
+
+.shoplist .mint-navbar .mint-tab-item-label .arrow i.bottom {
+    top: -.1rem;
+}
+
+.shoplist .mint-navbar .list {
+    position: absolute;
+    right: 0.4rem;
+    font-size: .426667rem;
+    line-height: 1.2rem;
+    color: #b0a4bc;
+}
+
+
+
+
+/*container  */
+
+.shoplist .mint-tab-container {
+    margin-top: .4rem;
+}
+
+
+
+
+/*块  */
+
+.shoplist .lump-wraper {
+    width: 4.466667rem;
+    float: left;
+    line-height: .64rem;
+    margin-bottom: .4rem
+}
+
+.shoplist .lump-wraper .img-box {
+    width: 100%;
+    margin-bottom: .4rem;
+    height:4.466667rem ;
+}
+
+.shoplist .lump-wraper:nth-child(odd) {
+    margin-right: .266667rem;
+}
+
+
+
+
+
+/*块 列表 共有  */
+
+.shoplist .img-box {
+    border: 1px solid #ece5f4;
+    border-radius: .133333rem;
+    overflow: hidden;
+}
+
+.shoplist .img-box img {
+    width: 100%;
+}
+
+.shoplist .title {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: .4rem;
+    color: #492b67;
+}
+
+.shoplist .price {
+    color: #de3163;
+    font-size: .4rem;
+    font-weight: 700;
+}
+
+.shoplist .price del {
+    color: #cdc6d5;
+    margin-left: .266667rem;
+    text-decoration: line-through;
+    font-weight: normal;
+    font-size: .36rem;
+}
+
+.shoplist .price i {
+    float: right;
+    margin-right: .133333rem;
+    color: #cdc6d5;
+    font-weight: normal;
+}
+
+
+
+
+/*列表 */
+
+.shoplist .item-wraper {
+    width: 9.2rem;
+    height: 2.666667rem;
+    overflow: hidden;
+    margin-bottom: .4rem;
+}
+
+.shoplist .item-wraper .img-box {
+    width: 2.666667rem;
+    float: left;
+    height:2.666667rem; 
+}
+
+.shoplist .item-wraper .title {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    white-space: normal!important;
+    line-height: .506667rem
+}
+
+.shoplist .item-wraper .content {
+    width: 6.47rem;
+    padding: .4rem .24rem;
+    box-sizing: border-box;
+    float: right
+}
+
+.shoplist .item-wraper .price {
+    margin-top: .4rem
+}
+
+
+
+
+/*搜索  */
+
+.shoplist .aside i {
+    position: fixed;
+    z-index: 100;
+    width: 1rem;
+    height: 1rem;
+    text-align: center;
+    line-height: 1rem;
+    font-size: .48rem;
+    background: #fff;
+    border-radius: 50%;
+    color: #d3cdda;
+    border: 1px solid #ece5f4;
+}
+
+.shoplist .search {
+
+    right: .4rem;
+    bottom: 3.4rem;
+}
+
+.shoplist .go-top {
+    right: .4rem;
+    bottom: 2rem;
+    display: none;
+}
+
+.shoplist .show {
+    display: block
+}
+
+
+
+
+/*  more*/
+
+.shoplist .more {
+    width: 100%;
+    height: 1.4rem;
+    padding: .4rem 0;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.shoplist .more .more-text {
+    display: inline-block;
+    font-size: .36rem;
+    border-top: 1px solid #ece5f4;
+    border-bottom: 1px solid #ece5f4;
+    color: #beb5c9;
+    line-height: .6rem;
+}
+</style>

@@ -1,0 +1,346 @@
+<template>
+  <div class="shopcart">
+    <!--头部  -->
+    <head-top></head-top>
+    <!--头部  end-->
+    <!--提示信息  -->
+    <div class="msg ">
+      <p>
+        <i class="iconfont icon-ionfontxiangqingye-"></i>库存紧张，尽快购买哦！</p>
+    </div>
+    <!--提示信息  end-->
+    <!--商品  -->
+    <div class="goods ">
+      <span class="edit" @click="changeStatus">{{this.edit}}</span>
+      <!-- <span class="edit">完成</span> -->
+      <ul>
+        <li v-for="good in testData" class="good-wraper" @click="toggleIcon(good)" :key="good.num">
+          <div class="check">
+            <i class="iconfont " :class="[good.ischecked?'icon-duihao':'icon-duihao1']" @click="checked"></i>
+          </div>
+          <div class="imgbox">
+            <img src="./../../assets/shopcart/goods.png" alt="">
+          </div>
+          <!-- 默认样式 -->
+          <div class="des-text " :class="[delShow?'delete-hide':'delete-show']">
+            <p class="title">{{good.name}}</p>
+            <p class="size">{{good.color}}；{{good.size}}</p>
+            <p class="price">￥{{good.price}}
+              <del>￥{{good.oldPrice}}</del>
+              <span class="num">×{{good.num}}</span>
+            </p>
+          </div>
+          <!--编辑样式  -->
+          <div class="shopedit" :class="[delShow?'delete-show':'delete-hide']">
+            <div class="count">
+              <button @click="reduce">-</button>
+              <input type="text" :value="value">
+              <button @click="add">+</button>
+            </div>
+  
+            <p class="size">{{good.color}}；{{good.size}}</p>
+            <div class="delete">
+              删除
+            </div>
+          </div>
+        </li>
+      </ul>
+  
+    </div>
+  
+    <!--商品  end-->
+    <!--底部购买  -->
+  
+    <div class="buy">
+      <div class="all-choose blank-leaving">
+        <i class="iconfont icon-duihao1"></i>全选
+        <span class="total">总计：
+          <i class="total-pay">￥800.00</i>
+        </span>
+      </div>
+      <div class="pay">
+        结算
+        <span class="pay-num">(1)</span>
+      </div>
+    </div>
+    <!--底部购买 end  -->
+  
+    <!--底部  -->
+    <footer class="footer"></footer>
+    <footer class="footer"></footer>
+    <foot-guide></foot-guide>
+  
+    <!--底部 end  -->
+  </div>
+</template>
+
+<script>
+import headTop from '../../components/head/head'
+import footGuide from '../../components/footer/footGuide'
+export default {
+  data() {
+
+    return {
+      isCheck: false,
+      delShow: false,
+      edit: '编辑',
+      value: 1,
+      
+    }
+  },
+  components: {
+    headTop,
+    footGuide,
+  },
+  created() {
+
+  },
+  methods: {
+    toggleIcon(good) {
+      good.ischecked = !good.ischecked;
+      console.log(good.ischecked)
+    },
+    checked: function () {
+      this.isCheck = !this.isCheck;
+    },
+    changeStatus() {
+
+      this.delShow = !this.delShow;
+
+    },
+    reduce() {
+      if (this.value > 0) {
+        this.value--;
+      }
+
+    },
+    add() {
+      if (this.value < 10) {
+        this.value++;
+      }
+
+    }
+  }
+}
+</script>
+
+<style>
+.shopcart .msg {
+  line-height: 1.333333rem;
+  color: #b0a4bc;
+  font-size: .4rem;
+  padding: 0 .4rem;
+}
+
+.shopcart .msg .icon-ionfontxiangqingye- {
+  margin-right: .2rem;
+  font-size: .4rem
+}
+
+.shopcart .goods {
+
+  position: relative;
+}
+
+.shopcart .edit {
+  position: absolute;
+  right: .4rem;
+  top: -.9rem;
+  font-size: .4rem;
+  color: #b0a4bc
+}
+
+.shopcart .good-wraper {
+  padding: .533333rem 0;
+  overflow: hidden;
+  border-top: 1px solid #eeecf1;
+}
+
+
+.shopcart .check i {
+  line-height: 2rem;
+  display: block;
+  float: left;
+  font-size: .56rem;
+  color: #b0a4bc;
+  margin-left: .4rem;
+}
+
+.shopcart .imgbox {
+  border: 1px solid #ece5f4;
+  border-radius: .133333rem;
+  width: 2rem;
+  float: left;
+  margin: 0 .4rem;
+}
+
+.shopcart .imgbox img {
+  width: 100%;
+}
+
+
+/*  */
+
+.shopcart .des-text {
+
+  float: left;
+  width: 6.1rem;
+  box-sizing: border-box;
+  padding-right: .4rem;
+}
+
+.shopcart .des-text .title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: .4rem;
+  color: #492b67;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  white-space: normal!important;
+  line-height: .506667rem;
+}
+
+.shopcart .delete-show {
+  display: block;
+}
+
+.shopcart .delete-hide {
+  display: none;
+}
+
+.shopcart .des-text .size {
+  color: #b0a4bc;
+  font-size: .36rem;
+  line-height: .6rem;
+}
+
+.shopcart .des-text .price {
+  line-height: .6rem;
+  color: #de3163;
+  font-size: .4rem;
+}
+
+.shopcart .des-text .price del {
+  color: #b0a4bc;
+  font-size: .32rem;
+  margin-left: .4rem;
+  text-decoration: line-through;
+}
+
+.shopcart .des-text .price .num {
+  float: right;
+  color: #b0a4bc;
+}
+
+
+/*  */
+
+.shopcart .shopedit {
+  float: left;
+  width: 6.175rem;
+
+  position: relative;
+}
+
+.shopcart .shopedit .size {
+  color: #b0a4bc;
+  font-size: .36rem;
+  line-height: .6rem;
+}
+
+.shopcart .shopedit .count {
+  width: 3.066667rem;
+  height: .733333rem;
+  line-height: .733333rem;
+  border-radius: .133333rem;
+  border: 1px solid #aea2ba;
+  margin: .4rem 0;
+  color: #492b67;
+  overflow: hidden;
+}
+
+.shopcart .shopedit .count input,
+button {
+  float: left;
+  height: .733333rem;
+  border: 0;
+  width: 33%;
+  background: #fff;
+  color: #aea2ba;
+  font-size: .52rem;
+}
+
+.shopcart .shopedit .count input {
+  box-sizing: border-box;
+  padding: 0 .3rem;
+  font-size: .4rem;
+  color: #492b67;
+}
+
+.shopcart .shopedit .delete {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 1.733333rem;
+  height: 100%;
+  color: #fff;
+  line-height: 2.133333rem;
+  font-size: .466667rem;
+  text-align: center;
+  background: #b0a4bc;
+}
+
+
+/*底部  */
+
+.shopcart .fot {
+  height: 1.306667rem;
+  width: 100%;
+}
+
+.shopcart .buy {
+  height: 1.306667rem;
+  width: 100%;
+  position: fixed;
+  background: #fff;
+  bottom: 1.466667rem;
+  line-height: 1.306667rem;
+  box-shadow: 1px 0 0 0 #ece5f4;
+}
+
+.shopcart .all-choose {
+  display: block;
+  float: left;
+  font-size: .4rem;
+  color: #b0a4bc;
+
+  width: 7.2rem;
+  box-sizing: border-box;
+}
+
+.shopcart .all-choose .iconfont {
+  margin-right: .4rem;
+  font-size: .56rem;
+}
+
+.shopcart .all-choose .total {
+  float: right;
+  font-size: .45rem;
+}
+
+.shopcart .all-choose .total .total-pay {
+  color: #de3163;
+  font-size: .45rem;
+  font-weight: 700;
+}
+
+.shopcart .pay {
+  width: 2.8rem;
+  background: linear-gradient(to right, #946cb6, #da3494);
+  float: left;
+  text-align: center;
+  font-size: .45rem;
+  color: #fff;
+}
+</style>

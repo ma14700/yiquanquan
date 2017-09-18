@@ -1,0 +1,366 @@
+<template>
+    <div class="colormeal">
+        <head-top></head-top>
+        <div class="homeHeader">
+            <mt-swipe :auto="4000">
+                <mt-swipe-item v-for="item in detailImg" :key="item"><img :src="item" alt=""></mt-swipe-item>
+            </mt-swipe>
+        </div>
+        <div class="mealdetail-content">
+            <p class="mealdetail-content-title">{{mealDetail.name}}
+                <span @click="packageCollect(mealDetail.id)" v-if="!isCollect">
+                    <i class="iconfont icon-shouCang"></i>
+                </span>
+                <span @click="unPackageCollect(mealDetail.id)" v-else-if="isCollect">
+                    <i class="iconfont icon-huabanfuben" ></i>
+                </span>
+            </p>
+            <p class="mealdetail-content-sale">
+                <span>{{mealDetail.discountPrice | two}}</span>
+                <span>{{mealDetail.salePrice | two}}</span>
+                <span>销量{{mealDetail.virtualSales}}件</span>
+            </p>
+            <!-- 标签 -->
+            <div class="mealdetail-content-label" v-if="labels">
+                <div class="mealdetail-content-labelContent" v-for="item in labels" :key="item">
+                    {{item}}
+                </div>
+            </div>
+            <!-- 标签 end-->
+        </div>
+        <div class="mealdetail-footer">
+            <div class="mealdetail-footer-head">
+                <div class="mealdetail-footer-headLeft" :class="{mealcolor:mealcolorr == 0}" @click="mealColor(0)">套餐介绍</div>
+                <div class="mealdetail-footer-headRight" :class="{mealcolor:mealcolorr == 1}" @click="mealColor(1)">套餐明细</div>
+            </div>
+            <div class="mealdetail-footer-headLeftContent" v-if="mealcolorr == 0">
+                <div class="partydetail-detail" v-html="mealDetail.content">
+                    <!-- <div class="partydetail-detail-top">2017上海MAO万圣节活动</div>
+                            <div class="partydetail-detail-center">
+                                <img src="../../assets/partydetail1.png" alt="">详细解说详细解说详细解说详细解说详细解说详细解说详细解说详细解说详细解说详细解说
+                            </div> -->
+                </div>
+            </div>
+            <div class="mealdetail-footer-headLeftContent" v-if="mealcolorr == 1">
+                <div class="mealdetail-footer-headContent clearfix" v-for="(item,index) in packageDetail" :key="index">
+                    <img :src="item.goodFirstPicUrl" alt="">
+                    <p>
+                        <span>{{item.goodName}}</span>
+                        <span class="mealred">{{item.goodPrice | two}}</span>
+                    </p>
+                    <p>x{{item.quantity}}</p>
+                </div>
+            </div>
+
+        </div>
+        <div class="mealdetail-footer-pay" @click="nowBuy(mealDetail.id)">
+            立即抢购
+        </div>
+
+    </div>
+</template>
+
+<script>
+import { Swipe, SwipeItem } from 'mint-ui';
+import headTop from '../../components/head/head'
+export default {
+    data() {
+        return {
+            mealcolorr: "",
+            catId: '',//套餐接口参数
+            mealDetail: '',//套餐数据
+            detailImg: [], //轮播图
+            packageDetail: '',//套餐明细
+            isCollect: false,//是否收藏
+            labels:[],//标签
+        }
+    },
+    mounted() {
+
+    },
+    created() {
+        this.getDetailData();
+        this.getBrowse();
+    },
+    methods: {
+        mealColor(index) {
+            this.mealcolorr = index;
+            if (index == 1) {
+                this.$http.get('/api/partypkg/partypkgdetail?id=' + this.catid).then(res => {
+                    console.log(res);
+                    this.packageDetail = res.data;
+                })
+            }
+        },
+        //获取详情数据
+        getDetailData() {
+            this.catid = this.$route.query.id;
+            this.$http.get('api/partypkg/partypkginfo?id=' + this.catid).then(res => {
+
+                this.mealDetail = res.data;
+                this.detailImg = res.data.thumbImgList.split(",");
+                this.labels = res.data.labels.split(",");
+            })
+
+        },
+        //根据套餐ID更新套餐访问量
+        getBrowse() {
+            this.$http.get('/api/partypkg/partypkgscan?id=' + this.catid).then(res => {
+                console.log("访问量+1")
+            })
+        },
+        //收藏套餐
+        packageCollect(id) {
+                this.isCollect = true;
+            
+                this.$http.post('api/userFavorite/tofavrite/', { "FavType": 2, "FavToId": id }).then(res => {
+                    console.log(res)
+                })
+            
+
+        },
+        unPackageCollect(id){
+                this.isCollect = false;
+                this.$http.post('api/userfavorite/userfavdel',{"Id":0,"FavType":2,"FavToId":id}).then(res=>{
+                     console.log(res);
+                })
+        },
+        //立即抢购
+        nowBuy(id){
+            
+            this.$router.push({path:'/cartpackage', query:{id}})
+        },
+    },
+    components: {
+        headTop
+    },
+    filters: {
+        //保留两位小数点
+        two: function(value) {
+
+            if (!value) { return '' };
+            return '¥' + value.toFixed(2);
+        }
+
+    }
+}
+</script>
+
+<style>
+.mealred {
+    color: #de3163;
+    font-size: 12px;
+}
+
+.mealdetail-footer-headContent {
+    width: 100%;
+    height: 2.666667rem;
+    font-size: 12px;
+    color: #b0a4bc;
+}
+
+.mealdetail-footer-headContent img {
+    width: 2.666667rem;
+    height: 2.666667rem;
+    border-radius: 10px;
+    border: 1px solid #ece5f4;
+    float: left;
+}
+
+.mealdetail-footer-headContent>p:nth-of-type(1) {
+    width: 4.8rem;
+    height: 100%;
+    margin-left: .32rem;
+    float: left;
+    margin-top: .8rem;
+}
+
+.mealdetail-footer-headContent>p:nth-of-type(2) {
+    width: 1.066667rem;
+    margin-right: .4rem;
+    float: right;
+    margin-top: .8rem;
+}
+
+.mealdetail-footer-headContent>p:nth-of-type(1)>span {
+    display: block;
+    width: 100%;
+    line-height: .666667rem;
+
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.colormeal {
+    background: #f3eef7;
+}
+
+.mealdetail-footer-pay {
+    width: 10rem;
+    height: 1.2rem;
+    line-height: 1.2rem;
+    background: linear-gradient(to right, #946cb6, #da3494);
+    text-align: center;
+    font-size: .426667rem;
+    color: #fff;
+    position: fixed;
+    bottom: 0px;
+    z-index: 999;
+}
+
+.mealdetail-footer-headLeftContent {
+    width: 100%;
+    margin-top: .453333rem;
+
+    overflow: hidden;
+}
+
+.partydetail-detail {
+    width: 9.2rem;
+    margin: 0 auto;
+    padding-bottom: .8rem;
+}
+.partydetail-detail p img{
+    width: 100%;
+}
+.partydetail-detail-top {
+    height: 1.2rem;
+    text-align: center;
+    line-height: 1.2rem;
+    font-size: .4rem;
+    color: #4a2c68;
+    font-weight: 600;
+}
+
+.partydetail-detail-center {
+    font-size: 14px;
+    color: #b0a4bc;
+    letter-spacing: 1px;
+}
+
+.partydetail-detail-center img {
+    width: 9.2rem;
+    height: 5.066667rem;
+    margin-bottom: 0.4rem;
+}
+
+.mealcolor {
+    color: #492b67 !important;
+    border-bottom: 2px solid #492b67 !important;
+}
+
+.homeHeader {
+    width: 100%;
+    height: 6.666667rem;
+    background: #fff;
+    border-bottom: 1px solid #ebebeb;
+}
+
+.homeHeader img {
+    width: 100%;
+}
+
+.mint-swipe-indicator.is-active {
+    background: #9c154b;
+}
+
+.mint-swipe-indicator {
+    background: #b4bac1;
+}
+
+.mealdetail-content {
+    width: 10rem;
+    margin: 0 auto;
+    background: #fff;
+    padding: .4rem;
+    box-sizing: border-box
+}
+
+.mealdetail-content-title {
+    width: 100%;
+    height: .8rem;
+    line-height: .8rem;
+    font-size: .426667rem;
+    color: #492b67;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+}
+
+.mealdetail-content-title>span {
+    float: right;
+}
+
+.mealdetail-content-title>span>i {
+    font-size: .6rem;
+}
+
+.mealdetail-content-sale {
+    width: 100%;
+    height: .8rem;
+    line-height: .8rem;
+}
+
+.mealdetail-content-sale>span:nth-of-type(1) {
+    font-size: .426667rem;
+    color: #de3163;
+    font-weight: 600;
+}
+
+.mealdetail-content-sale>span:nth-of-type(2) {
+    font-size: 12px;
+    color: #b0a4bc;
+    padding-left: 20px;
+    text-decoration: line-through;
+}
+
+.mealdetail-content-sale>span:nth-of-type(3) {
+    font-size: 12px;
+    color: #b0a4bc;
+    float: right;
+    display: inline-block;
+}
+
+.mealdetail-content-label {
+    width: 100%;
+    height: 1.2rem;
+}
+
+.mealdetail-content-labelContent {
+    width: 1.866667rem;
+    height: .666667rem;
+    border: 1px solid #beb5ca;
+    border-radius: 3px;
+    line-height: .666667rem;
+    margin-right: .266667rem;
+    text-align: center;
+    color: #beb5ca;
+    margin-top: .266667rem;
+    float: left;
+}
+
+.mealdetail-footer {
+    width: 100%;
+    background: #fff;
+    margin-top: .4rem;
+    padding-bottom: 1.6rem;
+}
+
+.mealdetail-footer-head {
+    width: 100%;
+    display: flex;
+}
+
+.mealdetail-footer-headLeft,
+.mealdetail-footer-headRight {
+    flex: 1;
+    text-align: center;
+    height: 1.333333rem;
+    line-height: 1.333333rem;
+    font-size: .4rem;
+    color: #b0a4bc;
+    border-bottom: 1px solid #b0a4bc;
+}
+</style>
+
+

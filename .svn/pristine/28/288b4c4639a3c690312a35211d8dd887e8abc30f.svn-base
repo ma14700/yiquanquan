@@ -1,0 +1,210 @@
+<template>
+    <div class="orderpay">
+        <div class="order-goods">
+            <div class="img-box">
+                <img src="../../../assets/order/goods.png" alt="">
+            </div>
+            <div class="order-text">
+                <p class="text">生日氢气球套餐生日生日氢气球套餐生日氢气球套餐生日氢气球套餐</p>
+                <p class="price">￥500.00
+                    <span>800.00</span>
+                </p>
+            </div>
+    
+        </div>
+        <div class="stage">
+            <p class="stage-pay">阶段一：已完成</p>
+            <p class="stage-detail">商品定金
+                <span>￥200.00</span>
+            </p>
+        </div>
+        <div class="stage">
+            <p class="stage-pay">阶段二：未完成</p>
+            <p class="stage-detail">商品定金
+                <span>￥300.00</span>
+            </p>
+        </div>
+        <div class="others">
+            <p class="others-money">待付尾款：
+                <i>￥300</i>
+            </p>
+            <p class="pay-detail" @click="showDetail">商品详细
+                <i class="iconfont icon-fanhui"></i>
+            </p>
+            
+        </div>
+        <!--隐藏的商品详细  -->
+            <div class="goods-detail" :class="[test?'goods-detail-block':'goods-detail']">
+                <div class="order-goods">
+                    <div class="img-box">
+                        <img src="../../../assets/order/goods.png" alt="">
+                    </div>
+                    <div class="order-text">
+                        <p class="text">生日氢气球套餐生日生日氢气球套餐生日氢气球套餐生日氢气球套餐</p>
+                        <p class="price">￥500.00
+                            <span>800.00</span>
+                        </p>
+                        <p class="num">×1</p>
+                    </div>
+    
+                </div>
+            </div>
+            <!--end  -->
+        <ul class="order-detail">
+            <li>订单编号：12345678901234567890</li>
+            <li>下单时间：2017-07-17 17:13:45</li>
+            <li>服务地址：郑州市金水区建业总部港</li>
+            <li>服务时间：2017-08-10 09:00</li>
+        </ul>
+        <div class="pay">
+            支付尾款
+        </div>
+    </div>
+</template>
+<script>
+export default {
+    data() {
+        return {
+            test:false,
+        }
+    },
+    methods: {
+        showDetail(){
+            this.test=!this.test;
+        }
+    }
+}
+</script>
+<style>
+/*不显示center内容  */
+.center{
+    background: #fff;
+}
+.makecard,
+.footGuide,
+.mypic,
+.myorder,
+.mymsg,
+footer {
+    display: none;
+}
+
+.orderpay {}
+
+.orderpay .order-goods {
+    overflow: hidden;
+    margin: .4rem 0;
+    padding: 0 .4rem;
+}
+
+.orderpay .order-goods .img-box {
+    width: 2.666667rem;
+    height: 2.666667rem;
+    overflow: hidden;
+    float: left;
+    border-radius: .133333rem;
+    border: 1px solid #ece5f4;
+    margin-right: .266667rem;
+}
+
+.orderpay .order-goods .img-box img {
+    width: 100%;
+}
+
+.orderpay .order-goods .order-text {
+    width: 6.133333rem;
+    float: left;
+
+    font-size: .4rem;
+    box-sizing: border-box;
+    padding: .4rem 0;
+}
+
+.order-text .text {
+    color: #492b67;
+    line-height: .533333rem;
+}
+
+.order-text .price {
+    color: #de3163;
+    margin-top: .4rem;
+}
+
+.order-text .price span {
+    font-size: .36rem;
+    color: #c5bcce;
+    text-decoration: line-through;
+}
+.order-text .num{
+    float: right;
+    color: #c5bcce
+}
+/*  */
+.stage {
+    font-size: .4rem;
+    line-height: .72rem;
+    margin-top: .266667rem;
+    padding: 0 .4rem;
+}
+
+.stage .stage-pay {
+    color: #492b67;
+}
+
+.stage .stage-detail {
+    color: #b0a4bc;
+}
+
+.stage .stage-detail span {
+    float: right;
+}
+
+.others p {
+    font-size: .4rem;
+    color: #492b67;
+    line-height: 1.266667rem;
+    padding: 0 .4rem;
+}
+
+.others p i {
+    float: right;
+}
+
+.others .others-money i {
+    color: #de3163;
+}
+
+.others .pay-detail i {
+    color: #b0a4bc;
+}
+
+.order-detail {
+    padding: 0 .4rem;
+    margin-bottom: 1.706667rem;
+}
+
+.order-detail li {
+    font-size: .36rem;
+    color: #b0a4bc;
+    line-height: .6rem;
+}
+
+.pay {
+    height: 1.306667rem;
+    background: linear-gradient(to right, #926eb7, #de3193);
+    text-align: center;
+    line-height: 1.306667rem;
+    color: #fff;
+    font-size: .48rem;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    
+}
+.goods-detail{
+    display: none;
+}
+.goods-detail-block{
+    display: block;
+}
+</style>
