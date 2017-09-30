@@ -1,0 +1,557 @@
+
+<template>
+    <div class="allorder">
+        <mt-navbar v-model="selected">
+            <mt-tab-item id="0">全部</mt-tab-item>
+            <mt-tab-item id="1">待付款</mt-tab-item>
+            <mt-tab-item id="2">待发货</mt-tab-item>
+            <mt-tab-item id="7">待收货</mt-tab-item>
+            <mt-tab-item id="4">待评价</mt-tab-item>
+        </mt-navbar>
+
+        <!-- tab-container -->
+        <mt-tab-container v-model="selected">
+            <mt-tab-container-item id="0">
+                <div class="blankpage" v-if="this.myorder.length == 0">
+                    <p>暂时没有订单</p>
+                </div>
+                <div v-else class="mygoods" v-for="(group,index) in myorder" :key="index">
+                    <div v-if="group.orderType==1">
+                        <p class="order-id">
+
+                            <!-- {{group.orderNo}} -->
+                            <span>{{group.orderStatus}}</span>
+                        </p>
+                        <div class="goods-wraper" v-for="item in group.orderItemList" :key="item.id" @click="goDetail(item,group)" v-if="item.itemType == 1">
+                            <div class="goods-img">
+                                <img v-lazy="item.itemPic" alt="">
+                            </div>
+                            <div class="goods-text">
+                                <p>{{item.itemGoodName | dot}}
+                                </p>
+                            </div>
+                            <div class="goods-price">
+                                <p class="nowpriice">￥{{item.itemPrice | two}}</p>
+                                <p class="oldprice">￥{{item.itemPrice | two}}</p>
+                                <p class="num">x{{item.itemGoodNum}}</p>
+                            </div>
+                        </div>
+
+                        <div class="mystatus">
+                            <p class="total-num">共
+                                <i v-text="group.orderType == 1 ? '1': myorder[index].orderNum"></i>件 ,
+                                <i v-text="group.orderType == 1 ? '需付定金：¥'+group.orderPromiseMoney:'需付款：¥'+group.orderTotalFee"></i>
+                            </p>
+                            <!-- <span>确认发货</span> -->
+                            <span class="waitting" @click="goPay(group)">去支付</span>
+                        </div>
+                    </div>
+
+                    <div v-if="group.orderType==2">
+                        <p class="order-id">
+
+                            <!-- {{group.orderNo}} -->
+                            <span>{{group.orderStatus}}</span>
+                        </p>
+                        <div class="goods-wraper" v-for="item in group.orderItemList" :key="item.id" @click="goDetail(item,group)" v-if="item.itemType == 2">
+                            <div class="goods-img">
+                                <img v-lazy="item.itemPic" alt="">
+                            </div>
+                            <div class="goods-text">
+                                <p>{{item.itemGoodName | dot}}
+                                </p>
+                            </div>
+                            <div class="goods-price">
+                                <p class="nowpriice">￥{{item.itemPrice | two}}</p>
+                                <p class="oldprice">￥{{item.itemPrice | two}}</p>
+                                <p class="num">x{{item.itemGoodNum}}</p>
+                            </div>
+                        </div>
+
+                        <div class="mystatus">
+                            <p class="total-num">共
+                                <i v-text="group.orderType == 1 ? '1': myorder[index].orderNum"></i>件 ,
+                                <i v-text="group.orderType == 1 ? '需付定金：¥'+group.orderPromiseMoney:'需付款：¥'+group.orderTotalFee"></i>
+                            </p>
+                            <!-- <span>确认发货</span> -->
+                            <span class="waitting" @click="goPay(group)">去支付</span>
+                        </div>
+                    </div>
+                </div>
+
+            </mt-tab-container-item>
+            <mt-tab-container-item id="1">
+                <!--待付款  -->
+                <div class="blankpage" v-if="this.waitPay.length == 0">
+                    <p>暂时没有订单</p>
+                </div>
+
+                <div class="mygoods" v-for="(group,index) in waitPay" :key="index" v-else>
+                    <div v-if="group.orderType == 1">
+
+                        <p class="order-id">
+                            <!-- {{group.orderNo}} -->
+                            <span>{{group.orderStatus}}</span>
+                        </p>
+                        <div class="goods-wraper" v-for="item in group.orderItemList" :key="item.id" @click="goDetail(item,group)" v-if="item.itemType == 1">
+                            <div class="goods-img">
+                                <img :src="item.itemPic" alt="">
+                            </div>
+                            <div class="goods-text">
+                                <p>{{item.itemGoodName}}
+                                </p>
+                            </div>
+                            <div class="goods-price">
+                                <p class="nowpriice">￥{{item.itemPrice | two}}</p>
+                                <p class="oldprice">￥{{item.itemPrice | two}}</p>
+                                <p class="num">x{{item.itemGoodNum}}</p>
+                            </div>
+                        </div>
+
+                        <div class="mystatus">
+                            <p class="total-num">共
+                                <i v-text="group.orderType == 1 ? '1': waitPay[index].orderNum"></i>件 ,
+                                <i v-text="group.orderType == 1 ? '需付定金：¥'+group.orderPromiseMoney:'需付款：¥'+group.orderTotalFee"></i>
+                            </p>
+
+                            <span class="waitting" @click="goPay(group)">去支付</span>
+
+                        </div>
+                    </div>
+                    <div v-if="group.orderType == 2">
+
+                        <p class="order-id">
+                            <!-- {{group.orderNo}} -->
+                            <span>{{group.orderStatus}}</span>
+                        </p>
+                        <div class="goods-wraper" v-for="item in group.orderItemList" :key="item.id" @click="goDetail(item,group)" v-if="item.itemType == 2">
+                            <div class="goods-img">
+                                <img :src="item.itemPic" alt="">
+                            </div>
+                            <div class="goods-text">
+                                <p>{{item.itemGoodName}}
+                                </p>
+                            </div>
+                            <div class="goods-price">
+                                <p class="nowpriice">￥{{item.itemPrice | two}}</p>
+                                <p class="oldprice">￥{{item.itemPrice | two}}</p>
+                                <p class="num">x{{item.itemGoodNum}}</p>
+                            </div>
+                        </div>
+
+                        <div class="mystatus">
+                            <p class="total-num">共
+                                <i v-text="group.orderType == 1 ? '1': waitPay[index].orderNum"></i>件 ,
+                                <i v-text="group.orderType == 1 ? '需付定金：¥'+group.orderPromiseMoney:'需付款：¥'+group.orderTotalFee"></i>
+                            </p>
+
+                            <span class="waitting" @click="goPay(group)">去支付</span>
+
+                        </div>
+                    </div>
+                </div>
+                <!--待付款 end  -->
+            </mt-tab-container-item>
+            <mt-tab-container-item id="2">
+                <div class="blankpage" v-if="this.waitGoods.length == 0">
+                    <p>暂时没有订单</p>
+                </div>
+                <div class="mygoods" v-for="(group,index) in waitGoods" :key="index" v-else>
+                    <div v-if="group.orderType == 1">
+
+                        <p class="order-id">
+                            <!-- {{group.orderNo}} -->
+                            <span>{{group.orderStatus}}</span>
+                        </p>
+                        <div class="goods-wraper" v-for="item in group.orderItemList" :key="item.id" @click="goDetail(item,group)" v-if="item.itemType == 1">
+                            <div class="goods-img">
+                                <img :src="item.itemPic" alt="">
+                            </div>
+                            <div class="goods-text">
+                                <p>{{item.itemGoodName}}
+                                </p>
+                            </div>
+                            <div class="goods-price">
+                                <p class="nowpriice">￥{{item.itemPrice| two}}</p>
+                                <p class="oldprice">￥{{item.itemPrice| two}}</p>
+                                <p class="num">x{{item.itemGoodNum}}</p>
+                            </div>
+                        </div>
+
+                        <div class="mystatus">
+                            <p class="total-num">共
+                                <i v-text="group.orderType == 1 ? '1': waitGoods[index].orderNum"></i>件 ,
+                                <i v-text="group.orderType == 1 ? '需付定金：¥'+group.orderPromiseMoney:'需付款：¥'+group.orderTotalFee"></i>
+                            </p>
+
+                            <span class="waitting" @click="goPay(group)">去支付</span>
+                        </div>
+                    </div>
+                    <div v-if="group.orderType == 2">
+
+                        <p class="order-id">
+                            <!-- {{group.orderNo}} -->
+                            <span>{{group.orderStatus}}</span>
+                        </p>
+                        <div class="goods-wraper" v-for="item in group.orderItemList" :key="item.id" @click="goDetail(item,group)" v-if="item.itemType == 2">
+                            <div class="goods-img">
+                                <img :src="item.itemPic" alt="">
+                            </div>
+                            <div class="goods-text">
+                                <p>{{item.itemGoodName}}
+                                </p>
+                            </div>
+                            <div class="goods-price">
+                                <p class="nowpriice">￥{{item.itemPrice| two}}</p>
+                                <p class="oldprice">￥{{item.itemPrice| two}}</p>
+                                <p class="num">x{{item.itemGoodNum}}</p>
+                            </div>
+                        </div>
+
+                        <div class="mystatus">
+                            <p class="total-num">共
+                                <i v-text="group.orderType == 1 ? '1': waitGoods[index].orderNum"></i>件 ,
+                                <i v-text="group.orderType == 1 ? '需付定金：¥'+group.orderPromiseMoney:'需付款：¥'+group.orderTotalFee"></i>
+                            </p>
+
+                            <span class="waitting" @click="goPay(group)">去支付</span>
+                        </div>
+                    </div>
+                </div>
+            </mt-tab-container-item>
+            <mt-tab-container-item id="7">
+                <div class="blankpage" v-if="this.waitEvaluated.length == 0">
+                    <p>暂时没有订单</p>
+                </div>
+                <div class="mygoods" v-for="(group,index) in waitEvaluated" :key="index" v-else>
+                    <div v-if="group.orderType == 1">
+                        <p class="order-id">
+                            <!-- {{group.orderNo}} -->
+                            <span>{{group.orderStatus}}</span>
+                        </p>
+                        <div class="goods-wraper" v-for="item in group.orderItemList" :key="item.id" @click="goDetail(item,group)" v-if="item.itemType == 1">
+                            <div class="goods-img">
+                                <img :src="item.itemPic" alt="">
+                            </div>
+                            <div class="goods-text">
+                                <p>{{item.itemGoodName}}
+                                </p>
+                            </div>
+                            <div class="goods-price">
+                                <p class="nowpriice">￥{{item.itemPrice| two}}</p>
+                                <p class="oldprice">￥{{item.itemPrice| two}}</p>
+                                <p class="num">x{{item.itemGoodNum}}</p>
+                            </div>
+                        </div>
+
+                        <div class="mystatus">
+                            <p class="total-num">共
+                                <i v-text="group.orderType == 1 ? '1': waitEvaluated[index].orderNum"></i>件 ,
+                                <i v-text="group.orderType == 1 ? '需付定金：¥'+group.orderPromiseMoney:'需付款：¥'+group.orderTotalFee"></i>
+                            </p>
+                            <span class="waitting" @click="goPay(group)">去支付</span>
+                        </div>
+                    </div>
+                    <div v-if="group.orderType == 2">
+                        <p class="order-id">
+                            <!-- {{group.orderNo}} -->
+                            <span>{{group.orderStatus}}</span>
+                        </p>
+                        <div class="goods-wraper" v-for="item in group.orderItemList" :key="item.id" @click="goDetail(item,group)" v-if="item.itemType == 2">
+                            <div class="goods-img">
+                                <img :src="item.itemPic" alt="">
+                            </div>
+                            <div class="goods-text">
+                                <p>{{item.itemGoodName}}
+                                </p>
+                            </div>
+                            <div class="goods-price">
+                                <p class="nowpriice">￥{{item.itemPrice| two}}</p>
+                                <p class="oldprice">￥{{item.itemPrice| two}}</p>
+                                <p class="num">x{{item.itemGoodNum}}</p>
+                            </div>
+                        </div>
+
+                        <div class="mystatus">
+                            <p class="total-num">共
+                                <i v-text="group.orderType == 1 ? '1': waitEvaluated[index].orderNum"></i>件 ,
+                                <i v-text="group.orderType == 1 ? '需付定金：¥'+group.orderPromiseMoney:'需付款：¥'+group.orderTotalFee"></i>
+                            </p>
+                            <span class="waitting" @click="goPay(group)">去支付</span>
+                        </div>
+                    </div>
+                </div>
+            </mt-tab-container-item>
+            <mt-tab-container-item id="4">
+                <div class="blankpage">
+                    <p>暂时没有订单</p>
+                </div>
+            </mt-tab-container-item>
+        </mt-tab-container>
+    </div>
+</template>
+<script>
+import { Lazyload } from 'mint-ui';
+import { Navbar, TabItem } from 'mint-ui';
+export default {
+    data() {
+        return {
+            selected: '0',
+            myorder: [],
+            waitPay: [],
+            waitGoods: [],
+            waitReceive: [],
+            waitEvaluated: [],
+        }
+    },
+    beforeMount() {
+
+    },
+    created() {
+        this.getMyorder();
+    },
+    mounted() {
+
+    },
+    watch: {
+        '$route'(to, from) {
+            console.log(this.$route.query.selected)
+            this.selected = this.$route.query.selected;
+        },
+        selected() {
+            return this.getList();
+        }
+    },
+    methods: {
+        goDetail(item, group) {
+            let url = '/mealdetail';
+            let id = item.itemGoodId;
+            if (group.orderType == 1) {
+                url = '/mealdetail'
+            } else {
+                url = '/shopdetail'
+            }
+
+
+            this.$router.push({ path: url, query: { id } })
+        },
+        goPay(group) {
+            let orderId = group.id
+            this.$router.push({ path: '/center/orderpay', query: { orderId } })
+        },
+        getMyorder() {
+            this.$http.get('/api/order/list?status=' + this.selected + '&page=0&rows=1000').then(res => {
+                this.myorder = res.data;
+                console.log(this.myorder);
+            })
+        },
+        getList() {
+            if (this.selected == 1) {
+                this.$http.get('/api/order/list?status=' + this.selected + ',10&page=0&rows=1000').then(res => {
+                    this.waitPay = res.data;
+                    console.log(res.data)
+                })
+            } else {
+                this.$http.get('/api/order/list?status=' + this.selected + '&page=0&rows=1000').then(res => {
+                    if (this.selected == 2) {
+                        this.waitGoods = res.data;
+                    } else if (this.selected == 7) {
+                        this.waitReceive = res.data;
+                    }
+                    console.log(res.data)
+                })
+            }
+
+        }
+    },
+    filters: {
+        //保留两位小数点
+        two: function(value) {
+            if (!value) { return '' };
+            return value.toFixed(2);
+        },
+        dot: function(value) {
+            if (value.length > 18) {
+                return value.slice(0, 18) + '...'
+            } else {
+                return value
+            }
+
+        }
+    }
+}
+</script>
+
+<style>
+/*不显示center内容  */
+
+.mint-tab-item-label {
+    height: 1.17333rem !important;
+    line-height: 1.17333rem !important;
+}
+
+.center {
+    background: #fff;
+}
+
+.allorder {
+    background: #ece5f4;
+}
+
+.allorder .mint-navbar .mint-tab-item.is-selected {
+    border-bottom: 1px solid #492b67;
+    color: #492b67;
+    margin: 0;
+}
+
+.allorder .mint-navbar .mint-tab-item {
+    padding: 0;
+    height: 1.17333rem;
+    color: #b0a4bc;
+    border-bottom: 1px solid #ece5f4;
+}
+
+.allorder .mint-navbar .mint-tab-item .mint-tab-item-label {
+    line-height: 1.17333rem;
+    font-size: .4rem;
+}
+
+
+.allorder .mygoods {
+
+    margin: 0.26rem 0;
+    padding: 0 .4rem;
+    overflow: hidden;
+    box-sizing: border-box;
+    background: #fff;
+}
+
+.allorder .order-id {
+    font-size: .4rem;
+    color: #b0a4bc;
+    margin-bottom: .4rem;
+}
+
+.allorder .goods-wraper {
+    overflow: hidden;
+    margin-bottom: .4rem;
+    width: 100%;
+}
+
+.allorder .order-id span {
+    float: right;
+    color: #de3163;
+    font-size: .4rem;
+}
+
+.allorder .goods-img {
+    width: 2.66rem;
+    height: 2.66rem;
+    border: 1px solid #ece5f4;
+    border-radius: 0.1333rem;
+    float: left;
+    overflow: hidden;
+    z-index: 999;
+}
+
+.allorder .goods-img img {
+    width: 100%;
+}
+
+.allorder .goods-text {
+    float: left;
+    width: 4.5rem;
+    padding: 0.8rem .2rem;
+    box-sizing: border-box
+}
+
+.allorder .goods-text p {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    white-space: normal!important;
+    line-height: .506667rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: .4rem;
+    color: #492b67;
+}
+
+.allorder .goods-price {
+    position: relative;
+    color: #492b67;
+    box-sizing: border-box;
+    text-align: right;
+    line-height: .48rem;
+    height: 2.66rem;
+    padding-top: .85rem;
+    font-size: .4rem;
+}
+
+
+
+.allorder .goods-price .oldprice {
+    text-decoration: line-through;
+    color: #b0a4bc;
+    font-size: .36rem;
+}
+
+.allorder .goods-price .num {
+    color: #b0a4bc;
+}
+
+.allorder .mystatus {
+    width: 100%;
+    overflow: hidden;
+    margin-top: .4rem;
+    padding: .4rem 0;
+    border-top: 1px solid #ece5f4;
+}
+
+.allorder .mystatus .total-num {
+    text-align: right;
+    margin-bottom: .4rem;
+    font-size: .4rem;
+    color: #b0a4bc;
+}
+
+.allorder .mystatus span {
+    font-size: .4rem;
+    border: 1px solid #b0a4bc;
+    display: inline-block;
+    float: right;
+    margin-left: .26rem;
+    padding: .2rem .4rem;
+    border-radius: .1333rem;
+    color: #b0a4bc;
+}
+
+.allorder .mystatus .waitting {
+    color: #de3163;
+    border-color: #de3163;
+}
+
+
+
+
+
+
+
+
+
+
+/*  */
+
+.allorder .blankpage {
+    min-height: 14.8rem;
+    background: #fff;
+    text-align: center;
+    font-size: .48rem;
+    color: #b0a4bc
+}
+
+.allorder .blankpage p {
+    line-height: 14rem
+}
+</style>
+

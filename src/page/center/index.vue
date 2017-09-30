@@ -1,12 +1,7 @@
 <template>
     <div class="center">
-        <transition name="router-slid" mode="out-in">
-            <keep-alive  >
-                <router-view>
-
-                </router-view>
-            </keep-alive>
-        </transition>
+        <router-view>
+        </router-view>
     </div>
 </template>
 
@@ -35,29 +30,6 @@ export default {
         // }
     },
     methods: {
-        centerData(){
-            this.$http.get('/api/userFavorite/userfavlist?favType=3').then(res => {
-                console.log(res);
-                this.goodCollectList = res.data;
-                }).catch(err => {
-                    console.log(err)
-            })
-        },
-        goEditProfile() {
-            this.$router.push('/center/editprofile');
-        },
-        goMyOrder() {
-            this.$router.push({path: '/center/myorder', query: {list: this.goodCollectList}});
-        },
-        goMyCollect() {
-            this.$router.push('/center/mycollect');
-        },
-        goMyCoupons() {
-            this.$router.push('/center/mycoupons');
-        },
-        goEticket() {
-            this.$router.push('/center/eticket');
-        }
     }
 }
 </script>

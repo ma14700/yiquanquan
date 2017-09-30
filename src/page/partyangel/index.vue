@@ -4,7 +4,7 @@
       <div class="homeContent">
         <div class="angel-head">
           <div class="angel-head-content">
-              <img src="../../assets/party1.png" alt="" class="angel-head-img">
+              <img src="../../assets/paisong.jpg" alt="" class="angel-head-img">
               <p>昵称介绍</p>
           </div>
           <p class="angel-head-introduce">个人介绍</p>
@@ -15,12 +15,12 @@
             <p>完美派对</p>
             <div class="angel-introduce">自我介绍自我介绍自我介绍自我介绍自我介绍自我介绍自我介绍自我介绍自我介绍自我介绍自我介绍自我介绍自我介绍自我介绍</div>
             <div class="angel-img clearfix">
-                <img src="../../assets/home/combo1.png" alt="">
-                <img src="../../assets/home/combo1.png" alt="">
-                <img src="../../assets/home/combo1.png" alt="">
-                <img src="../../assets/home/combo1.png" alt="">
-                <img src="../../assets/home/combo1.png" alt="">
-                <img src="../../assets/home/combo1.png" alt="">
+                <img src="../../assets/home/paisong.jpg" alt="">
+                <img src="../../assets/home/paisong.jpg" alt="">
+                <img src="../../assets/home/paisong.jpg" alt="">
+                <img src="../../assets/home/paisong.jpg" alt="">
+                <img src="../../assets/home/paisong.jpg" alt="">
+                <img src="../../assets/home/paisong.jpg" alt="">
             </div>
             <p><span><i class="iconfont icon-xihuan"></i>17,932</span><span><i class="iconfont icon-yanjing"></i>17,932</span></p>
         </div>
@@ -28,12 +28,12 @@
             <p>完美派对</p>
             <div class="angel-introduce">自我介绍自我介绍自我介绍自我介绍自我介绍自我介绍自我介绍自我介绍自我介绍自我介绍自我介绍自我介绍自我介绍自我介绍</div>
             <div class="angel-img clearfix">
-                <img src="../../assets/home/combo1.png" alt="">
-                <img src="../../assets/home/combo1.png" alt="">
-                <img src="../../assets/home/combo1.png" alt="">
-                <img src="../../assets/home/combo1.png" alt="">
-                <img src="../../assets/home/combo1.png" alt="">
-                <img src="../../assets/home/combo1.png" alt="">
+                <img src="../../assets/home/paisong.jpg" alt="">
+                <img src="../../assets/home/paisong.jpg" alt="">
+                <img src="../../assets/home/paisong.jpg" alt="">
+                <img src="../../assets/home/paisong.jpg" alt="">
+                <img src="../../assets/home/paisong.jpg" alt="">
+                <img src="../../assets/home/paisong.jpg" alt="">
             </div>
             <p><span><i class="iconfont icon-xihuan"></i>17,932</span><span><i class="iconfont icon-yanjing"></i>17,932</span></p>
         </div>

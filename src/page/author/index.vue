@@ -14,6 +14,7 @@ export default {
         },
         created () {
            this.comelogin();
+      
         },
         computed:{
             ...mapState([
@@ -43,28 +44,32 @@ export default {
                 if(!getStore('userInfo')){
                     if(location.href.indexOf('code') == -1){
                         let ua = window.navigator.userAgent.toLowerCase();
-                     
                             // 跳转到微信授权页面
-                            window.location.href = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx55db828f70eaded0&redirect_uri=http%3A%2F%2Fpro.yunyiku.com%2Fapi%2Fcode.aspx" +
+                            window.location.href = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxd8239120a84c19f4&redirect_uri=http%3A%2F%2Fh5.henandingdang.com%2fwxapi%2freturn.aspx" +
                                 encodeURIComponent('?returnUrl=' + encodeURIComponent(window.location.href.replace('?from=singlemessage', '')
                                     .replace('?from=timeline', '').replace('?from=groupmessage', '').replace('&isappinstalled=0', '')
-                                    .replace('&isappinstalled=1', ''))) + "&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect";
-                        
+                                    .replace('&isappinstalled=1', ''))) + "&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect";   
                     }
                     if(location.href.indexOf('code') != -1){
+                        console.log(location.href)
                         let code= location.href.substring(location.href.indexOf('code')+5);
                         console.log(code);  
-                        this.$http.post('/api/user/authorize?code='+code ).then(res => {
-                                 res = res.data.data
+                         this.$http.post('/api/user/authorize?code='+code ).then(res => {
+                                 res = res.data.data;
+                                removeStore('userInfo');
+                                if(getStore('userInfo') == ''){
+                                    alert('获取不到用户信息，请重新登录')
+                                    return
+                                }
                                 this.RECORD_USERINFO(res);
+                        }).catch(function(err){
+                            alert(err);
                         });
                     }
-                }else{
-                    console.log(1)
                 }
                  setTimeout(() => {
                     this._goBeforeLoginUrl() // 页面恢复(进入用户一开始请求的页面)
-                }, 2000)
+                }, 1000)
             },
             _goBeforeLoginUrl(){
                  let url = getStore('beforeLoginUrl');

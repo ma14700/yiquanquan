@@ -4,11 +4,11 @@
         <head-top></head-top>
         <!--头部  end-->
         <div class="store-img">
-            <img src="../../assets/party1.png" alt="">
+            <img src="../../assets/paisong.jpg" alt="">
         </div>
         <div class="store-head">
             <div class="photo">
-                <img src="../../assets/party1.png" alt="">
+                <img src="../../assets/paisong.jpg" alt="">
             </div>
             <p class="store-name">
                 郑州夜色酒吧
@@ -26,7 +26,7 @@
         <div class="partydetail-detail">
             <div class="partydetail-detail-top">2017上海MAO万圣节活动</div>
             <div class="partydetail-detail-center">
-              <img src="../../assets/partydetail1.png" alt="">
+              <img src="../../assets/paisong.jpg" alt="">
               详细解说详细解说详细解说详细解说详细解说详细解说详细解说详细解说详细解说详细解说
             </div>
         </div>

@@ -1,0 +1,297 @@
+<template>
+    <div class="eticket">
+        <mt-navbar v-model="selected">
+            <mt-tab-item id="1">全部</mt-tab-item>
+            <mt-tab-item id="2">待付款</mt-tab-item>
+            <mt-tab-item id="3">已付款</mt-tab-item>
+            <mt-tab-item id="4">取消</mt-tab-item>
+            
+        </mt-navbar>
+    
+        <!-- tab-container -->
+        <mt-tab-container v-model="selected">
+            <mt-tab-container-item id="1">
+                    <ul class="paid">
+                    
+                    <li  v-for="n in 4" :key="n">
+                        <p class="title">
+                            电子票票号：1234567890
+                            <span class="status">已付款</span>
+                        </p>
+                        <div class="ticket">
+                            <div class="img-box">
+                                <img src="../../../assets/center/mypic1.jpg" alt="">
+                            </div>
+                            <div class="ticket-text">
+                                <p class="text"><span class="text-title">夏日冲浪夏日冲浪夏日冲浪夏日冲浪夏日冲浪夏日冲浪</span><span class="num">×1张</span></p>
+                                <p class="ticket-time">
+                                    2017-08-07 19:00
+                                </p>
+                                <p class="ticket-price">￥500.00</p>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                
+            </mt-tab-container-item>
+            <mt-tab-container-item id="2">
+                <ul class="paid">
+                    <li >
+                        <p class="title">
+                            电子票票号：1234567890
+                            <span class="status">待付款</span>
+                        </p>
+                        <div class="ticket">
+                            <div class="img-box">
+                                <img src="../../../assets/center/mypic1.jpg" alt="">
+                            </div>
+                            <div class="ticket-text">
+                                <p class="text"><span class="text-title">夏日冲浪夏日冲浪夏日冲浪夏日冲浪夏日冲浪夏日冲浪</span><span class="num">×1张</span></p>
+                                <p class="ticket-time">
+                                    2017-08-07 19:00
+                                </p>
+                                <p class="ticket-price">￥500.00</p>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </mt-tab-container-item>
+            <mt-tab-container-item id="3">
+                <ul class="paid">
+                    
+                    <li @click="showDetail">
+                        <p class="title">
+                            电子票票号：1234567890
+                            <span class="status">已付款</span>
+                        </p>
+                        <div class="ticket">
+                            <div class="img-box">
+                                <img src="../../../assets/center/mypic1.jpg" alt="">
+                            </div>
+                            <div class="ticket-text">
+                                <p class="text"><span class="text-title">夏日冲浪夏日冲浪夏日冲浪夏日冲浪夏日冲浪夏日冲浪</span><span class="num">×1张</span></p>
+                                <p class="ticket-time">
+                                    2017-08-07 19:00
+                                </p>
+                                <p class="ticket-price">￥500.00</p>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <!--弹出层  电子券信息  -->
+                     <mt-popup v-model="popupVisible" popup-transition="popup-fade" position="bottom">
+                        <div class="ticket-detail">
+                            <div class="ticket-wraper">
+                            <p class="topic">2017主题派对主题派对2017主题派对2017主题派对</p>
+                            <p class="detail-time">演出时间：<br>2017-08-07 19:00至2017-08-07 23:00</p>
+                            <p class="ticket">入场门票：1张</p>
+                            <div class="code">
+                                <p>验证码：123456</p>
+                                <div class="code-img"><img src="../../../assets/center/code.png" alt=""></div>
+                                
+                            </div>
+                            <div class="address">
+                                地址：郑州市金水区经三路郑州市金水区经三路郑州市金水区经三路
+                            </div>
+                            </div>
+                        </div>
+                    </mt-popup>
+                <!--弹出层  end  -->
+            </mt-tab-container-item>
+            <mt-tab-container-item id="4">
+                <ul class="paid">
+                    
+                    <li @click="showDetail">
+                        <p class="title">
+                            电子票票号：1234567890
+                            <span class="status">已付款</span>
+                        </p>
+                        <div class="ticket">
+                            <div class="img-box">
+                                <img src="../../../assets/center/mypic1.jpg" alt="">
+                            </div>
+                            <div class="ticket-text">
+                                <p class="text"><span class="text-title">夏日冲浪夏日冲浪夏日冲浪夏日冲浪夏日冲浪夏日冲浪</span><span class="num">×1张</span></p>
+                                <p class="ticket-time">
+                                    2017-08-07 19:00
+                                </p>
+                                <p class="ticket-price">￥500.00</p>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </mt-tab-container-item>
+           
+        </mt-tab-container>
+    </div>
+</template>
+<script>
+import { Navbar, TabItem } from 'mint-ui';
+import { Popup } from 'mint-ui';
+export default {
+    data() {
+        return {
+            selected: '1',
+            popupVisible: false,
+        }
+    },
+    methods: {
+        showDetail(){
+            this.popupVisible=true;
+        }
+    }
+}
+</script>
+
+<style scoped>
+
+.center{
+    background: #fff;
+}
+.eticket{
+     background: #ece5f4;
+}
+
+/*  */
+.eticket    .mint-navbar .mint-tab-item.is-selected {
+        border-bottom: 1px solid #492b67;
+        color: #492b67;
+        margin: 0;
+    }
+
+.eticket    .mint-navbar .mint-tab-item {
+        padding: 0;
+        height: 1.17333rem;
+        color: #b0a4bc;
+
+    }
+.eticket    .mint-navbar .mint-tab-item[data-v-cb47ba66] .mint-tab-item-label {
+        line-height: 1.17333rem !important;
+        font-size: .4rem;
+
+    }
+   
+/*已付款  */
+ .eticket  .paid li{
+        margin-top: .266667rem;
+        background: #fff;
+   }
+.eticket    .paid .title{
+        color: #b0a4bc;
+        font-size: .4rem;
+        line-height: 1rem;
+        padding: 0 .4rem;
+        border-bottom: 1px solid #ece5f4;
+    }
+.eticket .paid .title .status{
+        float: right;
+        color: #de3163;
+    }
+ .eticket    .paid .ticket {
+        overflow: hidden;
+        padding: 0 .4rem .2rem;
+        margin-top: .4rem ;
+    }
+ .eticket    .paid .ticket .img-box{
+        width: 2.533333rem;
+        height: 2.533333rem;
+        border-radius: .133333rem;
+        overflow: hidden;
+        float: left;
+        margin: 0 .4rem .2rem 0;
+    }
+  .eticket   .paid .ticket .img-box img{
+        width: 100%;
+    }
+  .eticket   .paid .ticket  .ticket-text{
+        float: left;
+        width: 6rem;
+        font-size: .4rem;
+    }
+ .eticket    .paid .ticket  .ticket-text .text{
+        color: #492b67;
+        line-height: .666667rem;
+
+    }
+  .eticket   .paid .ticket  .ticket-text .text .text-title{
+        max-width: 4.733333rem;
+        overflow: hidden;
+        display: inline-block;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+
+    }
+ .eticket    .paid .ticket  .ticket-text .text .num{
+        float: right;
+    }
+  .eticket   .paid .ticket  .ticket-text .ticket-time{
+        line-height: .8rem;
+    color: #b0a4bc;
+    }
+  .eticket   .paid .ticket  .ticket-text .ticket-price{
+        line-height: .8rem;
+    color: #de3163;
+    }
+
+
+/*弹出层  */
+.eticket .mint-popup{
+    background: rgba(255, 255, 255, 0)
+}
+.eticket .mint-popup-bottom{
+    bottom: .666667rem;
+}
+.eticket .ticket-detail{
+    width: 8.4rem;
+    height: 12.666667rem;
+    overflow: hidden;
+    background: url(../../../assets/center/ticket-bg.png) no-repeat;
+    background-size: 100%;
+   
+    line-height: .533333rem;
+    font-size: .4rem;
+}
+.eticket .ticket-wraper{
+    padding: 0 .6rem;
+}
+.eticket .topic{
+    font-size: .48rem;
+    color: #492b67;
+    margin-top: 1.333333rem;
+    
+}
+.eticket .detail-time{
+    font-size: 12px;
+    color: #b0a4bc;
+    margin: .266667rem 0 0 0;
+}
+.eticket .ticket{
+    color: #b0a4bc;
+    font-size: 12px;
+}
+.eticket .code{
+    margin: .333333rem auto; 
+    text-align: center;
+    color: #492b67;
+    line-height: .866667rem;
+}
+.eticket .code .code-img{
+    width: 4rem;
+    height: 4rem;
+    overflow: hidden;
+    margin: 0 auto;
+
+}
+.eticket .code .code-img img{
+    width: 100%;
+}
+.eticket .address{
+    width: 7.333333rem;
+    margin-top: .8rem;
+    line-height: 18px;
+    font-size: 12px;
+    color: #ece5f4;
+    padding: 0 .4rem;
+    box-sizing: border-box;
+}
+</style>

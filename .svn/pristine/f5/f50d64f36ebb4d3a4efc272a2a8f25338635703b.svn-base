@@ -1,0 +1,139 @@
+<template>
+  <div>
+    <div class="indentcenter-head clearfix">
+      <img src="../../../assets/logo.png" alt="">
+      <div class="indentcenter-head-content">
+        <p>猫咪猫咪7呀</p>
+        <p>自我介绍自我介绍自我介绍自我介绍自我介绍</p>
+      </div>
+    </div>
+    <div class="indentcenter-content">
+      <p>自我介绍</p>
+      <div class="indentcenter-content-title clearfix">
+        <span>服务周到(45)</span><span>热情</span><span>服务周到(45)</span><span>服务周到(45)</span>
+      </div>
+      <p>评价</p>
+      <div class="indentcenter-evaluate">
+        <p>匿名评价</p>
+        <p>服务态度很好</p>
+      </div>
+      <div class="indentcenter-evaluate">
+        <p>匿名评价</p>
+        <p>服务态度很好</p>
+      </div>
+      <div class="indentcenter-evaluate">
+        <p>匿名评价</p>
+        <p>服务态度很好</p>
+      </div>
+      <div class="indentcenter-evaluate">
+        <p>匿名评价</p>
+        <p>服务态度很好</p>
+      </div>
+    </div>
+    <footer></footer>
+    <foot-grab></foot-grab>
+  </div>
+</template>
+<script>
+    import footGrab from '../../../components/footer/footGrab'
+    export default {
+        data(){
+            return{
+
+            }
+        },
+        mounted(){
+
+        },
+        methods:{
+
+        },
+        components:{
+            footGrab
+        }
+    }
+</script>
+
+<style scoped>
+footer{
+  padding-bottom: 1.6rem;
+}
+.indentcenter-head{
+    width: 100%;
+    padding-top: .866667rem;
+    padding-bottom: 1.066667rem;
+}
+.indentcenter-head img{
+  width: 2.533333rem;
+  height: 2.533333rem;
+  border-radius: 50%;
+  background: #e5e9ec;
+  float: left;
+  margin-left: 1.333333rem;
+
+}
+.indentcenter-head-content{
+  float: left;
+  margin-left: 5px;
+  margin-top: .4rem;
+  width: 55%;
+}
+.indentcenter-head-content>p:nth-of-type(1){
+  color: #492b67;
+  font-size: .4rem;
+  height: .666667rem;
+  line-height: .666667rem;
+  font-weight: 600;
+}
+.indentcenter-head-content>p:nth-of-type(2){
+  color: #b0a4bc;
+  font-size: .346667rem;
+  line-height: .533333rem;
+  overflow: hidden;
+  text-overflow:ellipsis;
+  white-space: nowrap;
+}
+.indentcenter-content{
+  width: 9.2rem;
+  margin: 0 auto;
+
+}
+.indentcenter-content p{
+  width: 100%;
+  height: .8rem;
+  line-height: .8rem;
+  color: #492b67;
+  font-size: .426667rem;
+}
+.indentcenter-content-title{
+  width: 100%;
+  line-height: 0.766667rem;
+  padding-bottom: .666667rem;
+  
+}
+.indentcenter-content-title span{
+  padding:0 .16rem;
+  background: #b0a4bc;
+  border-radius: 5px;
+  margin-right: .333333rem;
+  display: block;
+  float: left;
+  margin-top: .333333rem;
+  min-width: 2.133333rem;
+  text-align: center;
+  color: #fff;
+}
+.indentcenter-evaluate{
+  margin-top: .266667rem;
+  padding-bottom: .266667rem;
+}
+.indentcenter-evaluate p{
+  height: .666667rem;
+  line-height: .666667rem;
+  color: #b0a4bc;
+  font-size: .373333rem;
+}
+</style>
+
+
+

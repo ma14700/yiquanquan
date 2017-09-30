@@ -34,7 +34,11 @@ const state = {
     collectionList: {}, //收藏列表
     settleAccounts: [], //商品结算列表
     settlePackageAccounts: [], //套餐结算列表
-    addMoreGood: [], //加选更多商品
+    addMoreGood: [], //套餐加选更多商品
+    packageGood: [], //套餐的加选商品
+    goodOrderAddMore: false, //商品下单加选更多商品
+    grabStatus: null, //抢单状态
+    historySearch: [], //历史搜索
 
 }
 

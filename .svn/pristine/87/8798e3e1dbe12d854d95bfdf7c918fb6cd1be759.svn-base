@@ -1,0 +1,89 @@
+<template>
+  <div>
+  </div>
+</template>
+<script>
+const wx = require('weixin-js-sdk')
+import {cookies} from '../../config/mUtils'
+import { mapMutations, mapState } from 'vuex'
+import { setStore, getStore, removeStore } from '../../config/mUtils'
+export default {
+        data(){
+            return{
+                userInfo1:'123213213'
+            }
+        },
+        created () {
+           this.comelogin();
+      
+        },
+        computed:{
+            ...mapState([
+                'userInfo'
+            ]),
+        },
+        methods: {
+            ...mapMutations([
+                'RECORD_USERINFO',
+            ]),
+            test(){
+                
+                console.log(this.userInfo);
+            },
+            tiao(){
+                this.$router.push('/home')
+            },
+            login () {
+                let code= location.href.substring(location.href.indexOf('code')+5);
+                  console.log(code);
+                    this.$http.post('/api/user/authorize?code='+code ).then(res => {
+                    console.log(res)
+                        })
+            },
+            comelogin(){
+                // 检测会员有没有登录
+                if(!getStore('userInfo')){
+                    if(location.href.indexOf('code') == -1){
+                        let ua = window.navigator.userAgent.toLowerCase();
+                            // 跳转到微信授权页面
+                            window.location.href = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx55db828f70eaded0&redirect_uri=http%3A%2F%2Fpro.yunyiku.com%2Fapi%2Fcode.aspx" +
+                                encodeURIComponent('?returnUrl=' + encodeURIComponent(window.location.href.replace('?from=singlemessage', '')
+                                    .replace('?from=timeline', '').replace('?from=groupmessage', '').replace('&isappinstalled=0', '')
+                                    .replace('&isappinstalled=1', ''))) + "&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect";   
+                    }
+                    if(location.href.indexOf('code') != -1){
+                        console.log(location.href)
+                        let code= location.href.substring(location.href.indexOf('code')+5);
+                        console.log(code);  
+                        // var url=" https://api.weixin.qq.com/sns/oauth2/access_token?appid=wx55db828f70eaded0&code="+code+"&grant_type=authorization_code&secret=7900eeca29309a5495d5c16f12dbb85d";
+                        this.$http.post('/api/user/authorize?code='+code ).then(res => {
+                                 res = res.data.data
+                                this.RECORD_USERINFO(res);
+                        });
+                    }
+                }
+                 setTimeout(() => {
+                    this._goBeforeLoginUrl() // 页面恢复(进入用户一开始请求的页面)
+                }, 2000)
+            },
+            _goBeforeLoginUrl(){
+                 let url = getStore('beforeLoginUrl');
+                 console.log(url)
+                if(!url || url.indexOf('/author') != -1){
+                    this.$router.push('/')
+                }else{
+                    if(url == '/'){
+                    url = '/'
+                    }
+                    this.$router.push(url)
+                    setStore('beforeLoginUrl', '')
+                }
+            }
+        }
+}
+</script>
+
+<style scoped>
+
+</style>
+

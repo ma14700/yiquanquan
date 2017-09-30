@@ -2,7 +2,7 @@
     <div class="bacolor">
         <head-top></head-top>
         <div class="partyContent">
-            <img src="../../assets/party1.png" alt="">
+            <img src="../../assets/paisong.jpg" alt="">
             <div class="partyContent-content">
                 <p class="partyContent-content-title">2017年喵星人侵占地球名猫展北京站</p>
                 <p class="partyContent-content-title1">2017年喵星人侵占地球名猫展北京站 <span><i class="iconfont icon-shouCang"></i></span></p>
@@ -13,7 +13,7 @@
             </div>
         </div>
         <div class="partyContent">
-            <img src="../../assets/party1.png" alt="">
+            <img src="../../assets/paisong.jpg" alt="">
             <div class="partyContent-content">
                 <p class="partyContent-content-title">2017年喵星人侵占地球名猫展北京站</p>
                 <p class="partyContent-content-title1">2017年喵星人侵占地球名猫展北京站 <span><i class="iconfont icon-shouCang"></i></span></p>
@@ -24,7 +24,7 @@
             </div>
         </div>
         <div class="partyContent">
-            <img src="../../assets/party1.png" alt="">
+            <img src="../../assets/home/paisong.jpg" alt="">
             <div class="partyContent-content">
                 <p class="partyContent-content-title">2017年喵星人侵占地球名猫展北京站</p>
                 <p class="partyContent-content-title1">2017年喵星人侵占地球名猫展北京站 <span><i class="iconfont icon-shouCang"></i></span></p>

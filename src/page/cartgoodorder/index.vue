@@ -4,40 +4,37 @@
         <head-top></head-top>
         <!--头部  end-->
         <!-- 商品 -->
-        <div v-if="goodsData">
-            <div class="goods" v-for="item in goodsData" :key="item.CartNum">
-                <div class="imgbox fl">
-                    <img :src="item.goodImgUrl" alt="">
-                </div>
-                <div class="des fl">
-                    <p class="title">{{item.goodName}}</p>
-                    <p class="ctype">
-                        <i>×{{item.CartNum}}</i>
-                        <span class="price">{{item.goodTotalPrice | two}}</span>
-                    </p>
+        <div v-if="goodsData" class="goods-wraper">
 
+            <div class="mealdetail-footer-headContent clearfix" v-for="(item,index) in goodsData" :key="index">
+                <img :src="item.goodImgUrl" alt="">
+                <div class="text-wraper">
+                    <div class="text-wraper-left">
+                        <span>{{item.goodName | dot}}</span>
+                        <span>{{item.skuPropName.replace(/颜色分类:/,'').replace(/套餐数量:/,'') }}</span>
+                    </div>
+                    <div class="text-wraper-right">
+                        <span>{{item.goodPrice | two}}</span>
+                        <span>x{{item.CartNum}}</span>
+
+                    </div>
                 </div>
             </div>
-            <!-- <div class="goods">
-                                <div class="imgbox fl">
-                                    <img :src="goodsData.goodImgUrl" alt="">
-                                </div>
-                                <div class="des fl">
-                                    <p class="title">{{goodsData.goodName}}</p>
-                                    <p class="ctype">
-                                        <i>×{{goodsData.CartNum}}</i>
-                                        <span class="price">{{goodsData.goodTotalPrice | two}}</span>
-                                    </p>
 
-                                </div>
-                            </div> -->
         </div>
 
         <!-- 商品 end -->
-        <router-link tag="div" to="Qsearch" class="addgoods">
-            添加更多商品
-            <i class="iconfont icon-smallxiangyou"></i>
-        </router-link>
+        <div @click="addMoreGoods" class="addgoods">
+            商品总数量：{{goodTotalNum}}
+            <span>添加更多商品
+                <i class="iconfont icon-smallxiangyou"></i>
+            </span>
+        </div>
+        <div class="order-price">
+            <p class="needpay">订单总金额
+                <span>{{goodTotalPrice | two}}</span>
+            </p>
+        </div>
         <!--场地  -->
         <mt-navbar v-model="selected">
             <mt-tab-item id="1" class="y">已有场地</mt-tab-item>
@@ -51,31 +48,31 @@
                     <ul class="item-wraper">
 
                         <li @click="handleClick('time')">预约时间：
-                            <span> <input type="text" v-model="place" placeholder="请选择时间"> </span>
+                            <span> <input type="text" v-model="place" readonly unselectable="on"> </span>
                             <i class="iconfont icon-smallxiangyou"></i>
                         </li>
                         <li @click="handleClick('location')">预约地点：
-                            <span><input type="text" v-model="this.modal1" placeholder="请选择地点"></span>
+                            <span><input type="text" v-model="this.modal1" readonly unselectable="on"></span>
                             <i class="iconfont icon-smallxiangyou"></i>
                         </li>
                         <li>详细地址：
                             <input type="text" placeholder="××路××小区××号(楼)××(门牌号)" v-model="AddrMemo">
                         </li>
                         <li @click="handleClick('sex')">服务对象：
-                            <span><input type="text" v-model="this.sex" placeholder="请选择性别"></span>
+                            <span><input type="text" v-model="this.sex" readonly unselectable="on"></span>
                             <i class="iconfont icon-smallxiangyou"></i>
                         </li>
-                        <li>联系人：
-                            <input type="text" v-model="AddrName" placeholder="请填写联系人姓名">
+                        <li>联&nbsp;&nbsp;系&nbsp; 人：
+                            <input type="text" v-model="AddrName">
                         </li>
                         <li>联系电话：
-                            <input type="text" v-model="phone" placeholder="请填写联系电话">
+                            <input type="text" v-model="phone">
                         </li>
                     </ul>
                     <div class="remark">
                         <div class="remark-wraper">
                             <span>备注信息：</span>
-                            <textarea name="" id="" v-model="BuyerMessage" ></textarea>
+                            <textarea name="" id="" v-model="BuyerMessage"></textarea>
                         </div>
                     </div>
                 </form>
@@ -87,32 +84,34 @@
                 <ul class="item-wraper">
 
                     <li @click="handleClick('time')">预约时间：
-                        <span> <input type="text" v-model="place" placeholder="请选择时间"> </span>
+                        <span> <input type="text" v-model="place" readonly unselectable="on"> </span>
                         <i class="iconfont icon-smallxiangyou"></i>
 
                     </li>
                     <li @click="handleClick('location')">预约地点：
-                        <span><input type="text" v-model="this.modal1" placeholder="请选择地点"></span>
+                        <span><input type="text" v-model="this.modal1" readonly unselectable="on"></span>
                         <i class="iconfont icon-smallxiangyou"></i>
                     </li>
-                    <li>时长：
-                        <input type="text" placeholder="全天" v-model="OrderTimeLong">
+                    <li @click="handleClick('hours')">时&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;长：
+                        <span><input type="text" v-model="OrderTimeLong" readonly unselectable="on"></span>
+                        <i class="iconfont icon-smallxiangyou"></i>
                     </li>
-                    <li>聚会人数：
-                        <input type="text" placeholder="10-20人" v-model="OrderPersions">
+                    <li @click="handleClick('people')">聚会人数：
+                        <span><input type="text" v-model="OrderPersions" readonly unselectable="on"></span>
+                        <i class="iconfont icon-smallxiangyou"></i>
                     </li>
-                    <li>联系人：
-                        <input type="text" v-model="AddrName" placeholder="请填写联系人姓名">
+                    <li>联&nbsp;&nbsp;系&nbsp; 人：
+                        <input type="text" v-model="AddrName">
                     </li>
 
                     <li>联系电话：
-                        <input type="text" v-model="phone" placeholder="请填写联系电话">
+                        <input type="text" v-model="phone">
                     </li>
                 </ul>
                 <div class="remark">
                     <div class="remark-wraper">
-                    <span>备注信息：</span>
-                    <textarea name="" id="" v-model="BuyerMessage"></textarea>
+                        <span>备注信息：</span>
+                        <textarea name="" id="" v-model="BuyerMessage"></textarea>
                     </div>
                 </div>
             </mt-tab-container-item>
@@ -144,7 +143,7 @@
                             </ul>
                             <ul class="clearfix date-choose-week">
                                 <li v-for="item in firstDay" class="date-day"></li>
-                                <li v-for="(item,index) in nowsMonth" class="date-day" >
+                                <li v-for="(item,index) in nowsMonth" class="date-day">
                                     <a :class="{notSend:isDay==item.id}" v-if="item.state == true" @click="dayCss(item.id)">{{item.id}}</a>
                                     <a class="date-day-size" v-else>{{item.id}}</a>
                                 </li>
@@ -155,18 +154,17 @@
                             </ul>
                             <ul class="clearfix date-choose-week">
                                 <li v-for="item in nextnow" class="date-day">{{item.id}}</li>
-                                <li v-for="(item,index) in nextMonth" class="date-day" >
+                                <li v-for="(item,index) in nextMonth" class="date-day">
                                     <a :class="{notSend:isDay==item.id}" v-if="item.state == true" @click="dayCss(item.id,item.next)">{{item.id}}</a>
                                     <a class="date-day-size" v-else>{{item.id}}</a>
                                 </li>
                             </ul>
                         </div>
-                        
                     </div>
                     <div class="advance-hour clearfix">
-                        <p>
+                        <p class="h-tip">
                             <i class="iconfont icon-ionfontxiangqingye-"></i>派对使者上门装饰时间，需提前一小时</p>
-                        <ul>
+                        <ul class="clearfix">
                             <li v-for="(h,index) in hours" :key="index" @click="chooseHours(index)" :class="{isHours:isChooseHours==index}">{{h}}</li>
                         </ul>
                     </div>
@@ -174,12 +172,11 @@
                 </div>
                 <div class="show-city" v-else-if="this.modal == 'location'">
                     <h3>选择城市：</h3>
-                    <p>请选择下列有壹圈圈（派对）服务的城市</p>
+                    <p class="choose-title">请选择下列有壹圈圈（派对）服务的城市</p>
                     <ul class="choose-city">
                         <li v-for="(item , index) in orderedCity" :key="item.id" @click="chooseCityClick(item,index)">{{item.mergerName.replace(/河南省,/,'').replace(/市/,'')}}</li>
-
                     </ul>
-                    <p>更多城市敬请期待</p>
+                    <p class="choose-title">更多城市敬请期待</p>
                     <ul class="choose-city">
                         <li>郑州</li>
                         <li>安阳</li>
@@ -198,17 +195,27 @@
                 </div>
                 <div class="show-sex" v-else-if="this.modal == 'sex'">
                     <h3>请选择性别：</h3>
-                    <mt-picker :slots="slots" @change="onValuesChange" >
+                    <mt-picker :slots="slots" @change="onValuesChange">
+                    </mt-picker>
+                </div>
+                <div class="show-sex" v-else-if="this.modal == 'hours'">
+                    <h3>请选择时长：</h3>
+                    <mt-picker :slots="slots2" @change="onValuesChange2">
 
                     </mt-picker>
                 </div>
+                <div class="show-sex" v-else-if="this.modal == 'people'">
+                    <h3>请选择聚会人数：</h3>
+                    <mt-picker :slots="slots3" @change="onValuesChange3">
 
+                    </mt-picker>
+                </div>
             </mt-popup>
             <!--弹出层  end-->
         </mt-tab-container>
         <!--场地  -->
         <!--支付  -->
-        <div class="pay" @click="confirmPay(success)">
+        <div class="pay" @click="confirmPay()">
             确认支付
         </div>
 
@@ -237,10 +244,18 @@ export default {
             slots: [
                 {
                     values: [
+                        '请选择',
                         '男',
-                        '女'
+                        '女',
+
                     ]
                 }
+            ],
+            slots2: [
+                { values: ['半天', '全天', '两天', '一周'] }
+            ],
+            slots3: [
+                { values: ['少于10人', '10-20人', '20-30人', '30-40人', '40-50人', '50人以上'] }
             ],
             sex: '',
             sexnum: '',
@@ -248,7 +263,7 @@ export default {
             hours: [
                 "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00"
             ],
-            week:['日','一','二','三','四','五','六'],
+            week: ['日', '一', '二', '三', '四', '五', '六'],
             isChooseHours: '0',
             success: true,//确认订单
             place: '',//预约时间
@@ -266,19 +281,21 @@ export default {
             orderedCity: '',//可预约城市列表
             onlyone: true,
             TempLists: [],//商品列表json
-            firstDay:'',//本月第一天下标
-            lastDay:'',//本月最后一天
-            nowsMonth:[],//本月日历
-            beforeMonth:[],//本月之前
-            isDay:'',//点击样式变化
-            dayMonth:'',//年月
-            afterMonth:'',//下个月
-            normDate:'',//标准日期
-            nextMonth:[],//下月日历
-            dayMonth1:'',//年月
-            Qday:'',//下月剩余天数
-            lastdayIndex:'',//最后一天的下标
-            nextnow:[],//下个月与本月的交互
+            firstDay: '',//本月第一天下标
+            lastDay: '',//本月最后一天
+            nowsMonth: [],//本月日历
+            beforeMonth: [],//本月之前
+            isDay: '',//点击样式变化
+            dayMonth: '',//年月
+            afterMonth: '',//下个月
+            normDate: '',//标准日期
+            nextMonth: [],//下月日历
+            dayMonth1: '',//年月
+            Qday: '',//下月剩余天数
+            lastdayIndex: '',//最后一天的下标
+            nextnow: [],//下个月与本月的交互
+            wxConfig:[],
+            dataa:[]
         }
     },
     components: {
@@ -286,43 +303,105 @@ export default {
         datepicker
     },
     mounted: function() {
-
+       
     },
     created() {
         this.getGoodsData();
         this.getNowDate();
         this.getTempLists();
+        // 订单列表是否为空，若为空，跳转到商城首页（防止下单成功后，用户返回时，订单列表为空）
+        if (this.settleAccounts.length == 0) {
+            this.$router.push('/shopstore');
+             window.removeEventListener('popstate', popStateHandlergood);
+        }
+          this.$http.get('/api/user/wxconfig').then(res=>{
+            if(res.data.message == "成功" ){
+                let wxData = res.data.data;
+            //     wx.config({
+            //         debug: true,
+            //         appId: wxData.appId,
+            //         timestamp: wxData.timestamp,
+            //         nonceStr:  wxData.nonceStr,
+            //         signature:  wxData.signature,
+            //         jsApiList: [
+            //             'translateVoice'
+            //         ]
+            //     });
+            //     wx.ready(function(){
+            //       console.log('开启sdk了')
+            //  })
+            }
+             
+        })
+        var _this = this;
+        var popStateHandlergood = function() {
+            history.pushState(null, null, document.URL);
+            if (_this.settleAccounts.length != 0) {
+                MessageBox.confirm('确定放弃该订单吗?', '').then(action => {
+                    _this.$router.push('/shopstore');
+                    _this.CLEAR_ALL_SETTLE();
+                    _this.IS_GOOD_ADD_MORE(false);
+                    window.removeEventListener('popstate', popStateHandlergood);
+                });
+            }
+        };
+        history.pushState(null, null, document.URL);
+        window.addEventListener('popstate', popStateHandlergood);
+    },
+    mounted(){
+          
     },
     computed: {
         ...mapState([
-            'settleAccounts', 'settlePackageAccounts'
+            'settleAccounts', 'settlePackageAccounts', 'goodOrderAddMore'
         ]),
         rightPhoneNumber() {
             return /^1(3|4|5|7|8)\d{9}$/gi.test(this.phone);
+        },
+        goodTotalPrice: function() {
+            let TotalPrice = 0;
+            this.goodsData.forEach(function(good) {
+                TotalPrice += parseInt(good.goodPrice * good.CartNum);
+            })
+            return TotalPrice;
+        },
+        goodTotalNum: function() {
+            let TotalNum = 0;
+            this.goodsData.forEach(function(good) {
+                TotalNum += parseInt(good.CartNum);
+            })
+            return TotalNum;
         }
     },
-    watch: {
 
-
-    },
-    // 检测那个路由过来
-    beforeRouteEnter(to, from, next) {
-        next(vm => {
-            vm.url = from.path;
-            console.log(from.path);
-        })
-    },
     methods: {
-
         ...mapMutations([
-            'SETTLE_ACCOUNTS', 'GIT_SETTLE_ACCOUNTS', 'SETTLE_PACKAGE_ACCOUNTS', 'GIT_SETTLE_PACKAGE_ACCOUNTS'
+            'SETTLE_ACCOUNTS', 'GIT_SETTLE_ACCOUNTS', 'CLEAR_ALL_SETTLE', 'IS_GOOD_ADD_MORE','GIT_GOOD_ADD_MORE',
         ]),
-        dayCss(index,next){
+        // popStateHandlergood : function() {
+        //     var _this = this;
+        //     history.pushState(null, null, document.URL);
+        //     if (_this.settleAccounts.length != 0) {
+        //         MessageBox.confirm('确定放弃该订单吗?', '').then(action => {
+        //             _this.$router.push('/shopstore');
+        //             _this.CLEAR_ALL_SETTLE();
+        //             _this.IS_GOOD_ADD_MORE(false);
+        //             window.removeEventListener('popstate', this.popStateHandlergood());
+        //             console.info('removeEvt');
+        //         });
+        //     }
+        // },
+        addMoreGoods: function() {
+            this.$router.push({ path: '/Qsearch' })
+            this.IS_GOOD_ADD_MORE(true);
+            console.log(this.goodOrderAddMore, '点击商品添加');
+        },
+        dayCss(index, next) {
             let now = new Date();
             let month = now.getMonth() + 1;
             let day = now.getDate();
             this.isDay = index;
-            if (month < 10 && day < 10 && index<10) {
+            if (month < 10 && day < 10 && index < 10) {
                 month = '0' + month;
                 day = '0' + day;
                 index = '0' + index;
@@ -331,22 +410,20 @@ export default {
             // console.log(this.normDate)
             // let s = new Date(this.normDate).getDay();
             // let week = this.week[s];
-            if(next == 1){
-                this.normDate =parseInt(now.getFullYear() + "/" + (month+1) + '/' + index);
+            if (next == 1) {
+                this.normDate = now.getFullYear() + "/" + (month + 1) + '/' + index;
                 console.log(this.normDate)
                 let s = new Date(this.normDate).getDay();
                 let week = this.week[s];
-                this.date = now.getFullYear() + "年" + (month+1) + '月' + index + '日' +''+'星期'+ week;
-            }else{
-                
-                this.normDate =now.getFullYear() + "/" + month + '/' + index;
-
+                this.date = now.getFullYear() + "年" + (month + 1) + '月' + index + '日' + '' + '星期' + week;
+            } else {
+                this.normDate = now.getFullYear() + "/" + month + '/' + index;
                 let s = new Date(this.normDate).getDay();
                 let week = this.week[s];
-                this.date = now.getFullYear() + "年" + month + '月' + index + '日' +''+'星期'+ week;
-            }   
+                this.date = now.getFullYear() + "年" + month + '月' + index + '日' + '' + '星期' + week;
+            }
         },
-         //获取当前日期
+        //获取当前日期
         getNowDate() {
             let now = new Date();
             let month = now.getMonth() + 1;
@@ -356,49 +433,49 @@ export default {
                 day = '0' + day;
             }
             let week = this.week[now.getDay()];
-            this.date = now.getFullYear() + "年" + month + '月' + day + '日' +''+'星期'+ week;
+            this.date = now.getFullYear() + "年" + month + '月' + day + '日' + '' + '星期' + week;
             this.dayMonth = now.getFullYear() + "年" + month + '月';
-            if(this.dayMonth == 12){
+            if (this.dayMonth == 12) {
                 this.afterMonth = 1;
-            }else{
-                this.afterMonth = now.getFullYear() + "年" + parseInt(month+1) + '月';
+            } else {
+                this.afterMonth = now.getFullYear() + "年" + parseInt(month + 1) + '月';
             }
-            
+
             var date = new Date();
             date.setDate(1);
             this.isDay = day;
             this.firstDay = date.getDay();
             date.setMonth(date.getMonth() + 1);
-            var lastDate = new Date(date - 3600000*24);
+            var lastDate = new Date(date - 3600000 * 24);
             this.lastDay = lastDate.getDate();
-            this.Qday =  this.lastDay - day;
+            this.Qday = 30 - (this.lastDay - day);
             var date1 = new Date();
             date1.setDate(this.lastDay);
-            this.lastdayIndex = date1.getDay() +1;
-            for(var i=this.lastDay;i>this.lastDay-this.lastdayIndex;i--){
+            this.lastdayIndex = date1.getDay() + 1;
+            for (var i = this.lastDay; i > this.lastDay - this.lastdayIndex; i--) {
                 var jo = {};
                 jo.id = i;
                 this.nextnow.push(jo);
             }
             console.log(this.nextnow.reverse())
-            for(let i = 1 ; i<=this.lastDay;i++){
+            for (let i = 1; i <= this.lastDay; i++) {
                 var jo = {};
                 jo.id = i;
                 jo.next = 1;
-                if(i<this.Qday){
+                if (i < this.Qday) {
                     jo.state = true;
-                }else{
+                } else {
                     jo.state = false;
                 }
                 this.nextMonth.push(jo);
             }
-            for(let i = 1 ; i<=this.lastDay;i++){
+            for (let i = 1; i <= this.lastDay; i++) {
                 var jo = {};
                 jo.id = i;
                 jo.next = 0;
-                if(i<day){
+                if (i < day) {
                     jo.state = false;
-                }else{
+                } else {
                     jo.state = true;
                 }
                 this.nowsMonth.push(jo);
@@ -418,13 +495,13 @@ export default {
             console.log(this.TempLists);
 
         },
-      
+
 
         //
         getGoodsData() {
             this.GIT_SETTLE_ACCOUNTS();
             this.goodsData = this.settleAccounts;
-            console.log(this.goodsData)
+            console.log(this.goodsData, "shuju ")
 
         },
         // 点击显示对应的弹出层
@@ -457,7 +534,13 @@ export default {
             }
 
         },
-        
+        onValuesChange2(picker, values) {
+            this.OrderTimeLong = values[0];
+        },
+        onValuesChange3(picker, values) {
+            this.OrderPersions = values[0];
+        },
+
         //选择小时
         chooseHours(index) {
             this.isChooseHours = index;
@@ -466,33 +549,49 @@ export default {
         comfirmTime() {
             this.popupVisible = false;
             this.place = this.date + ' ' + this.hours[this.isChooseHours] + ':00';
-
-
+        },
+        goMycenter() {
+            this.$router.push({ path: '/center/mycenter' });
+        },
+        jsWechatPay(data){
+            WeixinJSBridge.invoke('getBrandWCPayRequest',data,function (res) {
+           
+                if (res.err_msg == 'get_brand_wcpay_request:cancel') {
+                    alert("支付取消",1)
+                }
+                else if (res.err_msg == 'get_brand_wcpay_request:ok') {
+                    alert("success",2)
+                }
+                else if (res.err_msg == 'get_brand_wcpay_request:fail') {
+                    alert("fail",3)
+                }else
+                    alert(res.err_msg,4);
+            }); 
         },
         // 确认支付
-        confirmPay(result) {
+        confirmPay() {
+            var _this = this;
+            let str1 = this.place.replace(/年/, '-').replace(/月/, '-').replace(/日/, '').slice(0, 9);
+            let str2 = this.place.replace(/年/, '-').replace(/月/, '-').replace(/日/, '').slice(13);
             if (!this.place || !this.phone || !this.rightPhoneNumber) {
                 if (!this.place) {
                     this.alertMsg = '请选择预约时间';
                 } else if (!this.phone) {
                     this.alertMsg = '请填写联系电话';
+                } else if (!this.AddrMemo) {
+                    this.alertMsg = '请填写详细地址';
                 } else {
                     this.alertMsg = '请填写正确的手机号';
                 }
-                this.showAlert = true;
-                var self = this;
-                setTimeout(function() {
-                    self.showAlert = false
-                }, 1000);
             } else {
                 this.$http.post('api/order/create', {
                     "ReceiveId": '',
                     "BuyerMessage": this.BuyerMessage,
                     "OrderType": 2,
-                    "OrderToSex": this.sexnum,
+                    "OrderToSex": 1,//男的
                     "OrderHaveVenues": this.selected,
                     "OrderPromiseMoney": '',
-                    "OrderPormiseDate": this.place,
+                    "OrderPormiseDate": str1 + ' ' + str2,
                     "OrderCity": this.modal1,
                     "OrderAreaId": this.orderedCity[this.cityId].id,
                     "OrderPersions": this.OrderPersions,
@@ -503,18 +602,40 @@ export default {
                     "AddrName": this.AddrName,
                     "AddrMobile": this.phone
                 }
-                ).then(res => {
-                    console.log(res);
-
+                ).then(res => { 
                     if (res.data.success) {
                         this.$http.post('api/order/pay?id=' + res.data.data + '&payType=3').then(response => {
-                            console.log(response)
                             if (response.data.success) {
+                                alert('config正式传递');
+                                let wxdataa = JSON.parse(response.data.message);
+                                let package_list = wxdataa.package;
+                                let sendData = {
+                                    appId: wxdataa.appId,
+                                    nonceStr: wxdataa.nonceStr,
+                                    package: package_list,
+                                    paySign: wxdataa.paySign,
+                                    signType: wxdataa.signType,
+                                    timeStamp: wxdataa.timeStamp
+                                }
+                                if (typeof WeixinJSBridge == "undefined") {
+                                    if (document.addEventListener) {
+                                        document.addEventListener('WeixinJSBridgeReady', function(){ _this.jsWechatPay(sendData) }, false);
+                                    }
+                                    else if (document.attachEvent) {
+                                        document.attachEvent('WeixinJSBridgeReady', function(){ _this.jsWechatPay(sendData) });
+                                        document.attachEvent('onWeixinJSBridgeReady', function(){ _this.jsWechatPay(sendData) });
+                                    }
+                                } else {
+                                    _this.jsWechatPay(sendData);
+                                }
+                                this.CLEAR_ALL_SETTLE();
+                                this.IS_GOOD_ADD_MORE(false);
                                 MessageBox({
                                     title: '支付成功',
                                     message: '您的订单会尽快给您处理',
                                     confirmButtonText: '完成'
-                                }).alert().then(action => {
+                                }).then(action => {
+                                    this.$router.push('/center/mycenter');
                                 });
                             } else {
                                 MessageBox({
@@ -522,14 +643,13 @@ export default {
                                     message: '支付遇到问题，请尝试重新支付',
                                     showCancelButton: true,
                                     confirmButtonText: '重新支付'
-                                }).confirm().then(action => {
+                                }).then(action => {
 
                                 });
-
                             }
                         })
                     }
-                })       
+                })
             }
         },
     },
@@ -537,45 +657,76 @@ export default {
         //保留两位小数点
         two: function(value) {
             if (!value) { return '' };
-            return '¥' + value.toFixed(2);
+            return '￥' + value.toFixed(2);
+        },
+        dot: function(value) {
+            if (!value) {
+                return value
+            } else {
+                if (value.length > 35) {
+                    return value.slice(0, 35) + '...'
+                } else {
+                    return value
+                }
+            }
         }
 
     }
 }
 </script>
 <style>
-.date-day-size{
-    color:#666;
+::-webkit-input-placeholder { /* WebKit browsers */ 
+font-size:10px;
+position: relative;
+top:3px;
+} 
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */ 
+font-size:3px;
+} 
+::-moz-placeholder { /* Mozilla Firefox 19+ */ 
+font-size:3px;
+} 
+:-ms-input-placeholder { /* Internet Explorer 10+ */ 
+font-size:3px;
 }
-.notSend{
+.date-day-size {
+    color: #666;
+}
+
+.notSend {
     background: #492b67;
     color: #fff !important;
-
 }
-.date-choose{
+
+.date-choose {
     width: 100%;
     height: 7rem;
-    overflow-x:hidden;
+    margin-top: 0.325rem;
+    overflow-x: hidden;
     overflow-y: scroll;
 }
-.date-choose-content{
+
+.date-choose-content {
     width: 100%;
     height: 200%;
     overflow: hidden;
 }
-.date-choose p{
+
+.date-choose p {
     width: 100%;
-    height: 1.333333rem;
-    line-height: 1.333333rem;
+    height: 0.8rem;
+    line-height: 0.8rem;
     text-align: center;
     color: #492b67;
     font-size: .4rem;
 }
-.date-choose-week{
+
+.date-choose-week {
     width: 90%;
     margin: 0 auto
 }
-.date-week{
+
+.date-week {
     float: left;
     width: 14.28%;
     height: 0.8rem;
@@ -585,118 +736,167 @@ export default {
     font-size: 12px;
     font-weight: 600;
 }
-.date-day{
+
+.date-day {
     float: left;
     width: 14.28%;
     height: 1rem;
     text-align: center;
-    line-height:1rem;
+    line-height: 1rem;
     color: #b0a4bc;
-    font-size: 12px;
-
+    font-size: 14px;
 }
-.date-day a{
+
+.date-day a {
     width: 80%;
     height: 100%;
-    line-height: 3.2;
+    line-height: 1rem;
     display: inline-block;
     border-radius: 50%;
 }
-.cartpackage .goods {
-    height: 3.066667rem;
-    overflow: hidden;
+
+
+.date-day a.date-day-size {
+    color: #c3c3c3;
+}
+
+.cartpackage {
+    background: #f1eef6;
+}
+
+.goods-wraper {
+    width: 100%;
     box-sizing: border-box;
-    padding: .533333rem .4rem;
+    padding: .2rem .4rem;
+    background: #fff;
 }
 
-.cartpackage .goods .imgbox {
-    width: 2rem;
-    border-radius: .133333rem;
-    border: 1px solid #ece5f4;
-    margin-right: .4rem;
-    height: 2rem;
-    overflow: hidden;
-}
-
-.cartpackage .goods .imgbox img {
+.mealdetail-footer-headContent {
     width: 100%;
     height: 100%;
+    padding: .2rem 0;
 }
 
-.cartpackage .goods .des {
-    width: 6.7rem;
-    box-sizing: border-box;
-    padding: .266667rem 0;
+.mealdetail-footer-headContent img {
+    width: 2.666667rem;
+    height: 2.666667rem;
+    border-radius: 10px;
+    border: 1px solid #ece5f4;
+    float: left;
+    margin-right: .4rem
 }
 
-.cartpackage .goods .des .title {
+.mealdetail-footer-headContent .text-wraper {
     overflow: hidden;
-    text-overflow: ellipsis;
     font-size: .4rem;
+    line-height: .6rem;
     color: #492b67;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    white-space: normal!important;
-    line-height: .506667rem;
-    min-height: 1rem;
+    padding-top: .2rem;
 }
 
-.cartpackage .goods .des .ctype {
-    color: #aea2ba;
-    font-size: .36rem;
-    line-height: .8rem;
-}
-
-.cartpackage .goods .des .ctype i {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    display: block;
-    max-width: 4.8rem;
+.mealdetail-footer-headContent .text-wraper .text-wraper-left {
+    width: 70%;
     float: left;
 }
 
-.cartpackage .goods .des .price {
-    float: right;
+.mealdetail-footer-headContent .text-wraper .text-wraper-left>span:nth-of-type(2) {
+    color: #b0a4bc;
+    margin-top: .2rem;
+    display: block;
+}
+
+.mealdetail-footer-headContent .text-wraper .text-wraper-right {
+    width: 30%;
+    float: left;
+    text-align: right;
+}
+
+.mealdetail-footer-headContent .text-wraper .text-wraper-right>span:nth-of-type(1) {
     color: #de3163;
     font-size: .4rem;
 }
 
+.mealdetail-footer-headContent>p:nth-of-type(1) {
+    width: 6.1rem;
+    height: 100%;
+    margin-left: .32rem;
+    float: left;
+    margin-top: .4rem;
+}
+
+.mealdetail-footer-headContent>p:nth-of-type(2) {
+    width: 1.066667rem;
+    margin-right: .4rem;
+    float: right;
+    margin-top: 1.555rem;
+}
+
+.mealdetail-footer-headContent>p:nth-of-type(1)>span {
+    display: block;
+    width: 100%;
+    line-height: .666667rem;
+}
+
+.mealdetail-footer-headContent>p>span:nth-of-type(1) {
+    width: 70%;
+    float: left;
+}
+
+.colormeal {
+    background: #f3eef7;
+}
+
+.mealdetail-footer-headContent>p>span>span {
+    color: #b0a4bc;
+    display: block;
+    float: right;
+    margin-right: 0.4rem;
+}
+
+
 .cartpackage .addgoods {
     color: #b0a4bc;
-    font-size: .36rem;
-    text-align: right;
     padding: 0 .4rem;
     line-height: 1.2rem;
-    border-top: 1px solid #ece5f4
+    border-top: 1px solid #ece5f4;
+    border-bottom: 1px solid #ece5f4;
+    font-size: .4rem;
+    background: #fff;
+}
+
+.cartpackage .addgoods span {
+    float: right;
 }
 
 .cartpackage .order-price {
-    padding: 0 .4rem;
+    padding: .2rem .4rem;
     box-sizing: border-box;
     font-size: .4rem;
     overflow: hidden;
-    background: #f1eef6;
+    background: #fff;
+    width: 100%;
+    margin-bottom: .4rem;
 }
 
 .cartpackage .order-price p {
-    width: 50%;
-    display: block;
-    float: left;
+    text-align: right;
     color: #b0a4bc;
     box-sizing: border-box;
-    line-height: 1.2rem;
+    line-height: .8rem
 }
 
-.cartpackage .order-price .needpay {
-    text-align: right;
-    border-left: 1px solid #ece5f4;
+.cartpackage .order-price p span {
+    width: 2rem;
+    display: inline-block;
 }
+
 
 .cartpackage .order-price .needpay span {
     color: #de3163;
 }
+
+
+
 
 
 /*  */
@@ -741,10 +941,15 @@ export default {
 }
 
 
+
+
+
+
 /* 显示ul列表 */
 
 .cartpackage .mint-tab-container {
     padding-bottom: 1.6rem;
+    background: #fff;
 }
 
 .cartpackage .mint-tab-container-item .item-wraper li {
@@ -816,25 +1021,31 @@ export default {
     border-radius: .133333rem;
     padding: .266667rem 0 0 .266667rem;
     box-sizing: border-box;
+    height: 3rem;
 }
 
 .cartpackage .remark span {
     position: absolute;
     left: .6rem;
+    display: block;
+    background: #f1eef6;
 }
 
 .cartpackage .remark textarea {
     border: 0;
     height: 100%;
     width: 100%;
-    
     box-sizing: border-box;
     color: #b0a4bc;
     font-size: .36rem;
     line-height: .733333rem;
     background: #f1eef6;
-    text-indent:5em
+    text-indent: 5em
 }
+
+
+
+
 
 
 
@@ -845,25 +1056,33 @@ export default {
 }
 
 
+
+
+
+
 /* 时间 */
 
 .show-time {
-    padding: .4rem 0;
+    padding: .2rem 0 .4rem;
 }
 
 .show-time h3 {
     font-size: .48rem;
     color: #492b67;
     padding: 0 .4rem;
+    line-height: 0.8rem;
 }
 
 .show-time .advance {
     overflow: hidden;
-    line-height: .733333rem;
+    line-height: .72rem;
     font-size: .4rem;
     color: #b0a4bc;
-    margin-bottom: .4rem;
-    padding: 0 .4rem;
+    margin-bottom: .2rem;
+    margin: 0 .4rem;
+    background: #e0dfdf;
+    text-indent: 0.18rem;
+    border-radius: 8px;
 }
 
 .show-time .advance p {
@@ -893,6 +1112,7 @@ export default {
 
 .show-time .youchoose-wraper {
     padding: 0 .4rem;
+    display: none;
 }
 
 .show-time .youchoose {
@@ -917,10 +1137,16 @@ export default {
 
 .advance-hour {
     padding: 0 0.4rem;
-    margin-top: .533333rem;
     color: #b0a4bc;
     font-size: .36rem;
     overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.advance-hour .h-tip {
+    line-height: 0.5rem;
+    margin-top: 0.1rem;
+    margin-bottom: .24rem;
 }
 
 .advance-hour p i {
@@ -928,7 +1154,8 @@ export default {
 }
 
 .advance-hour ul {
-    padding: .266667rem 0;
+
+
     box-sizing: border-box;
 }
 
@@ -947,7 +1174,8 @@ export default {
 
 .advance-hour ul li.isHours {
     border: 1px solid #492b67;
-    color: #492b67;
+    color: #ffffff;
+    background: #492b67;
 }
 
 .confirm-hour {
@@ -961,19 +1189,6 @@ export default {
     position: absolute;
     bottom: 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1002,22 +1217,6 @@ export default {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* 面板颜色 */
 
 .date-list li .message.selected .bg[_v-6c618eea] {
@@ -1040,21 +1239,10 @@ export default {
     color: #492b67;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+.show-city ul {
+    width: 88%;
+    margin: 0 auto;
+}
 
 
 
@@ -1074,7 +1262,7 @@ export default {
     color: #492b67;
 }
 
-.cartpackage .show-city p {
+.cartpackage .show-city .choose-title {
     color: #b0a4bc;
     font-size: .36rem;
 }
@@ -1089,34 +1277,20 @@ export default {
     border-radius: .133333rem;
     text-align: center;
     float: left;
-    margin-right: .4rem;
-    margin-bottom: .4rem;
+    margin: .2rem;
     font-size: .36rem;
     color: #b0a4bc;
 }
 
 .cartpackage .show-city .explain {
-    line-height: .4rem;
-    margin-top: .4rem;
+    line-height: .48rem;
+    margin-top: .2rem;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+.cartpackage .show-city .explain p {
+    color: #b0a4bc;
+    font-size: .36rem;
+}
 
 
 
@@ -1129,7 +1303,7 @@ export default {
 /*支付  */
 
 .cartpackage .pay {
-    position:fixed;
+    position: fixed;
     width: 100%;
     bottom: 0px;
     height: 1.306667rem;
@@ -1139,17 +1313,6 @@ export default {
     text-align: center;
     background: linear-gradient(to right, #926eb7, #de3193);
 }
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1176,19 +1339,6 @@ export default {
     color: #b0a4bc;
     font-size: .48rem;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /* alert-msg */
 

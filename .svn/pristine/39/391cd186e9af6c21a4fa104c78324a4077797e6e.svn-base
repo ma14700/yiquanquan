@@ -1,0 +1,73 @@
+﻿var mImageCompress = function(file, quality, mode, callback) {
+    /*bolb -> base64*/
+    //debugger;
+    quality = quality > 1 || quality <= 0 ? 1 : quality;
+    var reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = function() {
+        var _base64 = reader.result;
+        /*get image mime*/
+        var mime = _base64.split(',')[0].match(/:(.*?);/)[1];
+        /*bases64 -> canvas*/
+        var canvas = document.createElement('canvas');
+        var ctx = canvas.getContext('2d');
+        var img = new Image();
+        /*base64图片应当不会存在延迟加载的问题*/
+        img.src = reader.result;
+
+        img.onload = function() {
+            var ratio = 1,
+                width = img.width,
+                height = img.height;
+            if ((!mode || mode == "auto") && (ratio = width * height / 2457600) > 1) {
+                ratio = Math.sqrt(ratio);
+            }
+            if (mode == "width" && img.width > 1920) {
+                ratio = img.width / 1920;
+            }
+            if (mode == "height" && img.height > 1280) {
+                ratio = img.height / 1280;
+            }
+            width /= ratio;
+            height /= ratio;
+            canvas.width = width;
+            canvas.height = height;
+            ctx.fillStyle = 'rgba(225,225,225,0)';;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            //如果图片像素大于100万则使用瓦片绘制
+            var count;
+            if ((count = width * height / 1000000) > 1) {
+                count = ~~(Math.sqrt(count) + 1); //计算要分成多少块瓦片
+                //计算每块瓦片的宽和高
+                var nw = ~~(width / count);
+                var nh = ~~(height / count);
+                var tCanvas = document.createElement('canvas');
+                tCanvas.width = nw;
+                tCanvas.height = nh;
+                var tctx = tCanvas.getContext('2d');
+                for (var i = 0; i < count; i++) {
+                    for (var j = 0; j < count; j++) {
+                        tctx.drawImage(img, i * nw * ratio, j * nh * ratio, nw * ratio, nh * ratio, 0, 0, nw, nh);
+                        ctx.drawImage(tCanvas, i * nw, j * nh, nw, nh);
+                    }
+                }
+
+                tCanvas = null;
+            } else {
+                ctx.drawImage(img, 0, 0, width, height);
+            }
+
+            var newImageData = canvas.toDataURL(mime, 0.7);
+            var _str = atob(newImageData.split(',')[1]);
+            var _n = _str.length;
+            var u8arr = new Uint8Array(_n);
+            while (_n--) {
+                u8arr[_n] = _str.charCodeAt(_n);
+            }
+            callback(new Blob([u8arr], { type: mime }));
+        }
+
+    }
+
+}

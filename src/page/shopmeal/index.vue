@@ -1,19 +1,33 @@
 <template>
     <div>
-        <head-top></head-top>
-        <div class="meal-top">
-            <ul class="meal-top-content">
-                <li @click="chooseParty(null,-1)" :class="{colorPurle:currentIndex==-1}">全部</li>
-                <li v-for="(item,index) in partyList" :key="index" @click="chooseParty(item,index)" :class="{colorPurle:currentIndex==index}">{{item.name}}</li>
-            </ul>
-        </div>
-        <div class="meal-content" v-for="(item,index) in partyDetail" :key="index">
-            <img :src="item.mainImg" alt="" @click="mealdetail(item)">
+        <loading v-if="isLoading"></loading>
+        <div v-if="!isLoading" ref="mealul"  >
+            <transition name="move">
+            <div class="meal-top"  >
+                <ul class="meal-top-content" >
+                    <li @click="chooseParty(null,-1)" :class="{colorPurle:currentIndex==-1}" >全部</li>
+                    
+                        <li v-for="(item,index) in partyList" :key="index" @click="chooseParty(item,index)" class="test"  :class="{colorPurle:currentIndex==index}" transition="move">{{item.name}}</li>
+                   
+                </ul>
+            </div>
+            </transition>
+            <div class="meal-content-wraper">
+
+                <div class="blankpage" v-if="partyDetail.length == 0">
+                    <p>暂时还没有上架哦</p>
+                </div>
+                
+                <div class="meal-content" v-for="(item,index) in partyDetail" :key="index" v-else>
+                    <img :src="item.mainImg" alt="" @click="mealdetail(item)">
+                </div>
+            </div>
+            
         </div>
     </div>
 </template>
 <script>
-import headTop from '../../components/head/head';
+import loading from '../../components/loading/loading';
 export default {
     data() {
         return {
@@ -21,18 +35,35 @@ export default {
             currentIndex: -1,
             catId: 0,
             partyDetail: '',
+            isLoading: false,
+            scrolled: '',
+            scrollLeft:0,
         }
     },
     mounted() {
-
+        if(this.$route.query.classifyId && this.$route.query.classifyId >4){
+           
+        }
+        
+        this.$refs.mealul.getElementsByClassName('meal-top-content')[0].scrollLeft = 300
     },
     computed: {
 
     },
+    watch:{
+        // scrollLeft(){
+        //     this.scrollLeft = this.$refs.mealul.offsetLeft;
+        //     console.log(this.scrollLeft)
+        //     return this.scrollLeft
+        // }
+    },
     created() {
         this.getPartyList();
-        this.chooseParty(null, -1)
-
+        if (this.$route.query.classifyId != undefined) {
+            this.otherPageFrom();
+        } else {
+            this.chooseParty(null, -1);
+        }
     },
     methods: {
         mealdetail(item) {
@@ -42,45 +73,82 @@ export default {
         getPartyList() {
             this.$http.get('/api/partypkgcat/partycatlist').then(res => {
                 this.partyList = res.data;
-                console.log(this.partyList)
             })
-
         },
-        chooseParty(item, index) {
-            if (this.$route.query.classifyId != null) {
+        otherPageFrom() {
+            if (this.$route.query.classifyId != undefined) {
                 this.catId = this.$route.query.classifyId;
-                this.currentIndex = this.$route.query.classifyId-1;
-            } else {
-                if (index == -1) {
-                    this.currentIndex = -1;
-                    this.catId = 0
-                } else {
-                    this.currentIndex = index;
-                    this.catId = item.id;
-                }
-
+                this.currentIndex = this.$route.query.classifyId - 1;
+                this.$nextTick(function () {
+                    // DOM is now updated
+                    // `this` is bound to the current instance
+                    this.moveUl(this.currentIndex);
+                })
+                
             }
-
             this.$http.post('api/partypkg/partylist', {
                 catId: this.catId,
                 page: 1,
                 row: 10,
-                recommend: true
+                recommend: false
+            }).then(res => {
+                this.partyDetail = res.data;
+                // if (res.data) {
+                //     this.isLoading = false;
+                // }
+            });
+        },
+        chooseParty(item, index) {
+            if (index == -1) {
+                this.currentIndex = -1;
+                this.catId = 0
+            } else {
+                this.currentIndex = index;
+                this.moveUl(index);
+                this.catId = item.id;
+            }
+            this.$http.post('api/partypkg/partylist', {
+                catId: this.catId,
+                page: 1,
+                row: 10,
+                recommend: false
             }).then(res => {
                 console.log(res)
                 this.partyDetail = res.data;
+             
             })
 
         },
+        moveUl(index){
+            let count = index-1;
+            
+            this.$refs.mealul.getElementsByClassName('meal-top')[0].scrollLeft = count*60;
+        }
 
     },
     components: {
-        headTop
+        loading
     }
 }
 </script>
 
 <style>
+.move-transition{
+　　opacity: 1;
+　　transform: translate3d(0,0,0);
+}
+
+
+.move-enter-active,.move-leave-active{
+　　opacity: 0;
+　　transform: translate3d(5px,0,0);
+}
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active in below version 2.1.8 */ {
+  opacity: 0
+}
 .colorPurle {
     color: #4a2c68 !important;
 }
@@ -112,6 +180,10 @@ export default {
     overflow-x: scroll;
     overflow-y: hidden;
     -webkit-overflow-x: scroll;
+    box-shadow: 0 0 2px 0 #aaa;
+    position: fixed;
+    background: #fff;
+    top: 0
 }
 
 .meal-top-content {
@@ -135,13 +207,31 @@ export default {
     line-height: 1.2rem;
 }
 
+.meal-content-wraper {
+    margin-top: 1.2rem
+}
+
 .meal-content {
     width: 100%;
+    height: 5.266667rem;
+    margin-bottom: .4rem;
 }
 
 .meal-content img {
     width: 100%;
     height: 5.266667rem;
+}
+
+.blankpage {
+    min-height: 14.8rem;
+    background: #fff;
+    text-align: center;
+    font-size: .48rem;
+    color: #b0a4bc
+}
+
+.blankpage p {
+    line-height: 14rem
 }
 </style>
 

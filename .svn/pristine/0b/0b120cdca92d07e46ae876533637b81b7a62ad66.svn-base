@@ -1,0 +1,175 @@
+import {
+    ADD_CART,
+    REDUCE_CART,
+    INIT_BUYCART,
+    CLEAR_CART,
+    SETTLE_ACCOUNTS,
+    GIT_SETTLE_ACCOUNTS,
+    CLEAR_SETTLE_ACCOUNTS,
+    SETTLE_PACKAGE_ACCOUNTS,
+    GIT_SETTLE_PACKAGE_ACCOUNTS,
+    IS_PACKAGE_ADD_MORE,
+    IS_GOOD_ADD_MORE,
+    PACKAGE_GOODS,
+    CLEAR_ALL_SETTLE,
+    CLEAR_PACKAGE,
+    RECORD_USERINFO,
+    GET_USERINFO,
+    GIT_PACKAGE_ADD_MORE,
+    GIT_GOOD_ADD_MORE,
+    GRAB_CHANGE
+
+
+} from './mutation-types'
+import { setStore, getStore, removeStore } from '../config/mUtils'
+export default {
+
+    //结算商品（详情页）
+    [SETTLE_ACCOUNTS](state, {
+        SkuInfoId,
+        CartNum,
+        CartGoodId,
+        goodName,
+        goodTotalPrice,
+        goodPrice,
+        goodImgUrl,
+        OrderType,
+        skuPropName
+    }) {
+        let Accountsjson = {};
+        Accountsjson.SkuInfoId = SkuInfoId;
+        Accountsjson.CartNum = CartNum;
+        Accountsjson.CartGoodId = CartGoodId;
+        Accountsjson.goodName = goodName;
+        Accountsjson.goodTotalPrice = goodTotalPrice;
+        Accountsjson.goodPrice = goodPrice;
+        Accountsjson.goodImgUrl = goodImgUrl;
+        Accountsjson.OrderType = 2;
+        Accountsjson.skuPropName = skuPropName;
+        state.settleAccounts.push(Accountsjson);
+        for (let i = 0; i < state.settleAccounts.length; i++) {
+            for (let j = (i + 1); j < state.settleAccounts.length; j++) {
+                if (state.settleAccounts[i].SkuInfoId == state.settleAccounts[j].SkuInfoId) {
+                    state.settleAccounts[i].CartNum = parseInt(state.settleAccounts[i].CartNum) + parseInt(state.settleAccounts[j].CartNum)
+                    state.settleAccounts.splice(j, 1);
+                }
+            }
+        }
+        setStore('settleAccounts', state.settleAccounts);
+    },
+    //
+    [GIT_SETTLE_ACCOUNTS](state) {
+        let test = getStore('settleAccounts')
+        if (test) {
+            state.settleAccounts = JSON.parse(test);
+        }
+
+    },
+    //单个清除商品结算
+    [CLEAR_SETTLE_ACCOUNTS](state, index) {
+        state.settleAccounts.splice(index, 1);
+        setStore('settleAccounts', state.settleAccounts);
+    },
+    //确认支付后清空列表
+    [CLEAR_ALL_SETTLE](state) {
+        state.settleAccounts = [];
+        setStore('settleAccounts', state.settleAccounts);
+        console.log("qingkong");
+    },
+    //结算套餐
+    [SETTLE_PACKAGE_ACCOUNTS](state, {
+        packageId,
+        discountPrice,
+        downPayment,
+        imgUrl,
+        name,
+        summary,
+        OrderType
+    }) {
+        let packageAccounts = state.settlePackageAccounts;
+        let item = packageAccounts[packageId] = (packageAccounts[packageId] || {});
+        item[packageId] = {
+            'packageId': packageId,
+            "discountPrice": discountPrice,
+            "downPayment": downPayment,
+            "imgUrl": imgUrl,
+            "name": name,
+            "summary": summary,
+            "OrderType": 1
+        }
+
+        state.settlePackageAccounts = {...packageAccounts };
+        setStore('settlePackageAccounts', state.settlePackageAccounts);
+        console.log(state.settlePackageAccounts);
+    },
+    //
+    [GIT_SETTLE_PACKAGE_ACCOUNTS](state) {
+        let aaa = getStore('settlePackageAccounts');
+        if (aaa) {
+            state.settlePackageAccounts = JSON.parse(aaa);
+        }
+
+    },
+    [CLEAR_PACKAGE](state) {
+        console.log("qingchutaocan")
+        state.settlePackageAccounts = [];
+        setStore('settlePackageAccounts', state.settlePackageAccounts);
+
+    },
+
+    // 记录用户信息
+    [RECORD_USERINFO](state, info) {
+        state.userInfo = info;
+        setStore('userInfo', state.userInfo)
+    },
+    //获取用户信息存入vuex
+    [GET_USERINFO](state, info) {
+        if (state.userInfo && (state.userInfo.username !== info.username)) {
+            return;
+        };
+        if (!state.login) {
+            return
+        }
+        if (!info.message) {
+            state.userInfo = {...info };
+        } else {
+            state.userInfo = null;
+        }
+    },
+    //套餐加选商品的状态
+    [IS_PACKAGE_ADD_MORE](state, {
+        moreGood,
+        packageOrderId
+    }) {
+        let json = {}
+        json.moreGood = moreGood;
+        json.packageOrderId = packageOrderId;
+
+        state.addMoreGood.push(json);
+        // if (state.addMoreGood.length > 1) {
+        //     state.addMoreGood.pop();
+        // }
+        setStore('addMoreGood', state.addMoreGood);
+    },
+    [GIT_PACKAGE_ADD_MORE](state) {
+        let aaa = getStore('addMoreGood');
+        if (aaa) {
+            state.addMoreGood = JSON.parse(aaa);
+        }
+    },
+    //商品加选商品的状态
+    [IS_GOOD_ADD_MORE](state, status) {
+        state.goodOrderAddMore = status;
+        setStore('goodOrderAddMore', state.goodOrderAddMore);
+    },
+    [GIT_GOOD_ADD_MORE](state) {
+        let aaa = getStore('goodOrderAddMore');
+        if (aaa) {
+            state.goodOrderAddMore = JSON.parse(aaa);
+        }
+    },
+    [GRAB_CHANGE](state, status) {
+        state.grabstatus = status;
+        setStore('grabstatus', state.grabstatus)
+    }
+}
