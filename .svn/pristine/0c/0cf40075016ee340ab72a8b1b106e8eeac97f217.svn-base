@@ -1,0 +1,418 @@
+<template>
+  <div>
+    <div class="indenting">
+      <div class="indenting-head" v-if="!headStatus"><i class="iconfont icon-duihao1"></i>抢单成功</div>
+      <div class="indenting-head1 indenting-head" v-else-if="headStatus == 'decoration-begin'"><i class="iconfont icon-shalou"></i>装饰中</div>
+      <div class="indenting-head2 indenting-head" v-else><i class="iconfont icon-shalou"></i>订单已完成</div>
+      <div class="indenting-content">
+        <div class="indenting-p">订单编号：{{orderList.orderNo}}</div>
+        <div class="indenting-p">联系人：{{orderList.orderReceiverName}}</div>
+        <div class="indenting-p">联系电话：{{orderList.orderReceiverMobile}}</div>
+        <div class="indenting-p">服务地址：{{orderList.orderCity}}</div>
+        <div class="indenting-p">服务时间：{{orderList.modifyTime | date}}</div>
+        <div class="indenting-p">下单时间：{{orderList.createTime | date}}</div>
+      </div>
+      <div class="indenting-combodetail">
+        <div class="indenting-combodetail-head" @click="mealDetail()">套餐详情<span><i class="iconfont " :class="[mealdetail?'icon-smallxiangyou':'icon-arrow_down']"></i></span></div>
+        <div class="indenting-combodetail-content" v-show="mealdetail">
+          <div class="indenting-combodetail-contenthead clearfix">
+            <div class="indenting-combodetail-contentleft">
+              <img :src="mealTitle.itemPic" alt="">
+            </div>
+            <div class="indenting-combodetail-contentright">
+              <p>{{mealTitle.itemGoodName}}</p>
+              <p>￥{{mealTitle.itemPrice | two}} </p>
+            </div>
+          </div>
+          <div class="indenting-combodetail-contentcenter">
+            <div class="indenting-combodetail-combohead">套餐内所含商品</div>
+            <div class="indenting-combodetail-combocontent" v-for="item in mealList">
+             <span>{{item.goodName}}</span><span>x{{item.quantity}}</span>
+            </div>
+          </div>
+          <div class="indenting-combodetail-contentcenter" v-show="moreStatus">
+            <div class="indenting-combodetail-combohead">加选商品：</div>
+            <div class="indenting-combodetail-combocontent" v-for="item in orderList.orderItems" v-if="item.itemType == 2">
+              <span>{{item.itemGoodName}}</span><span>x{{item.itemGoodNum}}</span>
+            </div>
+           
+          </div>
+        </div>
+        <div class="indenting-combodetail-back"></div>
+        <div class="indenting-combodetail-footer">
+          <div class="indenting-combodetail-footercontent">
+            定金总额：<span>￥{{orderList.orderTotalFee | two}}</span>
+          </div>
+          <div class="indenting-combodetail-footercontent">
+            已付定金：<span>￥{{orderList.orderPromiseMoney | two}}</span>
+          </div>
+          <!-- <div class="indenting-combodetail-footercontent">
+            优惠劵满减：<span>-￥200.00</span>
+          </div> -->
+          <div class="indenting-combodetail-footercontent indentcolor">
+            代付尾款：<span>￥{{anotherPay | two}}</span>
+          </div>
+        </div>
+      </div>
+      <div class="indenting-combobutton">
+        <div class="indenting-combodecorate" @click="decorating()" v-if="!headStatus">上门装饰</div>
+        <div class="indenting-combodecorate" @click="decoratecomplete()" v-else-if="headStatus == 'decoration-begin'">装饰完成</div>
+        <div class=""  v-else-if="headStatus == 'decoration-end'"></div>
+      </div>
+    </div>
+    <footer></footer>
+    <mt-popup v-model="popupVisibling"  popup-transition="popup-fade">
+      <div class="decorate">
+        <div class="decorate-head"><i class="iconfont icon-duihao1"></i>开始装饰</div>
+        <div class="decorate-content">
+          <img src="../../../assets/grab1.png" alt="">
+          <p>请开始装饰</p>
+          <div class="decorate-query" @click="decoratequering">确定</div>
+        </div>
+      </div>
+    </mt-popup>
+    <mt-popup v-model="popupVisible"  popup-transition="popup-fade">
+      <div class="decorate">
+        <div class="decorate-head"><i class="iconfont icon-duihao1"></i>装饰完成</div>
+        <div class="decorate-content">
+          <img src="../../../assets/grab1.png" alt="">
+          <p>提醒客户支付尾款</p>
+          <div class="decorate-query" @click="decoratequery">确定</div>
+        </div>
+      </div>
+    </mt-popup>
+    <foot-grab></foot-grab>
+  </div>
+</template>
+<script>
+    import footGrab from '../../../components/footer/footGrab'
+    import { Popup } from 'mint-ui';
+    export default {
+        data(){
+            return{
+              popupVisible:false,
+              popupVisibling:false,
+              mealdetail:true,//套餐详情
+              orderList:[],//订单列表
+              mealId:null,//套餐Id
+              mealList:[],//套餐列表
+              mealTitle:[],//套餐主题
+              moreStatus:false,
+              anotherPay:null,//代付金额
+              headStatus:null,//判断订单状态
+              urlId:null
+            }
+        },
+        created(){
+            this.headStatus = this.$route.query.status;
+            console.log(1)
+            this.orderData();
+        },
+        watch:{
+             
+        },
+        methods:{
+            orderData(){
+                //获取订单列表
+                if(this.$route.query.id){
+                    let orderId = this.$route.query.id;
+                    this.urlId = orderId;
+                    this.$http.get('/api/order/detail?id='+orderId).then(res=>{
+                        this.orderList = res.data.data;
+                        let self = this;
+                        this.orderList.orderItems.forEach(function(item){
+                            if(item.itemType == 2){
+                                self.moreStatus = true;
+                            }
+                            if(item.itemType == 1){
+                                self.mealTitle = item;
+                                self.mealId = item.itemGoodId
+                                console.log(self.mealTitle,1)
+                            }
+                        })
+                        this.anotherPay = this.orderList.orderTotalFee - this.orderList.orderPromiseMoney;
+                        this.mealData();
+                    })
+                }
+            },
+            //套餐列表
+            mealData(){
+                if(this.mealId){
+                    //套餐列表详情接口
+                    console.log(this.mealId)
+                    this.$http.get('/api/partypkg/partypkgdetail?id='+this.mealId).then(res=>{
+                        this.mealList = res.data.data;
+                        console.log(this.mealList)
+                    })
+                    //套餐详情接口
+                }   
+            },
+            decoratecomplete(){
+              this.popupVisible = true;
+              this.headStatus = 'decoration-end';
+              this.$http.post('/api/riderorder/status?orderId='+this.urlId+'&status='+this.headStatus).then(res=>{
+                  console.log(res);
+              })
+            },
+            //上门装饰
+            decorating(){
+                this.headStatus = 'decoration-begin';
+                this.popupVisibling = true;
+                this.$http.post('/api/riderorder/status?orderId='+this.urlId +'&status='+this.headStatus).then(res=>{
+                    console.log(res)
+                });
+                this.$router.push({ path: '/orderStatus', query: { id:this.urlId,status:'decoration-end' } })
+            },
+            decoratequering(){
+                this.popupVisibling = false;   
+            },
+            decoratequery(){
+              this.popupVisible = false;
+               this.$router.push({ path: '/completeindent' })
+            },
+            mealDetail(){
+              this.mealdetail = !this.mealdetail;
+            }
+        },
+        components:{
+            footGrab
+        },
+        filters:{
+            date(value){
+                var dateee = new Date(value).toJSON();  
+                var date = new Date(+new Date(dateee)+8*3600*1000).toISOString().replace(/T/g,' ').replace(/\.[\d]{3}Z/,'');
+                return date      
+            },
+            two: function(value) {
+                if (!value) { return '' };
+                return  value.toFixed(2);
+            }
+        }
+    }
+</script>
+<style>
+    .indenting-combodetail-back{
+      background: #f3eef7;
+      width: 10.6rem;
+      margin-left:-0.4rem;
+      height: .266667rem;
+    }
+    .decorate{
+      width: 9.2rem;
+      height: 6.666667rem;
+    }
+    .decorate-head{
+      width: 100%;
+      height: 1.333333rem;
+      line-height: 1.333333rem;
+      background: linear-gradient(to right,#5c8de4,#656bca)
+    }
+    .decorate-content{
+      width: 100%;
+    }
+    .decorate-content img{
+      width: 2.133333rem;
+      height: 2.133333rem;
+      margin: 0 auto;
+      display: block;
+      margin-top: .266667rem;
+    }
+    .decorate-content{
+      width: 100%;
+      text-align: center;
+      height: 1.333333rem;
+      line-height: 1.333333rem;
+      color: #6190e2;
+      font-size: .506667rem;
+    }
+    .decorate-query{
+      width: 5.333333rem;
+      height: 1.2rem;
+      line-height: 1.2rem;
+      color: #fff;
+      font-size: .506667rem;
+      text-align: center;
+      background: linear-gradient(to right,#5c8de4,#de3193);
+      border-radius: 5px;
+      margin: 0 auto;
+    }
+    .indentcolor{
+      color: #492b67 !important;
+      font-weight: 600;
+    }
+    .indentcolor span{
+      color: #de3163;
+      font-weight: 600;
+    }
+    footer{
+      padding-bottom: 2rem;
+    }
+    .indenting{
+        width: 100%;
+        background: #f3eef7;
+        overflow: hidden;
+    }
+    .indenting-head,.decorate-head{
+      width: 100%;
+      height: 1.333333rem;
+      line-height: 1.333333rem;
+      text-align: center;
+      font-size: .506667rem;
+      color: #fff;
+      background: linear-gradient(to left,#656bca,#5c8de4);
+    }
+    .indenting-head1{
+        background: linear-gradient(to right,#6190e2,#3a94f6) !important;
+    }
+    .indenting-head2{
+        background: #eeecf1 !important;
+        color: #b0a4bc !important;
+    }
+    .indenting-head2 i{
+         color: #b0a4bc !important;
+    }
+    .indenting-head i{
+      font-size: .56667rem !important;
+      padding-right: 10px;
+      position: relative;
+      top:2px;
+    }
+    .indenting-content{
+      width: 100%;
+      background: #fff;
+      padding-top: .266667rem;
+      box-sizing: border-box;
+      padding: .266667rem .4rem .466667rem 0.4rem;
+    }
+    .indenting-p{
+      font-size: .373333rem;
+      color: #492b67;
+      height: .666667rem;
+      line-height: .666667rem;
+    }
+    .indenting-combodetail{
+      width: 100%;
+      margin-top: .4rem;
+      box-sizing: border-box;
+      padding: 0 .4rem;
+      padding-bottom: 1.066667rem;
+      background: #fff;
+    }
+    .indenting-combodetail-head{
+      width: 100%;
+      height: 1.2rem;
+      line-height: 1.2rem;
+      font-size: .426667rem;
+      color: #492b67;
+      background: #fff;
+    }
+    .indenting-combodetail-head span{
+      float: right;
+    }
+    .indenting-combodetail-contenthead{
+      width: 100%;
+    }
+    .indenting-combodetail-contenthead img{
+      width: 2.666667rem;
+      height: 2.666667rem;
+      border-radius: 10px;
+      border:1px solid #ece5f4;
+    }
+    .indenting-combodetail-contentleft{
+      float: left;
+      margin-right: .4rem;
+       width: 2.666667rem;
+    }
+    .indenting-combodetail-contentright{
+      float: left;
+      width: 65%;
+      color: #492b67;
+      margin-top: .533333rem;
+      font-size: .373333rem;
+   
+  
+    }
+    .indenting-combodetail-contentright>p:nth-of-type(1){
+       word-break:break-all;  
+          display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+      line-height: .426667rem;
+    }
+    .indenting-combodetail-contentright>p:nth-of-type(2){
+      color: #de3163;
+      font-size: .4rem;
+      font-weight: 600;
+      margin-top: .4rem;
+    }
+    .indenting-combodetail-contentright>p:nth-of-type(2)>span{
+      font-size: 12px;
+      color: #cac2d2;
+      text-decoration: line-through;
+      padding-left: .266667rem;
+      font-weight: normal;
+    }
+    .indenting-combodetail-combohead{
+      width: 9.2rem;
+      margin: 0 auto;
+      background: #f3eef7;
+      height: 1.066667rem;
+      line-height: 1.066667rem;
+      color: #b0a4bc;
+      padding-left: .4rem;
+      box-sizing: border-box;
+    }
+    .indenting-combodetail-combocontent{
+      width: 100%;
+      height: 1.066667rem;
+      line-height: 1.066667rem;
+      font-size: 12px;
+      color: #b5aac0;
+      box-sizing: border-box;
+       padding:0 0.4rem; 
+    }
+    .indenting-combodetail-combocontent span:nth-of-type(1){
+        width: 85%;
+        display: inline-block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .indenting-combodetail-combocontent span:nth-of-type(2){
+      display: inline-block;
+      float:right;
+    }
+    .indenting-combodetail-footer{
+      margin-top: .266667rem;
+    }
+    .indenting-combodetail-footercontent{
+      width: 100%;
+      height: .72rem;
+      line-height: .72rem;
+      font-size: .346667rem;
+      color: #b5aac0;
+    }
+    .indenting-combodetail-footercontent span{
+      display: inline-block;
+      float:right;
+    }
+    .indenting-combobutton{
+      width: 100%;
+      height: 1.92rem;
+    }
+    .indenting-combodecorate{
+      width: 5.266667rem;
+      height: 1.2rem;
+      line-height: 1.2rem;
+      background: linear-gradient(to right,#5c8de4,#de3193);
+      margin:0 auto;
+      text-align: center;
+      color: #fff;
+      font-size: .48rem;
+      border-radius: 10px;
+      margin-top: .4rem;
+    }
+</style>
+
+

@@ -1,0 +1,211 @@
+<template>
+    <div class="get-coupons">
+        <div class="coupons-backdrop">
+            <img :src="couponsInfo.couponImage || 'http://img.iyiquanquan.com/uploadfiles/images/201710/20/19_30055d_01.png'" alt="">
+        </div>
+        <div class="coupons-content">
+            <h3>{{couponsInfo.name}}</h3>
+            <h1>
+              <p>{{couponsInfo.useType}}</p>
+            </h1>
+            <div class="coupons-info">
+                <span v-if="couponsInfo.useType == '打折券'">
+                    <span>{{couponsInfo.couponData}}</span>
+                    <i>%</i>
+                </span>
+                <span v-else>
+                    <i>¥</i>
+                    <span>{{couponsInfo.couponData}}</span>
+                </span>
+                <p>{{couponsInfo.useLimit}}</p>
+                <p>有效时间：{{couponsInfo.validDate | valid}}&nbsp;至&nbsp;{{couponsInfo.invalidDate |valid}}</p>
+            </div>
+            <span @click="getCoupon">立即领取</span>
+        </div>
+    </div>
+</template>
+<script>
+import { MessageBox } from 'mint-ui';
+import { QueryUrlParams } from '../../config/mUtils';
+export default {
+    data() {
+        return {
+            couponsInfo: '',
+            token:''
+        }
+    },
+    beforeRouteEnter (to, from, next) {
+      console.log(from.meta.title)
+    if(from.meta.title == "壹圈圈"){
+      location.href="/";
+      return;
+    }
+    next();
+  },
+    created() {
+        var qp = new QueryUrlParams();
+        var _token = qp.find('token');
+        if(!!!_token){
+          alert('链接地址错误！');
+          window.location.href='/';
+        }
+        this.token = _token;
+        this.getCouponsInfo();
+    },
+    methods: {
+        getCouponsInfo() {
+            this.$http.get('/api/coupon/obtaininfo/' + this.token).then(res => {
+                if(!!res.data.success){
+                  this.couponsInfo = res.data.data;
+                }
+                else{
+                  alert('链接地址错误！');
+                  window.location.href='/';
+                }
+            })
+        },
+        getCoupon() {
+            this.$http.get('/api/coupon/obtain/' + this.token).then(res => {
+                MessageBox({
+                    message: res.data.message,
+                    confirmButtonText: '确定',
+                    closeOnClickModal: false
+                }).then(action => {
+                    this.$router.push({ path: '/' });
+                });
+            })
+        }
+    },
+    filters: {
+        discount: function(value) {
+            if (!value) { return '' };
+            var newValue = value + '%';
+            return newValue
+        },
+        valid(value) {
+            if (value == null) return '无限期';
+            var newValue = value.split("T")[0];
+            return newValue
+        }
+    }
+}
+</script>
+<style>
+.coupons-backdrop {
+    height: 7.2rem;
+    width: 100%;
+    overflow: hidden;
+}
+
+.coupons-backdrop>img {
+    height: 100%;
+    width: 100%;
+}
+
+.coupons-content {
+    background: url(../../assets/getCoupon/hongbao.png);
+    background-size: 100% 100%;
+    height: 10.16rem;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+}
+.coupons-content>h1{
+  height:1.3rem;
+  position: absolute;
+  top:1.3rem;right:0;
+}
+.coupons-content>h1>p{
+  width: 100px;
+    float: right;
+    line-height: 0.9rem;
+    margin-top: 0.4rem;
+    background: #ffcc00;
+    text-align: center;
+    border-top-left-radius: 0.45rem;
+    border-bottom-left-radius: 0.45rem;
+    color: #f03a39;
+    font-weight: bolder;
+    font-size: 0.4rem;
+}
+.coupons-content>h3 {
+    height: 1.3rem;
+    font-size: .52rem;
+    text-align: center;
+    line-height: 1.3rem;
+    /* background-color: rgba(255,255,255,.4) */
+}
+
+.coupons-info>p {
+    font-size: .4rem;
+    line-height: .76rem;
+    color: #fff;
+}
+
+.coupons-content>span {
+    width: 6.88rem;
+    height: 1.066667rem;
+    display: block;
+    background: #ffcc00;
+    text-align: center;
+    border-radius: .133333rem;
+    line-height: 1.066667rem;
+    position: absolute;
+    bottom: .8rem;
+    left: 50%;
+    margin-left: -3.44rem;
+    font-size: .48rem;
+}
+
+.coupons-info {
+    padding: 0 1.146667rem;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.coupons-info>span {
+    font-size: 2.2rem;
+    color: #fff;
+    text-align: center;
+    display: block;
+    margin-top: 1rem;
+    margin-bottom: .4rem;
+    text-shadow: 5px 5px rgba(0, 0, 0, 0.3);
+}
+
+.coupons-info>span>span {
+    margin: 0 .5rem;
+}
+
+.coupons-info>span>i {
+    font-size: .8rem;
+
+    text-shadow: 3px 3px rgba(0, 0, 0, 0.3);
+}
+
+
+/* messagebox */
+
+.mint-msgbox-title {
+    color: #b0a4bc;
+    font-size: .533333rem;
+    font-weight: normal;
+}
+
+.mint-msgbox-message {
+    color: #b0a4bc;
+}
+
+.mint-msgbox-btn.mint-msgbox-confirm {
+    color: #492b67;
+    font-size: .48rem;
+}
+
+.mint-msgbox-btn.mint-msgbox-cancel {
+    color: #b0a4bc;
+    font-size: .48rem;
+}
+</style>
+
+

@@ -1,0 +1,165 @@
+<template>
+  <div class="conbox">
+        <loading v-if="isLoading"></loading>
+      <div v-else>
+             <div class="startindent">
+        <!-- <div class="startindent-head">
+            <i class="iconfont icon-cuohao"></i>抢单成功后才能查看订单详情！
+        </div> -->
+        <div class="completes" v-if="completeList.length">
+            <div class="startindent-content" v-for="item in completeList">
+                <div class="startindent-content-indent">订单编号: {{item.orderNo}}</div>
+                <div class="startindent-content-time"><span><i class="iconfont icon-cuohao"></i></span>服务时间:<span class="startpd">{{item.orderPormiseDate | date}}</span></div>
+                <div class="startindent-content-time startindent-content-local"><span><i class="iconfont icon-pingjia"></i></span>服务地址:<span class="startpd">{{item.orderReceiverAddress}}</span></div>
+                <div class="startindent-content-grab1" @click="orderDetail(item.orderId)">订单详情</div>
+            </div>
+        </div>
+        <div class="indentEmpty" v-else>
+            暂无完成订单
+        </div>
+      </div>
+      <footer></footer>
+      <foot-grab></foot-grab>
+      </div>
+ 
+  </div>
+  
+</template>
+<script>
+import loading from '../../../components/loading/loading';
+    import footGrab from '../../../components/footer/footGrab'
+    export default {
+        data(){
+            return{
+                completeList:[],//完成订单列表
+                isLoading:true
+            }
+        },
+        mounted(){
+            this.completeData();
+        },
+        methods:{
+            completeData(){
+                this.$http.get('/api/riderorder/order?astatus=finish').then(res=>{
+                    this.isLoading = false
+                    if(res.data.success){
+                        this.completeList = res.data.data;
+                        console.log(this.completeList)
+                    }else{
+                        alert(res.data.message)
+                    }
+                })
+            },
+            orderDetail(id){
+               this.$router.push({ path: '/orderStatus', query: { id:id,status:'decoration-end' } })
+            }
+        },
+        components:{
+            footGrab,
+            loading
+        },
+        filters:{
+            date(value){
+                var dateee = new Date(value).toJSON();  
+                var date = new Date(+new Date(dateee)).toISOString().replace(/T/g,' ').replace(/\.[\d]{3}Z/,'');
+                return date      
+            },
+        }
+    }
+</script>
+
+<style scoped>
+    .conbox{
+        background: #f3eef7;
+    }   
+
+    footer{
+        padding-bottom: 1.6rem;
+    }
+    .indentEmpty{
+        width: 10rem;
+        text-align: center;
+        position: absolute;
+        top:0px;
+        background: #fff;height: 8.893333rem;
+        line-height: 8.89333rem;
+        font-size: .533333rem;
+        color:#bbb1c5; 
+    }
+    .completes{
+        min-height: 13.333333rem;
+    }
+    .startpd{
+        padding-left: 5px;
+        color: #bbb1c5;
+    }
+    .startindent{
+        width: 100%;
+        background: #f3eef7;
+        padding-bottom: 0.4rem;
+    }
+    .startindent-head{
+        width: 100%;
+        height: 1.333333rem;
+        line-height: 1.333333rem;
+        background: #fff;
+        font-size: .346667rem;
+        color: #bbb1c5;
+        box-sizing: border-box;
+        padding-left: 0.4rem;
+    }
+    .startindent-head i{
+        font-size: .346667rem !important;
+        padding-right: .533333rem;
+    }
+    .startindent-content{
+        width: 10rem;
+        margin:0 auto;
+        background: #fff;
+        margin-top: .4rem;
+        box-sizing: border-box;
+        padding: 0 0.4rem 0  0.4rem;
+    }
+    .startindent-content-indent{
+        width: 100%;
+        height: 1.333333rem;
+        line-height: 1.333333rem;
+        font-size: .426667rem;
+        color: #492b67;
+    }
+    .startindent-content-indent span{
+        font-size: 12px;
+        color: #bbb1c5;
+        display: inline-block;
+        float: right;
+        padding-top: 7px;
+    }
+    .startindent-content-time{
+        font-size: .346667rem;
+        color: #492b67;
+    }
+    .startindent-content-time i{
+        font-size: .346667rem;
+        color: #492b67;
+    }
+    .startindent-content-time span{
+        padding-right: 10px;
+    }
+    .startindent-content-local{
+        height: 1rem;
+        line-height: 1rem;
+        border-bottom:1px solid #eeecf1;
+    }
+    .startindent-content-grab1{
+        width: 4.533333rem;
+        height: 1.2rem;
+        line-height: 1.2rem;
+        border-radius: 6px;
+        margin:0 auto;
+        text-align: center;
+        color: #b0a4bc;
+        font-size: .48rem;
+    }
+</style>
+
+

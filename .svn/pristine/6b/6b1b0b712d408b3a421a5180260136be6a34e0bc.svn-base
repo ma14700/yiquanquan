@@ -1,0 +1,875 @@
+<template>
+  <div class="shop">
+    <loading v-if="isLoading"></loading>
+        <div v-if="!isLoading">
+    <!--头部  -->
+    <head-top></head-top>
+    <!--头部  end-->
+    <!--搜素框  -->
+    <router-link to="Qsearch" tag="div" class="qsearch-input fixed">
+      <div class="qsearch-input-content">请输入关键词
+        <span>
+          <i class="iconfont icon-sousuo1"></i>
+        </span>
+      </div>
+    </router-link>
+    <!--搜素框  end-->
+
+    <!--轮播  -->
+    <mt-swipe :auto="4000">
+      <mt-swipe-item>
+        <img src="./../../assets/shop/banner.jpg" alt="" class="banner">
+      </mt-swipe-item>
+      <mt-swipe-item>
+        <img src="./../../assets/shop/banner.jpg" alt="" class="banner">
+      </mt-swipe-item>
+      <mt-swipe-item>
+        <img src="./../../assets/shop/banner.jpg" alt="" class="banner">
+      </mt-swipe-item>
+    </mt-swipe>
+    <!--轮播 end  -->
+    <!--分类  -->
+    <div class="classify">
+      <ul>
+        <router-link tag="li" to="shopmeal">
+          <img src="../../assets/icons/jingxi.png" alt="">
+          <p>主题套餐</p>
+        </router-link>
+        <li>
+          <img src="../../assets/icons/promotion.png" alt="">
+          <p>促销活动</p>
+        </li>
+        <router-link tag="li" to="Qsearch">
+          <img src="../../assets/icons/fenlei.png" alt="">
+          <p>产品分类</p>
+        </router-link>
+      </ul>
+    </div>
+    <!--分类 end  -->
+    <!--派对必备  -->
+    <div class="party floor">
+      <div class="title">
+        <p>
+          <i class="iconfont icon-crown"></i>派对必备
+          <span @click="goPackageClassify(0)">More
+            <i class="iconfont icon-smallxiangyou"></i>
+          </span>
+        </p>
+      </div>
+      <div class="start" @click="goPartyDetail(partyList[0].id)">
+        <img  alt="" v-lazy="partyList[0].mainImg">
+      </div>
+      <!-- 横向滑动 -->
+      <div class="swiper-container">
+
+        <div class="swiper-wrapper swiper-wrapper1">
+          <div class="swiper-slide" v-for="(item,index) in partyList.slice(1,6)" :key="index" @click="goPartyDetail(item.id)">
+            <img  alt="" v-lazy="item.mainImg">
+          </div>
+        </div>
+
+      </div>
+      <!-- 横向滑动 -->
+    </div>
+
+    <!--派对必备  end-->
+
+    <!--为你推荐   -->
+    <div class="foryou floor">
+      <div class="title">
+        <p>
+          <i class="iconfont icon-zan"></i>为您推荐
+          <span @click="MoreGood(0)">More
+            <i class="iconfont icon-smallxiangyou"></i>
+          </span>
+        </p>
+      </div>
+      <ul class="props">
+        <li v-for="(item,index) in goodDataList.slice(0,3)" :key="index" @click="goGooddetail(item.id)">
+          <img alt="" v-lazy="item.goodFirstPicUrl">
+          <span>{{item.goodName}}</span>
+        </li>
+      </ul>
+      <div class="myscroll">
+        <div class="scroll-wrap">
+          <div class="foryou-detail" v-for="(item,index) in goodDataList.slice(3,9)" :key="index" @click="goGooddetail(item.id)">
+            <img v-lazy="item.goodFirstPicUrl" alt="">
+            <p class="foryou-title">
+              <span>{{item.goodName}}</span>
+              <i>¥{{item.goodSalePrice | two}}</i>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!--为你推荐  end-->
+
+    <!--猜你喜欢   -->
+    <div class="youlike floor">
+      <div class="title">
+        <p>
+          <i class="iconfont icon-cainixihuan"></i>猜你喜欢
+          <span @click="goPackageClassify(0)">More
+            <i class="iconfont icon-smallxiangyou"></i>
+          </span>
+        </p>
+      </div>
+
+      <div class="swiper-container">
+        <div class="swiper-wrapper swiper-wrapper2">
+          <div class="swiper-slide" v-for="(item, index) in packageClassifyList" :key="index" @click="goPackageClassify(item.id)">
+            <img v-lazy="item.thumbImg" alt="">
+          </div>
+
+        </div>
+      </div>
+      <v-loadmore :bottom-method="loadBottom" :bottom-all-loaded="allLoaded" :auto-fill="false" ref="loadmore">
+        <ul class="taocan">
+          <li :key="index" v-for="(item,index) in packageDataList" @click.stop="goGooddetail(item.id)" v-if="item.goodName">
+            <div class="img-box">
+              <img v-lazy="item.goodFirstPicUrl" alt="">
+            </div>
+            <div class="text">
+              <p class="des-text">{{item.goodName}}</p>
+              <p class="price">¥{{item.goodSalePrice | two}}
+                <i>{{item.goodPrice | two}}</i>
+              </p>
+            </div>
+          </li>
+        </ul>
+        <div slot="bottom" class="mint-loadmore-bottom">
+          <div class="more" v-if="updown == true">
+            <span class="line">MORE</span>
+            <span>查看更多</span>
+          </div>
+          <div class="more" v-else>
+            <span>下面没有了</span>
+          </div>
+        </div>
+
+      </v-loadmore>
+
+    </div>
+
+    <!--猜你喜欢  end-->
+
+    <!--查看更多  -->
+    <!-- <div class="more">
+      <span class="line">MORE</span>
+      <span>查看更多</span>
+    </div> -->
+    <!--查看更多 end -->
+
+    <!--底部  -->
+    <footer class="footer"></footer>
+    <foot-guide></foot-guide>
+
+    <!--底部 end  -->
+        </div>
+  </div>
+</template>
+
+
+<script>
+import headTop from '../../components/head/head'
+import footGuide from '../../components/footer/footGuide'
+import { Swipe, SwipeItem } from 'mint-ui';
+import { InfiniteScroll } from 'mint-ui';
+import { Loadmore } from 'mint-ui';
+import loading from '../../components/loading/loading';
+export default {
+  data() {
+    return {
+      value: '',
+      scroll: '',
+      goodDataList: '',
+      partyList:[],
+      packageDataList: [],
+      packageClassifyList: '',
+      searchCondition: {  //分页属性  
+        catId: 0,
+        orderBy: 1,
+        row: 4,
+        page: 1
+      },
+      allLoaded: false, //是否可以上拉属性，false可以上拉，true为禁止上拉，就是不让往上划加载数据了  
+      scrollMode: "auto", //移动端弹性滚动效果，touch为弹性滚动，auto是非弹性滚动  
+      updown: true,
+      clickMessage: true,
+      isLoading:true,
+    }
+  },
+  beforeRouteEnter(to, from, next) {
+        next(vm => {
+            vm.url = from.path;
+            console.log(vm.url);
+            if (vm.url == '/myorder') {
+               window.location.reload();
+            }
+        })
+    },
+  created() {
+    this.getGoodDataList();
+    this.getPackageClassifyList();
+    this.getPartyList();
+  },
+  computed: {
+    showIcon: function() {
+      this.changeShow();
+      return this.scroll > 64;
+    }
+  },
+  mounted() {
+    window.addEventListener('scroll', this.changeShow);
+    this.loadPageList();
+  },
+  methods: {
+    getPartyList(){
+      this.$http.post('api/partypkg/partylist', {
+        "catId": 0,
+        "recommend": false,
+        "row": 6,
+        "page": 1
+      }).then(res => {
+        this.partyList = res.data;
+        if(res.data){
+          this.isLoading =false;
+        }
+      })
+    },
+    changeShow() {
+      this.scroll = document.body.scrollTop;
+    },
+    getGoodDataList() {
+      this.$http.post('api/good/goodlist', {
+        "catId": 0,
+        "recommend": true,
+        "row": 10,
+        "page": 1
+      }).then(res => {
+        this.goodDataList = res.data.data;
+        
+      })
+    },
+    getPackageClassifyList() {
+      this.$http.get('/api/partypkgcat/partycatlist').then(res => {
+        this.packageClassifyList = res.data;
+        
+      })
+    },
+
+    MoreGood(id) {
+      this.$router.push({ path: '/shoplist', query: { id } })
+    },
+    goPackageClassify(classifyId) {
+      this.$router.push({ path: '/shopmeal', query: { classifyId } }, )
+    },
+    goPackageDetail(id) {
+      if (this.clickMessage) {
+        this.$router.push({ path: '/mealdetail', query: { id } })
+      }
+
+    },
+    goGooddetail(id) {
+      this.$router.push({ path: '/shopdetail', query: { id } })
+    },
+    goPartyDetail(id){
+      this.$router.push({ path: '/mealdetail', query: { id } })
+    },
+    loadTop: function() { //组件提供的下拉触发方法  
+      //下拉加载  
+      this.loadPageList();
+      this.$refs.loadmore.onTopLoaded();// 固定方法，查询完要调用一次，用于重新定位  
+    },
+    loadBottom: function() {
+      // 上拉加载  
+      this.more();// 上拉触发的分页查询  
+      this.$refs.loadmore.onBottomLoaded();// 固定方法，查询完要调用一次，用于重新定位  
+    },
+    loadPageList: function() {
+      // 查询数据 
+      this.$http.post('/api/good/goodlist', this.searchCondition).then(res => {
+        this.packageDataList = res.data.data;
+        this.$nextTick(function() {
+          this.scrollMode = "touch";
+        });
+      })
+    },
+    more: function() {
+      // 分页查询  
+      this.searchCondition.page = parseInt(this.searchCondition.page) + 1;
+      this.clickMessage = false;
+      var self = this;
+      setTimeout(function() {
+        self.clickMessage = true
+      }, 1000);
+      this.$http.post('/api/good/goodlist', this.searchCondition).then(res => {
+        if (!res.data.data.length) {
+          this.updown = false
+        } else {
+          this.packageDataList = this.packageDataList.concat(res.data.data);
+        }
+      })
+    },
+  },
+  components: {
+    footGuide,
+    headTop,
+    'v-loadmore': Loadmore,
+    loading,
+  },
+  filters: {
+    two: function(value) {
+      if (!value) { return '' };
+      return value.toFixed(2);
+    },
+  }
+
+}
+</script>
+
+
+
+
+
+<style>
+.classify ul li img{
+  width: .693333rem;
+  height: .693333rem;
+  margin-bottom: 5px;
+}
+.mint-loadmore-top,
+.mint-loadmore-bottom {
+  line-height: 0px;
+}
+
+.shop {
+  background: #f4eef8;
+}
+
+.qsearch-input {
+  width: 100%;
+  height: 1.066667rem;
+  line-height: 1.066667rem;
+  background: linear-gradient(to right, rgba(146, 110, 183, 0.6), rgba(222, 49, 147, 0.6));
+  z-index: 999;
+}
+
+.qsearch-input-content {
+  width: 9.2rem;
+  margin: 0 auto;
+  height: .746667rem;
+  line-height: .746667rem;
+  background: transparent;
+  color: #f9f6f6;
+  font-size: .373333rem;
+  border: 1px solid rgba(232, 229, 244, 0.5);
+  border-radius: 5px;
+  margin-top: .16rem;
+  box-sizing: border-box;
+  padding: 0 .333333rem;
+}
+
+.qsearch-input-content span {
+  display: block;
+  float: right;
+  margin-bottom: 2px;
+}
+
+
+
+
+
+/*搜索框  */
+
+.shop .mint-search {
+  height: auto;
+  position: absolute;
+  width: 100%;
+  z-index: 100;
+}
+
+.shop .fixed {
+  position: fixed;
+  top: 0;
+}
+
+.shop .mint-searchbar {
+  background: linear-gradient(to right, rgba(146, 110, 183, 0.6), rgba(222, 49, 147, 0.6));
+  padding: 4px 10px;
+}
+
+.shop .mint-searchbar-inner {
+  background-color: rgba(255, 255, 255, 0);
+  position: relative;
+  padding: 0;
+  /* border-radius: .133333rem;
+  border: 1px solid rgba(232, 229, 244, 0.5); */
+  height: .725rem
+}
+
+.shop .mint-searchbar-inner:before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  bottom: -50%;
+  left: -50%;
+  right: -50%;
+  -webkit-transform: scale(0.5);
+  transform: scale(0.5);
+  border-style: solid;
+  border-width: 1px;
+  border-color: rgba(232, 229, 244, 0.5);
+  -webkit-border-radius: .133333rem;
+  border-radius: .133333rem;
+}
+
+
+
+.shop .mint-searchbar-inner ::-webkit-input-placeholder {
+  font-size: 12px;
+  color: #ffe1f4;
+}
+
+
+
+
+
+
+
+.shop .mint-searchbar-inner .mintui-search {
+  font-size: .48rem;
+  position: absolute;
+  right: .4rem;
+  margin-top: -.24rem;
+  top: 50%;
+  color: #ffe1f4;
+}
+
+.shop .mint-searchbar-core {
+  width: 80%;
+  margin-left: .4rem;
+  background: rgba(255, 255, 255, 0);
+  color: #fff
+}
+
+.shop ::-webkit-input-placeholder {
+  /* WebKit, Blink, Edge */
+  color: #fff;
+  font-size: .4rem
+}
+
+.shop :-moz-placeholder {
+  /* Mozilla Firefox 4 to 18 */
+  color: #fff;
+  font-size: .4rem
+}
+
+.shop ::-moz-placeholder {
+  /* Mozilla Firefox 19+ */
+  color: #fff;
+  font-size: .4rem
+}
+
+.shop :-ms-input-placeholder {
+  /* Internet Explorer 10-11 */
+  color: #fff;
+  font-size: .4rem
+}
+
+
+
+
+
+
+
+
+
+/*轮播  */
+
+.shop .mint-swipe-items-wrap {
+  width: 100%;
+  height: 240px;
+}
+
+.shop .banner {
+  width: 100%;
+  height: 100%;
+}
+
+
+
+
+
+
+
+
+
+/*分类  */
+
+.shop .classify {
+  width: 100%;
+  background: #fff;
+  box-sizing: border-box;
+  padding: .266667rem 0;
+  text-align: center;
+  font-size: .36rem;
+  color: #b0a4bc;
+}
+
+.shop .classify ul {
+  overflow: hidden;
+}
+
+.shop .classify ul li {
+  float: left;
+  width: 33.3%;
+  /* height: 1.36rem; */
+}
+
+.shop .classify ul li i {
+  font-size: .7rem;
+  color: #492b67
+}
+
+.shop .classify ul li p {
+  line-height: .4rem;
+}
+
+
+
+
+
+
+
+
+
+/*派对必备  */
+
+.shop .floor {
+  margin: .4rem 0;
+  width: auto;
+  padding: .4rem;
+  background: #fff;
+}
+
+
+.shop .floor .title {
+  font-size: .48rem;
+  color: #492b67;
+  margin-bottom: .266667rem;
+}
+
+.shop .floor .title p span {
+  float: right;
+  color: #e8ddf2;
+  font-size: .4rem;
+  position: relative;
+  bottom: -.1rem
+}
+
+.shop .floor .title p span i {
+  margin: 0;
+  font-size: .36rem
+}
+
+.shop .floor .title i {
+  font-size: .52rem;
+  margin-right: .266667rem
+}
+
+.shop .party .start {
+  padding: .133333rem 0;
+}
+
+.shop .party .start img {
+  width: 100%;
+  height:4.533333rem;
+  border-radius: .133333rem;
+}
+
+.shop .floor .swiper-container {
+  width: 100%;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  -webkit-overflow-x: scroll;
+}
+
+.shop .floor .swiper-wrapper {
+
+  overflow: hidden;
+  min-width: 10rem;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.shop .floor .swiper-wrapper1 {
+  width:379%;
+}
+
+.shop .floor .swiper-wrapper2 {
+  width: 230%;
+}
+
+.shop .floor .swiper-slide {
+  display: inline-block;
+  padding: .133333rem 0;
+  box-sizing: border-box;
+  margin-right: .333333rem;
+}
+
+.shop .floor .swiper-slide:last-child {
+  margin-right: 0;
+}
+
+.shop .floor .swiper-slide img {
+  width: 100%;
+}
+
+.swiper-wrapper2 img {
+  width: 2.333333rem !important;
+  height: 2.333333rem;
+  border-radius: .133333rem;
+}
+.swiper-wrapper1 img{
+  width: 6.666667rem !important;
+  height: 4rem;
+  border-radius: .133333rem;
+}
+
+
+
+
+
+
+
+
+
+/*为你推荐  */
+
+.shop .foryou .props {
+  overflow: hidden;
+  margin-top: .266667rem;
+}
+
+.shop .foryou .props li {
+  float: left;
+  width: 32.3%;
+  position: relative;
+  margin-right: .133333rem;
+  overflow: hidden;
+  border-radius: .133333rem;
+  height: 3.933333rem;
+}
+
+.shop .foryou .props li:last-child {
+  margin-right: 0;
+}
+
+.shop .foryou .props li img {
+  width: 100%;
+  height: 100%;
+}
+
+.shop .foryou .props li span {
+  position: absolute;
+  bottom: 0;
+  background: rgba(155, 155, 155, 0.6);
+  font-size: 12px;
+  text-align: center;
+  width: 100%;
+  height: .64rem;
+  line-height: .64rem;
+  color: #333;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -o-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box;
+  padding: 0 .2rem;
+}
+
+.shop .myscroll {
+  width: 100%;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  margin-top: .333333rem;
+}
+
+.shop .scroll-wrap {
+  width: 268%;
+  overflow: hidden;
+  display: flex;
+  -webkit-box-pack: start;
+  -ms-flex-pack: start;
+  justify-content: flex-start;
+}
+
+.shop .foryou-detail {
+  width: 3.866667rem;
+  float: left;
+  margin-right: .266667rem;
+}
+
+.shop .foryou-detail:last-child {
+  margin-right: 0;
+}
+
+.shop .foryou-detail img {
+  width: 100%;
+  height: 2.666667rem;
+  border-radius: .133333rem;
+}
+
+.shop .foryou-detail .foryou-title {
+  color: #333333;
+  font-size: .36rem;
+  margin-top: 10px;
+}
+
+.shop .foryou-detail .foryou-title span {
+  width: 1.8rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: inline-block;
+}
+
+.shop .foryou-detail .foryou-title i {
+  color: #de3163;
+  font-size: .36rem;
+  float: right;
+  font-weight: 700
+}
+
+
+
+
+
+
+
+
+
+/*猜你喜欢  */
+
+.shop .youlike .taocan {
+  overflow: hidden;
+}
+
+.shop .youlike .taocan li {
+  width: 48.5%;
+  float: left;
+  margin-right: .266667rem;
+  margin-bottom: .25rem;
+  overflow: hidden;
+}
+
+.shop .youlike .taocan li:nth-child(even) {
+  margin-right: 0;
+}
+
+.shop .youlike .taocan li .img-box {
+  width: 100%;
+  border: 1px solid #ece5f4;
+  border-radius: .133333rem;
+  box-sizing: border-box;
+  height: 3.72rem;
+  overflow: hidden;
+}
+
+.shop .youlike .taocan li .img-box img {
+  width: 100%;
+  height: 100%;
+}
+
+.shop .youlike .taocan li .des-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: .4rem;
+  color: #492b67;
+  line-height: .88rem;
+  width: 95%;
+  font-weight: 600;
+}
+
+.shop .youlike .taocan li .price {
+  font-size: .4rem;
+  color: #de3163;
+  font-weight: 700
+}
+
+.shop .youlike .taocan li .price i {
+  color: #b0a4bc;
+  font-size: .36rem;
+  margin-left: .266667rem;
+  text-decoration: line-through;
+  font-weight: normal;
+}
+
+
+
+
+
+
+
+
+
+/*查看更多  */
+
+ .more {
+  height: 1rem;
+  margin-bottom: .4rem;
+  text-align: center;
+  color: #b0a4bc;
+  font-size: .32rem;
+}
+
+ .more span {
+  display: block;
+  line-height: .5rem;
+  letter-spacing: .066667rem;
+}
+
+ .more .line {
+  display: inline-block;
+  padding: 0 .333333rem;
+  border-bottom: 1px solid #b0a4bc;
+  font-size: .36rem;
+}
+
+
+
+
+
+
+
+
+
+/*去除滚动条  */
+
+.shop ::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.shop ::-webkit-scrollbar-track {
+  background-color: #fff;
+}
+
+.shop ::-webkit-scrollbar-thumb {
+  background-color: #fff
+}
+
+.shop ::-webkit-scrollbar-button {
+  background-color: #fff
+}
+
+.shop ::-webkit-scrollbar-corner {
+  background-color: #fff;
+}
+</style>

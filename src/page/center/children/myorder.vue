@@ -9,7 +9,6 @@
                 <mt-tab-item id="2">进行中</mt-tab-item>
                 <mt-tab-item id="4">待评价</mt-tab-item>
             </mt-navbar>
-
             <!-- tab-container -->
             <mt-tab-container v-model="selected">
                 <mt-tab-container-item id="0">
@@ -36,14 +35,17 @@
                                 </div>
                             </div>
                             <div class="mystatus">
-                                <p class="total-num">共
+                                <p class="total-num" v-if="myorder[index].orderStatus == '定金未付'">共
                                     <i v-text="group.orderType == 1 ? '1': myorder[index].orderNum"></i> 件 ,
-                                    <i v-text="group.orderType == 1 ? '需付定金：¥'+group.orderPromiseMoney:'需付款：¥'+group.orderTotalFee"></i>
+                                    <i v-text="group.orderType == 1 ? '需付定金：¥'+group.orderPromiseMoney.toFixed(2):'需付款：¥'+(group.orderTotalFee-group.orderCouponMoney).toFixed(2)"></i>
                                 </p>
                                 <!-- <span>确认发货</span> -->
-                                <span class="waitting" @click="goPay(group)">
-                                    <i class="red-text status-button" v-text="group.ispay?'去支付':'查看详情'"></i>
+                                <span class="waitting">
+                                    <i class="red-text status-button" v-text="group.ispay?'去支付':'查看详情'"  @click="goPay(group)"></i>
+                                    <i class="status-button" @click="canclePay(group)" v-if="(group.orderStatus == '定金未付') || (group.orderStatus == '等待支付')">取消订单</i>
+                                    <i class="red-text status-button" @click="goComment(group)" v-if="group.orderStatus == '尾款已支付'">立即评价</i>
                                 </span>
+
                             </div>
                         </div>
                         <div v-if="group.orderType==2">
@@ -59,7 +61,7 @@
                                 <div class="goods-text">
                                     <p>{{item.itemGoodName | dot}}
                                     </p>
-                                    <span>{{item.itemSkuJson.replace(/颜色分类:/,'').replace(/套餐数量:/,'')}}</span>
+                                    <span>{{proData(item.itemSkuJson)}}</span>
                                 </div>
                                 <div class="goods-price">
                                     <p class="nowpriice">￥{{item.itemPrice | two}}</p>
@@ -67,13 +69,14 @@
                                 </div>
                             </div>
                             <div class="mystatus">
-                                <p class="total-num">共
+                                <p class="total-num" v-if="myorder[index].orderStatus == '等待支付'">共
                                     <i v-text="group.orderType == 1 ? '1': myorder[index].orderNum"></i>件 ,
-                                    <i v-text="group.orderType == 1 ? '需付定金：¥'+group.orderPromiseMoney:'需付款：¥'+group.orderTotalFee"></i>
+                                    <i v-text="group.orderType == 1 ? '需付定金：¥'+group.orderPromiseMoney.toFixed(2):'需付款：¥'+(group.orderTotalFee-group.orderCouponMoney).toFixed(2)"></i>
                                 </p>
                                 <!-- <span>确认发货</span> -->
-                                <span class="waitting" @click="goPay(group)">
-                                    <i class="red-text status-button" v-text="group.ispay?'去支付':'查看详情'"></i>
+                                <span class="waitting" >
+                                    <i class="red-text status-button" v-text="group.ispay?'去支付':'查看详情'" @click="goPay(group)"></i>
+                                    <i class="status-button" @click="canclePay(group)" v-if="(group.orderStatus == '定金未付') || (group.orderStatus == '等待支付')">取消订单</i>
                                 </span>
                             </div>
                         </div>
@@ -109,9 +112,9 @@
                             </div>
 
                             <div class="mystatus">
-                                <p class="total-num">共
+                                <p class="total-num" v-if="waitPay[index].orderStatus == '定金未付'">共
                                     <i v-text="group.orderType == 1 ? '1': waitPay[index].orderNum"></i>件 ,
-                                    <i v-text="group.orderType == 1 ? '需付定金：¥'+group.orderPromiseMoney:'需付款：¥'+group.orderTotalFee"></i>
+                                    <i v-text="group.orderType == 1 ? '需付定金：¥'+group.orderPromiseMoney.toFixed(2):'需付款：¥'+(group.orderTotalFee-group.orderCouponMoney).toFixed(2)"></i>
                                 </p>
 
                                 <span class="waitting">
@@ -143,9 +146,9 @@
                             </div>
 
                             <div class="mystatus">
-                                <p class="total-num">共
+                                <p class="total-num" v-if="waitPay[index].orderStatus == '等待支付'">共
                                     <i v-text="group.orderType == 1 ? '1': waitPay[index].orderNum"></i>件 ,
-                                    <i v-text="group.orderType == 1 ? '需付定金：¥'+group.orderPromiseMoney:'需付款：¥'+group.orderTotalFee"></i>
+                                    <i v-text="group.orderType == 1 ? '需付定金：¥'+group.orderPromiseMoney.toFixed(2):'需付款：¥'+(group.orderTotalFee-group.orderCouponMoney).toFixed(2)"></i>
                                 </p>
 
                                 <span class="waitting">
@@ -185,9 +188,9 @@
                             </div>
 
                             <div class="mystatus">
-                                <p class="total-num">共
+                                <p class="total-num" v-if="waitGoods[index].orderStatus == '定金未付'">共
                                     <i v-text="group.orderType == 1 ? '1': waitGoods[index].orderNum"></i>件 ,
-                                    <i v-text="group.orderType == 1 ? '需付定金：¥'+group.orderPromiseMoney:'需付款：¥'+group.orderTotalFee"></i>
+                                    <i v-text="group.orderType == 1 ? '需付定金：¥'+group.orderPromiseMoney.toFixed(2):'需付款：¥'+(group.orderTotalFee-group.orderCouponMoney).toFixed(2)"></i>
                                 </p>
 
                                 <span class="waitting">
@@ -219,9 +222,9 @@
                             </div>
 
                             <div class="mystatus">
-                                <p class="total-num">共
+                                <p class="total-num" v-if="waitGoods[index].orderStatus == '等待支付'">共
                                     <i v-text="group.orderType == 1 ? '1': waitGoods[index].orderNum"></i>件 ,
-                                    <i v-text="group.orderType == 1 ? '需付定金：¥'+group.orderPromiseMoney:'需付款：¥'+group.orderTotalFee"></i>
+                                    <i v-text="group.orderType == 1 ? '需付定金：¥'+group.orderPromiseMoney.toFixed(2):'需付款：¥'+(group.orderTotalFee-group.orderCouponMoney).toFixed(2)"></i>
                                 </p>
 
                                 <span class="waitting">
@@ -259,9 +262,9 @@
                             </div>
 
                             <div class="mystatus">
-                                <p class="total-num">共
+                                <p class="total-num" v-if="waitEvaluated[index].orderStatus == '定金未付'">共
                                     <i v-text="group.orderType == 1 ? '1': waitEvaluated[index].orderNum"></i>件 ,
-                                    <i v-text="group.orderType == 1 ? '需付定金：¥'+group.orderPromiseMoney:'需付款：¥'+group.orderTotalFee"></i>
+                                    <i v-text="group.orderType == 1 ? '需付定金：¥'+group.orderPromiseMoney.toFixed(2):'需付款：¥'+(group.orderTotalFee-group.orderCouponMoney).toFixed(2)"></i>
                                 </p>
                                 <span class="waitting">
                                     <i class="red-text status-button" @click="goComment(group)">立即评价</i>
@@ -289,9 +292,9 @@
                             </div>
 
                             <div class="mystatus">
-                                <p class="total-num">共
+                                <p class="total-num" v-if="waitEvaluated[index].orderStatus == '等待支付'">共
                                     <i v-text="group.orderType == 1 ? '1': waitEvaluated[index].orderNum"></i>件 ,
-                                    <i v-text="group.orderType == 1 ? '需付定金：¥'+group.orderPromiseMoney:'需付款：¥'+group.orderTotalFee"></i>
+                                    <i v-text="group.orderType == 1 ? '需付定金：¥'+group.orderPromiseMoney.toFixed(2):'需付款：¥'+(group.orderTotalFee-group.orderCouponMoney).toFixed(2)"></i>
                                 </p>
                                 <span class="waitting">
                                     <i class="red-text status-button" @click="goComment(group)">立即评价</i>
@@ -299,60 +302,61 @@
                             </div>
                         </div>
 
-                        <!-- 评价 -->
-                        <div class="comment">
-                            <mt-popup v-model="popupVisible" popup-transition="popup-fade" position="bottom">
-                                <div class="reviews">
-                                    <div class="pleased">服务满意度：
-                                        <span class="all">
-                                            <input type="radio" name="b" value="0" v-model="inputdata" />
-                                            <span class="iconfont icon-huabanfuben"></span>
-                                            <input type="radio" name="b" value="1" v-model="inputdata" />
-                                            <span class="iconfont icon-huabanfuben"></span>
-                                            <input type="radio" name="b" value="2" v-model="inputdata" />
-                                            <span class="iconfont icon-huabanfuben"></span>
-                                            <input type="radio" name="b" value="3" v-model="inputdata" />
-                                            <span class="iconfont icon-huabanfuben"></span>
-                                            <input type="radio" name="b" value="4" v-model="inputdata" />
-                                            <span class="iconfont icon-huabanfuben"></span>
-                                            <input type="radio" name="b" value="5" v-model="inputdata" />
-                                            <span class="iconfont icon-huabanfuben"></span>
-                                        </span>
-                                    </div>
-                                    <!--  -->
-                                    <ul class="comments">
-                                        <li v-for="(item,index) in commentLable" :key="index" @click="chooseCommentLable(item,index)" :class="item.isChecked?'red-text':''">{{item.labelLbl}}</li>
-                                    </ul>
-                                    <div class="write">
-                                        <textarea name="" id="" class="write-here" v-model="RateContent"></textarea>
-                                        <ul class="picture">
 
-                                            
-                                            <li v-for="(item,index) in uploadFiles" :key="index">
-                                                <img v-lazy="item" alt="">
-                                                <span class="iconfont icon-cuohao little-button" @click="deleteImg(index)"></span>
-                                            </li>
-                                            <li v-if="uploadFiles.length < 3">
-                                                <i class="iconfont icon-xiangji"></i>
-                                                <p @click="uploadItem(file)">添加图片<br>{{uploadFiles.length}}/3</p>
-                                                <vue-file-upload url="/api/handler/upload" class="iconfont icon-right" name="imgFile" :auto-upload="true" :compress="uploadCompress" :filters="uploadFilters" :events="uploadEvents"></vue-file-upload>
-                                            </li>
-                                    
-                                        </ul>
-                                    </div>
-
-                                </div>
-                                <div class="confirm-reviews" @click="submitComment(group)">提交评论</div>
-                            </mt-popup>
-
-                        </div>
-                        <!-- 评价end -->
                     </div>
 
                 </mt-tab-container-item>
             </mt-tab-container>
+            <!-- 评价 -->
+            <div class="comment">
+                <mt-popup v-model="popupVisible" popup-transition="popup-fade" position="bottom">
+                    <div class="reviews">
+                        <div class="pleased">服务满意度：
+                            <span class="all">
+                                <input type="radio" name="b" value="0" v-model="inputdata" />
+                                <span class="iconfont icon-huabanfuben"></span>
+                                <input type="radio" name="b" value="1" v-model="inputdata" />
+                                <span class="iconfont icon-huabanfuben"></span>
+                                <input type="radio" name="b" value="2" v-model="inputdata" />
+                                <span class="iconfont icon-huabanfuben"></span>
+                                <input type="radio" name="b" value="3" v-model="inputdata" />
+                                <span class="iconfont icon-huabanfuben"></span>
+                                <input type="radio" name="b" value="4" v-model="inputdata" />
+                                <span class="iconfont icon-huabanfuben"></span>
+                                <input type="radio" name="b" value="5" v-model="inputdata" />
+                                <span class="iconfont icon-huabanfuben"></span>
+                            </span>
+                        </div>
+                        <!--  -->
+                        <ul class="comments">
+                            <li v-for="(item,index) in commentLable" :key="index" @click="chooseCommentLable(item,index)" :class="item.isChecked?'red-text':''">{{item.labelLbl}}</li>
+                        </ul>
+                        <div class="write">
+
+                            <textarea name="" id="" class="write-here" v-model="RateContent" placeholder="写下体会，帮助其他小伙伴吧~"></textarea>
+                            <ul class="picture">
+
+                                <li v-for="(item,index) in uploadFiles" :key="index">
+                                    <img v-lazy="item" alt="">
+                                    <span class="iconfont icon-cuohao little-button" @click="deleteImg(index)"></span>
+                                </li>
+                                <li v-if="uploadFiles.length < 3">
+                                    <i class="iconfont icon-xiangji"></i>
+                                    <p @click="uploadItem(file)">添加图片<br>{{uploadFiles.length}}/3</p>
+                                    <vue-file-upload url="/api/handler/upload" class="iconfont icon-right" name="imgFile" :auto-upload="true" :compress="uploadCompress" :filters="uploadFilters" :events="uploadEvents"></vue-file-upload>
+                                </li>
+
+                            </ul>
+                        </div>
+
+                    </div>
+                    <div class="confirm-reviews" @click="submitComment(group)">提交评论</div>
+                </mt-popup>
+
+            </div>
+            <!-- 评价end -->
         </div>
-        
+
     </div>
 </template>
 <script>
@@ -368,7 +372,7 @@ export default {
     data() {
         var __this = this;
         return {
-            isLoading:true,
+            isLoading: true,
             selected: '0',
             myorder: [],
             waitPay: [],
@@ -377,7 +381,7 @@ export default {
             waitEvaluated: [],
             popupVisible: false,
             inputdata: '5',
-            RateContent: '写下体会，帮助其他小伙伴吧~',
+            RateContent: null,
             commentLable: [],
             chooseLable: [],
             RateResult: '',
@@ -396,7 +400,6 @@ export default {
                             duration: 1.5e3
                         });
                     }
-                    console.log(__this.uploadFiles);
                     __this.RatePicture = __this.uploadFiles.join(",");
                 },
                 onBeforeUpload: function() {
@@ -444,30 +447,33 @@ export default {
         loading,
     },
     created() {
-
-
         this.getMyorder();
         this.getCommentLable();
-
     },
     mounted() {
         this.selected = this.$route.query.selected;
     },
     watch: {
         '$route'(to, from) {
-            console.log(this.$route.query.selected, 1)
             this.selected = this.$route.query.selected;
         },
         selected() {
             return this.getList();
         },
-
     },
     computed: {
 
     },
     methods: {
-
+        //
+        proData(pro) {
+            pro = pro.split(";");
+            let data = [];
+            for (let i = 0; i < pro.length; i++) {
+                data.push(pro[i].split(":")[1]);
+            }
+            return data.join(";");
+        },
         deleteImg(index) {
             this.uploadFiles.splice(index, 1);
             this.RatePicture = this.uploadFiles.join(",");
@@ -481,15 +487,14 @@ export default {
         chooseCommentLable(item) {
 
             this.$set(item, "isChecked", !!!item.isChecked);
-            console.log(item.isChecked);
-            if (!!item.isChecked) {
-                this.chooseLable.push(item.labelLbl);
-                console.log(this.chooseLable, "1");
-            } else {
-                this.chooseLable.splice(item, 1);
-            }
+            let _this=this;
+
+                if (!!item.isChecked) {
+                    _this.chooseLable.push(item.labelLbl);
+                } else {
+                    _this.chooseLable.splice(item, 1);
+                }
             this.RateResult = this.chooseLable.join(",")
-            console.log(this.chooseLable);
         },
         goComment(group) {
             this.popupVisible = true;
@@ -497,7 +502,8 @@ export default {
         },
         // 评论
         submitComment() {
-            this.$http.post('/api/rate/add', {
+            if(this.RateContent != null){
+                this.$http.post('/api/rate/add', {
                 "RateContent": this.RateContent,
                 "RateResult": this.RateResult,
                 "OrderInfoId": this.OrderInfoId,
@@ -509,21 +515,32 @@ export default {
                     MessageBox({
                         title: '评价成功',
                         message: '',
-                        confirmButtonText: '完成'
+                        confirmButtonText: '完成',
+                        closeOnClickModal:false
                     }).then(action => {
-                        this.$router.push({ path: '/center/myorder?selected=4' });
+                       location.href="/myorder?selected=0";
+                       //this.$router.push({ path: '/myorder?selected=4' });
                     });
                 } else {
                     MessageBox({
                         title: '网络超时，请稍后重试',
                         message: '',
-                        confirmButtonText: '好的'
+                        confirmButtonText: '好的',
+                        closeOnClickModal:false
                     }).then(action => {
 
                     });
                 }
             })
             this.popupVisible = false;
+            }else{
+                Toast({
+                            message: '评价内容不能为空哦',
+                            position: 'bottom',
+                            duration: 1.5e3
+                    });
+            }
+
         },
         canclePay(group) {
             let id = group.id;
@@ -536,24 +553,23 @@ export default {
             MessageBox.confirm('确认取消支付?', '确认取消').then(action => {
                 this.$http.post('/api/order/status?id=' + id + '&status=cancel&payType=' + payType).then(res => {
                 });
-                this.$router.push({ path: '/center/myorder?selected=0' });
+                location.href="/myorder?selected=0";
+                // this.$router.push({ path: '/myorder?selected=0' });
             });
 
         },
         goPay(group) {
             let orderId = group.id;
-            this.$router.push({ path: '/center/orderpay', query: { orderId } })
+            this.$router.push({ path: '/orderpay', query: { orderId } })
         },
         getMyorder() {
-
             this.$http.get('/api/order/list?status=all&page=0&rows=1000').then(res => {
                 this.myorder = res.data.data;
-                if(res.data.data){
+                if (res.data.data) {
                     this.isLoading = false;
                 }
                 var _this = this;
                 this.myorder.forEach(function(group) {
-
                     if (group.orderStatus == '定金未付' || group.orderStatus == '等待支付') {
                         _this.$set(group, "ispay", true);
                     } else {
@@ -569,7 +585,6 @@ export default {
             if (this.selected == 1) {
                 this.$http.get('/api/order/list?status=waitpay&page=0&rows=1000').then(res => {
                     this.waitPay = res.data.data;
-
                 })
             } else if (this.selected == 2) {
                 this.$http.get('/api/order/list?status=ongoing&page=0&rows=1000').then(res => {
@@ -596,7 +611,6 @@ export default {
             }
         },
         onAddItem(files) {
-            console.log(files);
             this.files = files;
         },
         uploadItem(file) {
@@ -632,7 +646,7 @@ export default {
 </script>
 
 <style>
-/*不显示center内容  */
+
 
 .mint-tab-item-label {
     height: 1.17333rem !important;
@@ -641,10 +655,6 @@ export default {
 
 .mint-toast {
     z-index: 99999;
-}
-
-.center {
-    background: #fff;
 }
 
 .allorder {
@@ -665,7 +675,7 @@ export default {
 }
 
 .allorder .mint-navbar .mint-tab-item .mint-tab-item-label {
-    line-height: 1.17333rem;
+    line-height: 1.17333rem ;
     font-size: .4rem;
 }
 
@@ -704,7 +714,7 @@ export default {
 
 .allorder .goods-img {
     width: 2.26rem;
-    height: 2.26rem;
+    height: 1.883334rem;
     border: 1px solid #ece5f4;
     border-radius: 0.1333rem;
     float: left;
@@ -791,29 +801,6 @@ export default {
     border: 1px solid #b0a4bc;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /*  */
 
 .allorder .blankpage {
@@ -867,22 +854,6 @@ export default {
     color: #de3163;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /*  */
 
 .comment .comments {
@@ -908,21 +879,6 @@ export default {
     border-color: #de3163;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /*xie  */
 
 .comment .write {
@@ -930,12 +886,13 @@ export default {
     color: #b0a4bc;
     text-align: center;
     position: relative;
+    overflow: hidden;
 }
 
 .comment .write-here {
     width: 100%;
-    height: 5.533333rem;
-    padding: .4rem;
+    height: 3rem;
+    padding: .4rem 0;
     box-sizing: border-box;
     color: #b0a4bc;
     font-size: .36rem;
@@ -943,11 +900,7 @@ export default {
     line-height: .48rem;
 }
 
-.comment .write .picture {
-    position: absolute;
-    bottom: 0;
-    left: .266667rem;
-}
+.comment .write .picture {}
 
 .comment .write .picture li {
     margin-right: .266667rem;
@@ -977,19 +930,6 @@ export default {
     font-size: .4rem;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 /*  */
 
 .comment .confirm-reviews {
@@ -1000,14 +940,6 @@ export default {
     color: #fff;
     background: linear-gradient(to right, #926eb7, #de3193);
 }
-
-
-
-
-
-
-
-
 
 /* messagebox */
 
@@ -1029,6 +961,30 @@ export default {
 .mint-msgbox-btn.mint-msgbox-cancel {
     color: #b0a4bc;
     font-size: .48rem;
+}
+
+::-webkit-input-placeholder {
+    /* WebKit, Blink, Edge */
+    color: #b0a4bc;
+    font-size: .4rem
+}
+
+:-moz-placeholder {
+    /* Mozilla Firefox 4 to 18 */
+    color: #b0a4bc;
+    font-size: .4rem
+}
+
+::-moz-placeholder {
+    /* Mozilla Firefox 19+ */
+    color: #b0a4bc;
+    font-size: .4rem
+}
+
+:-ms-input-placeholder {
+    /* Internet Explorer 10-11 */
+    color: #b0a4bc;
+    font-size: .4rem
 }
 </style>
 

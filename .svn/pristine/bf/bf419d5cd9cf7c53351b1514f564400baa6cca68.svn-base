@@ -1,0 +1,854 @@
+<template>
+  <div class="conbox">
+    <div class="homeContent">
+      <div class="homeSearch">
+        <span @click="location">郑州
+          <i class="iconfont icon-arrow_down" ></i>
+        </span>
+        <img src="../../assets/home/logo.png" alt="">
+        <span @click="homesearch">
+          <i class="iconfont icon-sousuo1"></i>
+        </span>
+      </div>
+      <div class="homeHeader">
+        <mt-swipe :auto="0">
+          <mt-swipe-item v-for="(item,index) in carouselFigure" :key="index" ><a :href="item.linkUrl" @click="carouselClick(item)"><img :src="item.imageUrl" alt="" ></a></mt-swipe-item>
+          
+        </mt-swipe>
+      </div>
+      <div class="homeNavigation clearfix">
+        <div class="navigation-head">
+          您的派对计划？
+        </div>
+        <ul class="navigation-content">
+          <li class="navigation-icon" v-for="(item,index) in packageContent" :key="index" @click="goShopMeal(item.id)">
+            <img :src="item.mainImage" alt="">
+            <span class="navigation-icon-font" v-if="item.name.length>0">{{item.name}}</span>
+          </li>
+        </ul>
+      </div>
+      <!-- <div class="homeHotparty">
+          <div class="homeHotparty-head">
+            <i class="iconfont icon-huatong"></i>
+            <span>热门潮趴</span>
+            <span>More
+              <i class="iconfont icon-smallxiangyou"></i>
+            </span>
+          </div>
+          <div class="homeHotparty-content clearfix">
+            <router-link tag="div" class="homeHotparty-contentimg" :class="'homeHotparty-contentimg'+item.id" v-for="item in swiperimg" :key="item.id" :to="'/partydetail/' + item.id">
+              <img :src="item.img">
+              <span>{{item.title}}</span>
+            </router-link>
+          </div>
+        </div> -->
+
+        
+      <div class="partyteach">
+        <div class="homeHotparty-head">
+          <!-- <i class="iconfont icon-2"></i> -->
+          <span style="padding-left:0">派对策划师</span>
+          <!-- :to="'/partyangelList'" -->
+          <router-link tag="span" :to="'/partyangelList'">More
+            <i class="iconfont icon-smallxiangyou"></i>
+          </router-link>
+        </div>
+        <div class="partyteach-content">
+          <ul class="partyteach-content-center">
+            <li class="partyteachContent" v-for="(item,index) in grabList" :key="item.id" v-if="index<5" @click="goPartyAngel(item.id)">
+              <div class="partyteach-container">
+                <div class="partyPlanner">
+                  <img :src="item.headImage">
+                  <p class="plannerName">{{item.nickName | dot}}&nbsp;
+                    <i class="iconfont" :class="item.gender?'icon-iconnan1 man':'icon-nv woman'"></i>
+                  </p>
+                  <p class="plannerIntro">
+                    {{item.summary | trim}}
+                  </p>
+                </div>
+                <!-- <div class="partyteachContentname">{{item.nickName | dot}}
+                    <i class="iconfont" :class="item.gender?'icon-iconnan1 man':'icon-nv woman'"></i>
+                  </div> -->
+                <!-- <div class="partyteachContentintroduce">
+
+                  </div> -->
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+        <div class="pkg-commend-box" v-cloak  v-for="(group,index) in pkgList" :key="index" v-if="group != null" >
+          <h2>
+            {{group.cateName}}套餐精选
+            <span @click='goShopMeal(group.cateId)'>
+              More
+              <i class="iconfont icon-smallxiangyou"></i>
+            </span>
+          </h2>
+          <div class="main-thumb" v-if="group.partyPkgList.length != 0" @click.stop="mealGo(group.partyPkgList[0].id)">
+            <img :src="group.partyPkgList[0].mainImg" alt="">
+            <p>{{group.partyPkgList[0].name}}</p>
+          </div>
+          <div class="pkg-list">
+            <ul v-if="group.partyPkgList.length != 0">
+              <li v-for="(item,index) in group.partyPkgList.slice(1, 5)" @click.stop="mealGo(item.id)" :key="index">
+                  <img :src="item.mainImg + '.250x200.jpg'" alt="">
+                  <p>{{item.name}}</p>
+                  <!-- <div class="comboContentfoot" v-if="item.name.length>0">
+                    {{item.name}}
+                  </div> -->
+              </li>
+            </ul>
+          </div>
+        </div>
+    </div>
+
+    <footer></footer>
+    <foot-Guide selected="home"></foot-Guide>
+  </div>
+</template>
+
+<script>
+import { TabContainer, TabContainerItem } from "mint-ui";
+import { Swipe, SwipeItem } from "mint-ui";
+import { Loadmore } from "mint-ui";
+import headTop from "../../components/head/head";
+import footGuide from "../../components/footer/footGuide";
+import { mapMutations, mapState } from "vuex";
+import { MessageBox } from "mint-ui";
+export default {
+  data() {
+    return {
+      active: "tab-container1",
+      scrolled: false,
+      scroll: "",
+      packageContent: [],
+      packMeallist: [],
+      grabList: [],
+      carouselFigure: [],
+      pkgList: [],
+      times: 0,
+      scrollBottom: ""
+    };
+  },
+  beforeRouteLeave(to, from, next) {
+    window.removeEventListener("scroll", this.handleScroll);
+    console.log("remove")
+    next()  
+    },
+  created() {
+    this.getCarouselFigure();
+    this.getPackageContent();
+    this.$http.get("/api/planner/list?number=100").then(res => {
+      this.grabList = res.data.data.rows;
+    });
+    window.addEventListener("scroll", this.handleScroll);
+  },
+
+  components: {
+    footGuide,
+    headTop,
+    "v-loadmore": Loadmore
+  },
+  methods: {
+    getCarouselFigure() {
+      this.$http.post("/api/carousel/list", { useType: 1 }).then(res => {
+        this.carouselFigure = res.data.data.rows;
+      });
+    },
+    carouselClick(item) {
+      this.$http.get("/api/carousel/click/" + item.id).then(res => {});
+      return true;
+    },
+    goPartyAngel(id) {
+      this.$router.push({ path: "/partyangel", query: { id } });
+    },
+    location() {
+      MessageBox({
+        title: "其他区域暂未开放",
+        message: "",
+        confirmButtonText: "确定"
+      }).then(action => {});
+    },
+    mealGo(id) {
+      this.$router.push({ path: "/mealdetail", query: { id } });
+    },
+    goMealDetail(id) {
+      this.$router.push({ path: "/mealdetail", query: { id } });
+    },
+    goShopMeal(classifyId) {
+      this.$router.push({ path: "/shopmeal", query: { classifyId } });
+    },
+    getPackageContent() {
+      this.$http.get("api/partypkgcat/partycatlist").then(res => {
+        this.packageContent = res.data;
+        if (this.packageContent.length > 8) {
+          this.packageContent = this.packageContent.slice(0, 8);
+        }
+      });
+    },
+    getdata(){
+      this.$http
+        .get("/api/partypkg/recommand?count=5&times=" + this.times)
+        .then(res => {
+          this.pkgList = this.pkgList.concat(res.data.data);
+          console.log(this.pkgList)
+          if(res.data.data == null){
+            this.times = false;
+            window.removeEventListener("scroll", this.handleScroll);
+          }
+        });
+    },
+    //窗口可视范围高度
+    getClientHeight(){    
+      var clientHeight=0;    
+      if(document.body.clientHeight&&document.documentElement.clientHeight){    
+          var clientHeight=(document.body.clientHeight<document.documentElement.clientHeight)?document.body.clientHeight:document.documentElement.clientHeight;            
+      }else{    
+          var clientHeight=(document.body.clientHeight>document.documentElement.clientHeight)?document.body.clientHeight:document.documentElement.clientHeight;        
+      }
+      return clientHeight;    
+    } ,
+    //窗口滚动条高度
+    getScrollTop(){ 
+      var scrollTop=0;    
+      if(document.documentElement && document.documentElement.scrollTop){    
+          scrollTop = document.documentElement.scrollTop;    
+      }else if(document.body){    
+          scrollTop = document.body.scrollTop;    
+      }    
+      return scrollTop;    
+    } ,
+    //文档内容实际高度
+    getScrollHeight(){    
+      return Math.max(document.body.scrollHeight,document.documentElement.scrollHeight);    
+    },
+    handleScroll(){
+      this.scrollBottom = this.getScrollHeight() - this.getScrollTop() -this.getClientHeight();
+    },
+
+    homesearch() {
+      this.$router.push({ path: "/Hsearch" });
+    }
+  },
+  watch: {
+    scrollBottom: function(val) {
+      if(val == 139 || val == 0 ){
+       this.times = parseInt(this.times) + 1;
+        this.getdata();
+       console.log(this.times,'times');
+      }
+    }
+  },
+  filters: {
+    dot: function(value) {
+      if (!value) {
+        return value;
+      } else {
+        if (value.length > 6) {
+          return value.slice(0, 6) + "...";
+        } else {
+          return value;
+        }
+      }
+    },
+    trim: function(value) {
+      return (value || "").replace(/^\s+|\s+$/gm, "");
+    }
+  }
+};
+</script>
+<style scoped>
+.mint-loadmore-top,
+.mint-loadmore-bottom {
+  line-height: 0px;
+}
+/*查看更多  */
+.more {
+  height: 1rem;
+  margin-bottom: 0.4rem;
+  text-align: center;
+  color: #b0a4bc;
+  font-size: 0.32rem;
+}
+.more span {
+  display: block;
+  line-height: 0.5rem;
+  letter-spacing: 0.066667rem;
+}
+.more .line {
+  display: inline-block;
+  padding: 0 0.333333rem;
+  border-bottom: 1px solid #b0a4bc;
+  font-size: 0.36rem;
+}
+.conbox {
+  background: #f3eef7;
+}
+.comboContentImg {
+  display: table-cell;
+}
+
+.homeSearch {
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0px;
+  background: linear-gradient(
+    to right,
+    rgba(190, 168, 212, 0.7),
+    rgba(231, 134, 192, 0.7)
+  );
+  height: 1.066667rem;
+  z-index: 100;
+}
+
+.homeSearch span:nth-of-type(1) {
+  float: left;
+  line-height: 1.066667rem;
+  color: #fff;
+  font-size: 0.375rem;
+  margin-left: 0.4rem;
+  width: 2rem;
+}
+
+.homeSearch span:nth-of-type(1) i {
+  font-size: 0.325rem;
+  padding-left: 0.2rem;
+}
+
+.homeSearch span:nth-of-type(2) {
+  float: right;
+  line-height: 1.066667rem;
+  color: #fff;
+  font-size: 0.426667rem;
+  margin-right: 0.4rem;
+}
+
+.homeSearch span:nth-of-type(2) i {
+  font-size: 0.533333rem;
+}
+
+.homeSearch img {
+  width: 1.933333rem;
+  height: 0.853333rem;
+  margin: 0 auto;
+  display: block;
+  margin-top: 0.106667rem;
+  float: left;
+  margin-left: 2rem;
+}
+
+.homereturnTop {
+  width: 1rem;
+  height: 1rem;
+  position: fixed;
+  right: 0px;
+  bottom: 2rem;
+}
+
+.homeTopscroll {
+  background: red;
+}
+
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #fff;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #fff;
+}
+
+::-webkit-scrollbar-button {
+  background-color: #fff;
+}
+
+::-webkit-scrollbar-corner {
+  background-color: #fff;
+}
+
+footer {
+  width: 100%;
+  height: 70px;
+}
+
+.notSend {
+  background: red;
+}
+
+.send {
+  background: green;
+}
+
+.homeContent {
+  width: 100%;
+  background: #f3eef7;
+  overflow-x: hidden;
+}
+
+.homeHeader {
+  width: 100%;
+  height: 6.666667rem;
+  background: #fff;
+}
+
+.homeHeader img {
+  width: 100%;
+  height: 100%;
+}
+
+.mint-swipe-indicator.is-active {
+  background: #9c154b;
+}
+
+.mint-swipe-indicator {
+  background: #b4bac1;
+}
+
+.navigation-head {
+  width: 100%;
+  height: 1.2rem;
+  line-height: 1.2rem;
+  text-align: center;
+  font-size: 0.38rem;
+  color: #492b67;
+  background: #fff;
+}
+
+.homeNavigation {
+  background: #fff;
+}
+
+.navigation-content {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -o-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box;
+  padding: 0 0.3125rem;
+  width: 100%;
+  text-align: center;
+  background: #fff;
+}
+
+.navigation-icon {
+  width: 25%;
+  height: 1.92rem;
+  float: left;
+  position: relative;
+  color: #492b67;
+}
+
+.navigation-icon img {
+  width: 40%;
+}
+
+.navigation-icon-font {
+  display: block;
+  padding-top: 10px;
+  color: #b0a4bc;
+}
+
+.navigation-icon i {
+  display: block;
+  font-size: 0.666667rem !important;
+  color: #482a66;
+}
+
+.homeHotparty,
+.partyteach,
+.comborecommend {
+  width: 100%;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -o-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box;
+  padding: 0;
+  margin-top: 0.4rem;
+  background: #fff;
+}
+
+.partyteach {
+  padding-bottom: 0.4rem;
+}
+
+.homeHotparty-head {
+  margin: 0 0.4rem;
+  height: 1.333333rem;
+  line-height: 1.333333rem;
+}
+
+.homeHotparty-head > i {
+  font-size: 0.4rem;
+  color: #492b67;
+}
+
+.homeHotparty-head > span {
+  padding-left: 12px;
+  font-size: 0.4rem;
+  color: #492b67;
+  position: relative;
+  top: 0px;
+}
+
+.homeHotparty-head > span:nth-of-type(2) {
+  font-size: 0.4rem;
+  color: #e8ddf2;
+  float: right;
+}
+
+.homeHotparty-content {
+  width: 100%;
+}
+
+.homeHotparty-contentimg {
+  float: left;
+  margin-bottom: 0.4rem;
+}
+
+.homeHotparty-contentimg1,
+comboimg1 {
+  width: 9.2rem;
+  height: 5.075862rem;
+}
+
+.comboImg1 > img {
+  width: 9.2rem;
+  border-radius: 5px;
+  height: 5.075862rem;
+}
+
+.comboImg2 {
+  width: 3.466667rem;
+  height: 3.466667rem;
+}
+
+.comboImg2 > img {
+  width: 3.466667rem;
+  height: 3.466667rem;
+  border-radius: 5px;
+}
+
+.comboImg3 {
+  width: 5.466667rem;
+  height: 3.466667rem;
+  float: right !important;
+}
+
+.comboImg3 > img {
+  width: 5.466667rem;
+  height: 3.466667rem;
+  border-radius: 5px;
+}
+
+.homeHotparty-contentimg1 > img {
+  width: 9.2rem;
+  border-radius: 5px;
+  height: 5.333333rem;
+}
+
+.homeHotparty-contentimg2 {
+  width: 5.466667rem;
+  height: 3.466667rem;
+}
+
+.homeHotparty-contentimg2 > img {
+  width: 5.466667rem;
+  border-radius: 5px;
+  height: 3.466667rem;
+}
+
+.homeHotparty-contentimg3 {
+  width: 3.466667rem;
+  height: 3.466667rem;
+  float: right;
+}
+
+.homeHotparty-contentimg3 > img {
+  width: 3.466667rem;
+  border-radius: 5px;
+  height: 3.466667rem;
+}
+
+.homeHotparty-contentimg4 {
+  width: 4.4rem;
+}
+
+.homeHotparty-contentimg4 > img {
+  width: 4.4rem;
+  border-radius: 5px;
+  height: 3.466667rem;
+}
+
+.homeHotparty-contentimg5 {
+  width: 4.5rem;
+
+  float: right;
+}
+
+.homeHotparty-contentimg5 > img {
+  width: 4.5rem;
+  border-radius: 5px;
+  height: 3.466667rem;
+}
+
+.homeHotparty-contentimg > span {
+  display: inline-block;
+  font-size: 12px;
+  margin-top: 10px;
+  color: #7a6490;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.combo-content-center {
+  width: 100%;
+  height: 3.733333rem;
+  position: relative;
+  left: 0;
+  overflow-y: hidden;
+  overflow-x: scroll;
+}
+
+.partyteach-content {
+  margin: 0 0.4rem;
+  width: 9.2rem;
+  box-sizing: border-box;
+  position: relative;
+  left: 0;
+  overflow-y: hidden;
+  overflow-x: scroll;
+  box-shadow: inset -4px 1px 10px 3px #f7f7f7;
+}
+
+.partyteach-content-center {
+  display: block;
+  float: left;
+  width: auto;
+  height: 100%;
+  list-style: none;
+  padding: 0;
+  overflow: hidden;
+}
+
+.comboContent {
+  position: relative;
+}
+
+.comboContent img {
+  width: 2.4rem;
+  height: 3.733333rem;
+  margin-right: 0.266667rem;
+  border-radius: 5px;
+}
+
+.comboContentfoot {
+  width: 2.4rem;
+  text-align: center;
+  height: 0.733333rem;
+  line-height: 0.733333rem;
+  position: absolute;
+  bottom: 0px;
+  color: #333333;
+  background: rgba(255, 255, 255, 0.7);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* .partyteachContentImg{
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    margin: 0 auto;
+  } */
+
+.partyteach-container {
+  width: 2.6rem;
+  border: 1px solid #ece5f4;
+  padding: 0.32rem;
+  height: 3.4rem;
+}
+
+.partyteach-container:after {
+  clear: both;
+}
+
+.partyPlanner {
+  width: 100%;
+  height: 1.6rem;
+  box-sizing: border-box;
+}
+
+.partyPlanner img {
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  display: block;
+  margin: 0 auto;
+}
+
+.partyPlanner .plannerName {
+  line-height: 1rem;
+  text-align: center;
+  font-size: 0.42rem;
+}
+
+.partyPlanner .plannerName .woman {
+  color: #da3967;
+  font-size: 0.32rem;
+}
+
+.partyPlanner .plannerName .man {
+  color: #75cfed;
+  font-size: 0.32rem;
+}
+
+.partyPlanner .plannerIntro {
+  height: 0.8rem;
+  line-height: 0.4rem;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  color: #b0a4bc;
+}
+
+.partyteachContent {
+  /* width: 2.733333rem;
+    height: 100%;
+    margin-right: .3rem;
+    border:1px solid #ece5f4;
+    padding-bottom: .4rem; */
+  padding-right: 0.3rem;
+  display: table-cell;
+}
+
+.partyteachContent:last-of-type {
+  padding-right: 0;
+}
+
+.partyteachContentname {
+  height: 0.4rem;
+  line-height: 0.4rem;
+  width: 100%;
+  text-align: center;
+  font-size: 0.32rem;
+  color: #492b67;
+  margin-bottom: 0.133333rem;
+}
+
+.partyteachContentintroduce {
+  height: 0.8rem;
+  line-height: 0.4rem;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  color: #b0a4bc;
+}
+</style>
+
+<style>
+.pkg-commend-box {
+  width: 100%;
+  background-color: #fff;
+  margin-top: 0.4rem;
+}
+.pkg-commend-box h2 {
+  padding: 0 0.4rem;
+  height: 1.333333rem;
+  line-height: 1.333333rem;
+  font-size: 0.4rem;
+  color: #492b67;
+}
+
+.pkg-commend-box h2 > i {
+  font-size: 0.4rem;
+  color: #492b67;
+}
+
+.pkg-commend-box h2 > span {
+  font-size: 0.4rem;
+  color: #e8ddf2;
+  float: right;
+}
+.pkg-commend-box .main-thumb {
+  padding: 0 0.4rem;
+  width: 9.2rem;
+  height: 5.075862rem;
+  position: relative;
+}
+.pkg-commend-box .main-thumb > img {
+  width: 100%;
+  height: 100%;
+}
+.pkg-commend-box .main-thumb > p {
+  padding: 0 0.275rem;
+  line-height: 1.2rem;
+  background-color: rgba(0, 0, 0, 0.6);
+  position: absolute;
+  left: 0.4rem;
+  bottom: 0;
+  width: 9.2rem;
+  color: #fff;
+  box-sizing: border-box;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.pkg-commend-box .pkg-list {
+  margin: 0 0.4rem;
+  padding: 0.275rem 0;
+  width: 9.2rem;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  position: relative;
+  left: 0;
+  overflow-y: hidden;
+  overflow-x: scroll;
+}
+.pkg-commend-box .pkg-list ul {
+  display: block;
+  float: left;
+  width: auto;
+  height: 100%;
+  list-style: none;
+  padding: 0;
+  overflow: hidden;
+}
+
+.pkg-commend-box .pkg-list li {
+  display: table-cell;
+  padding-left: 0.275rem;
+  overflow: hidden;
+}
+.pkg-commend-box .pkg-list li:first-child {
+  padding-left: 0;
+}
+.pkg-commend-box .pkg-list li > img {
+  width: 3.8rem;
+  height: 2.096551rem;
+}
+.pkg-commend-box .pkg-list li > p {
+  width: 3.8rem;
+  line-height: 0.8rem;
+  height: 0.8rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+}
+</style>

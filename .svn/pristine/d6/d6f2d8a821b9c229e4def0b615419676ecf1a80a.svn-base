@@ -1,0 +1,1558 @@
+<template>
+    <div class="cartpackage">
+        <!--头部  -->
+        <head-top></head-top>
+        <!--头部  end-->
+        <!--套餐  -->
+        <div v-if="packageData">
+            <!-- <div class="package-type"><i class="iconfont icon-shoudaodelibao"></i>{{packageData.summary}}</div> -->
+            <div class="goods">
+                <div class="imgbox fl">
+                    <img :src="packageData.imgUrl" alt="">
+                </div>
+                <div class="des fl">
+                    <p class="title">{{packageData.name}}</p>
+                    <p class="ctype">
+                        <i>{{packageData.summary}}</i>
+                        <span class="price">{{packageData.discountPrice | two}}</span>
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+        <!--套餐 end  -->
+        <div class="addgoods" @click="addMoreGoods">
+            更多优质单品
+            <span>去挑选
+                <i class="iconfont icon-smallxiangyou"></i>
+            </span>
+
+        </div>
+        <div class="addgoods" v-if="moreGoodList.length !=0" @click="showDetail">
+            加选商品:共{{goodTotalNum}}件，合计{{goodTotalPrice}}元
+            <span>
+                <i v-text="isShowDetail?'点击收起':'点击展开'"></i>
+                <i class="iconfont double-arrow" :class="isShowDetail?'icon-double-angle-arrow-up':'icon-shuangjiantou-copy-copy'"></i>
+            </span>
+
+        </div>
+        <!--隐藏的商品详细  -->
+        <div class="goods-detail" v-if="isShowDetail">
+            <div class="mealdetail-footer-headContent clearfix" v-for="(item,index) in moreGoodList" :key="index">
+                <img :src="item.goodImgUrl" alt="">
+                <div class="text-wraper">
+                    <div class="text-wraper-left">
+                        <span>{{item.goodName}}</span>
+                        <span>{{proData(item.skuPropName)}}</span>
+                    </div>
+                    <div class="text-wraper-right">
+                        <span>{{item.goodTotalPrice | two}}</span>
+                        <span>x{{item.CartNum}}</span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+        <!--end  -->
+
+        <div class="order-price" v-if="packageData">
+            <p>订单总金额
+                <span>{{packageData.discountPrice + goodTotalPrice | two}}</span>
+            </p>
+            <p class="needpay">需付定金
+                <span>{{packageData.downPayment+goodTotalPrice | two}}</span>
+            </p>
+        </div>
+        <!--场地  -->
+        <mt-navbar v-model="selected">
+            <mt-tab-item id="1" class="y">已有场地</mt-tab-item>
+            <mt-tab-item id="2" class="n">没有场地</mt-tab-item>
+        </mt-navbar>
+        <mt-tab-container v-model="selected">
+            <!--已有场地   -->
+            <mt-tab-container-item id="1">
+                <form>
+                    <ul class="item-wraper">
+
+                        <li @click="handleClick('time')">预约时间：
+                            <span> <input type="text" v-model="place" readonly unselectable="on"> </span>
+                            <i class="iconfont icon-smallxiangyou"></i>
+                        </li>
+                        <li @click="handleClick('location')">预约地点：
+                            <span><input type="text" v-model="this.modal1" readonly unselectable="on"></span>
+                            <i class="iconfont icon-smallxiangyou"></i>
+                        </li>
+                        <li>详细地址：
+                            <span><input type="text" placeholder="××路××小区××号(楼)××(门牌号)" v-model="AddrMemo"></span>
+                        </li>
+                        <li @click="handleClick('sex')">服务对象：
+                            <span><input type="text" v-model="this.sex" readonly unselectable="on"></span>
+                            <i class="iconfont icon-smallxiangyou"></i>
+                        </li>
+                        <li>联&nbsp;&nbsp;系&nbsp; 人：
+                            <input type="text" v-model="AddrName">
+                        </li>
+
+                        <li>联系电话：
+                            <input type="text" v-model="phone">
+                        </li>
+                    </ul>
+                    <div class="remark">
+                        <div class="remark-wraper">
+                            <span>备注信息：</span>
+                            <textarea name="" id="" v-model="BuyerMessage"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </mt-tab-container-item>
+            <!--已有场地 end  -->
+
+            <!--没有场地   -->
+            <mt-tab-container-item id="2">
+                <ul class="item-wraper">
+
+                    <li @click="handleClick('time')">预约时间：
+                        <span> <input type="text" v-model="place" readonly unselectable="on"> </span>
+                        <i class="iconfont icon-smallxiangyou"></i>
+
+                    </li>
+                    <li @click="handleClick('location')">预约地点：
+                        <span><input type="text" v-model="this.modal1" readonly unselectable="on"></span>
+                        <i class="iconfont icon-smallxiangyou"></i>
+                    </li>
+                    <li @click="handleClick('hours')">时&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;长 ：
+                        <span><input type="text" v-model="OrderTimeLong" readonly unselectable="on"></span>
+                        <i class="iconfont icon-smallxiangyou"></i>
+                    </li>
+                    <li @click="handleClick('people')">聚会人数：
+                        <span><input type="text" v-model="OrderPersions" readonly unselectable="on"></span>
+                        <i class="iconfont icon-smallxiangyou"></i>
+
+                    </li>
+                    <li>联&nbsp;&nbsp;系&nbsp; 人：
+                        <input type="text" v-model="AddrName">
+                    </li>
+
+                    <li>联系电话：
+                        <input type="text" v-model="phone">
+                    </li>
+                </ul>
+                <div class="remark">
+                    <div class="remark-wraper">
+                        <span>备注信息：</span>
+                        <textarea name="" id="" v-model="BuyerMessage"></textarea>
+                    </div>
+                </div>
+            </mt-tab-container-item>
+            <!--没有场地 end  -->
+        </mt-tab-container>
+        <!--场地  -->
+        <!--支付  -->
+        <div class="pay" @click="confirmPay(success)" v-if="isDisabled">
+            确认支付
+        </div>
+        <div class="pay paying" v-if="!isDisabled">
+            支付中
+        </div>
+        <!--支付  end-->
+            <!--弹出层  -->
+            <mt-popup v-model="popupVisible" popup-transition="popup-fade" position="bottom">
+                <div class="show-time" v-if="this.modal == 'time'">
+                    <h3>请选择预约时间:</h3>
+                    <div class="advance">
+                        <p>
+                            <i class="iconfont icon-ionfontxiangqingye-"></i>
+                            <span>开放15天档期选择</span>
+                        </p>
+                        <ul>
+                            <li :class="{isStutas:true}">
+                                <i>●</i>可预约</li>
+                            <li>
+                                <i>●</i>已约满</li>
+                        </ul>
+                    </div>
+                    <div class="youchoose-wraper clearfix">
+                        <div class="youchoose clearfix">您选择的时间是：{{date}}</div>
+                    </div>
+                    <div class="date-choose">
+                        <div class="date-choose-content">
+                            <p>{{dayMonth}}</p>
+                            <ul class="clearfix date-choose-week">
+                                <li v-for="item in week" class="date-week">{{item}}</li>
+                            </ul>
+                            <ul class="clearfix date-choose-week">
+                                <li v-for="item in firstDay" class="date-day"></li>
+                                <li v-for="(item,index) in nowsMonth" class="date-day">
+                                    <a :class="{notSend:isDay==item.id}" v-if="item.state == true" @click="dayCss(item.id)">{{item.id}}</a>
+                                    <a class="date-day-size" v-else>{{item.id}}</a>
+                                </li>
+                            </ul>
+                            <p>{{afterMonth}}</p>
+                            <ul class="clearfix date-choose-week">
+                                <li v-for="item in week" class="date-week">{{item}}</li>
+                            </ul>
+                            <ul class="clearfix date-choose-week">
+                                <li v-for="item in nextnow" class="date-day">{{item.id}}</li>
+                                <li v-for="(item,index) in nextMonth" class="date-day">
+                                    <a :class="{notSend:isDay==item.id}" v-if="item.state == true" @click="dayCss(item.id,item.next)">{{item.id}}</a>
+                                    <a class="date-day-size" v-else>{{item.id}}</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="advance-hour">
+                        <p>
+                            <i class="iconfont icon-ionfontxiangqingye-"></i>派对使者上门装饰时间，需提前一小时</p>
+                        <ul>
+                            <li v-for="(h,index) in hours" :key="index" @click="chooseHours(index)" :class="{isHours:isChooseHours==index}">{{h}}</li>
+                        </ul>
+                    </div>
+                    <div class="confirm-hour" @click="comfirmTime">确认</div>
+                </div>
+                <div class="show-city" v-else-if="this.modal == 'location'">
+                    <h3>选择城市：</h3>
+                    <p class="choose-title">请选择下列有壹圈圈（派对）服务的城市</p>
+                    <ul class="choose-city">
+                        <li v-for="(item , index) in orderedCity" :key="item.id" @click="chooseCityClick(item,index)">{{item.mergerName.replace(/河南省,/,'').replace(/市/,'')}}</li>
+                    </ul>
+                    <p class="choose-title">更多城市敬请期待</p>
+                    <ul class="choose-city">
+                        <li>郑州</li>
+                        <li>安阳</li>
+                        <li>洛阳</li>
+                        <li>南阳</li>
+                        <li>信阳</li>
+
+                        <li>洛阳</li>
+                        <li>南阳</li>
+                        <li>信阳</li>
+                    </ul>
+                    <div class="explain">
+                        <p>壹圈圈派对正在努力开发更多城市，以方便顾客，欢迎更多城市梦想合伙人的加入！</p>
+                        <p>可发送意向信息至邮箱：service@yqqparty.com</p>
+                    </div>
+                </div>
+                <div class="show-sex" v-else-if="this.modal == 'sex'">
+                    <h3>请选择性别：</h3>
+                    <mt-picker :slots="sexSlots" @change="onSexChange" :visible-item-count="3"></mt-picker>
+                </div>
+                <div class="show-sex" v-else-if="this.modal == 'hours'">
+                    <h3>请选择时长：</h3>
+                    <mt-picker :slots="slots2" @change="onValuesChange2">
+
+                    </mt-picker>
+                </div>
+                <div class="show-sex" v-else-if="this.modal == 'people'">
+                    <h3>请选择聚会人数：</h3>
+                    <mt-picker :slots="slots3" @change="onValuesChange3">
+
+                    </mt-picker>
+                </div>
+            </mt-popup>
+            <!--弹出层  end-->
+        <div class="alert-msg" v-if="showAlert">{{alertMsg}}</div>
+    </div>
+</template>
+
+<script>
+import headTop from '../../components/head/head';
+import { Popup } from 'mint-ui';
+import { Navbar, TabItem } from 'mint-ui';
+import { Picker } from 'mint-ui';
+import datepicker from 'vue-date'
+import { MessageBox } from 'mint-ui';
+import { mapState, mapMutations } from 'vuex';
+import { setStore, getStore, removeStore } from '../../config/mUtils';
+export default {
+    data() {
+        return {
+            popupVisible: false,
+            selected: '1',
+            index: '',
+            modal: '',
+            modal1: '',
+            cityId: '0',
+            sexSlots: [{
+                flex: 1,
+                values: ['女♀','男♂'],
+                textAlign: 'center',
+                defaultIndex:0
+            }],
+            slots2: [
+                { values: ['半天', '全天', '两天', '一周'] }
+            ],
+            slots3: [
+                { values: ['少于10人', '10-20人', '20-30人', '30-40人', '40-50人', '50人以上'] }
+            ],
+            sex: '请选择',
+            sexnum: '',
+            date: '',
+            hours: [
+                "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00"
+            ],
+            isChooseHours: '0',
+            success: true,//确认订单
+            place: '',//预约时间
+            phone: '',//联系电话
+            BuyerMessage: '',//用户留言
+            AddrMemo: '',//详细地址
+            AddrName: '',//联系人姓名
+            OrderPersions: '',//聚会人数
+            OrderTimeLong: '',//聚会时长
+            alertMsg: '',//提示填写电话等信息
+            showAlert: false,
+            //
+            packageData: '',//套餐数据
+            OrderHaveVenues: 1,//是否有场地
+            orderedCity: '',//可预约城市列表
+            TempLists: [],//商品列表json
+            moreGoodList: [],
+            isShowDetail: false,
+            firstDay: '',//本月第一天下标
+            lastDay: '',//本月最后一天
+            nowsMonth: [],//本月日历
+            beforeMonth: [],//本月之前
+            isDay: '',//点击样式变化
+            dayMonth: '',//年月
+            afterMonth: '',//下个月
+            normDate: '',//标准日期
+            nextMonth: [],//下月日历
+            dayMonth1: '',//年月
+            Qday: '',//下月剩余天数
+            lastdayIndex: '',//最后一天的下标
+            nextnow: [],//下个月与本月的交互
+            week: ['日', '一', '二', '三', '四', '五', '六'],
+            isDisabled: true,
+            isShowBox: true,
+        }
+    },
+    components: {
+        headTop,
+        datepicker
+    },
+    mounted: function() {
+
+    },
+    // 检测那个路由过来
+    beforeRouteEnter(to, from, next) {
+
+        next(vm => {
+            vm.url = from.path;
+            if (vm.url == '/mealdetail') {
+                vm.CLEAR_ALL_SETTLE();
+            }
+
+        })
+    },
+    beforeRouteLeave(to, from, next) {
+        window.removeEventListener('popstate', this.popStateHandler);
+        next()
+    },
+    created() {
+        this.getPackageData();
+        this.getNowDate1();
+        this.getOrderedList();
+        this.getMoreGoodList();
+        this.getTempLists();
+
+        history.pushState(null, null, document.URL);
+        window.addEventListener('popstate', this.popStateHandler);
+        // 订单列表是否为空，若为空，跳转到商城首页（防止下单成功后，用户返回时，订单列表为空）
+        if (this.settlePackageAccounts.length == 0) {
+            this.$router.push('/shopstore');
+            window.removeEventListener('popstate', this.popStateHandler);
+        }
+    },
+
+    computed: {
+        ...mapState([
+            'settleAccounts', 'settlePackageAccounts', 'addMoreGood',
+        ]),
+
+        rightPhoneNumber() {
+            return /^1(3|4|5|7|8)\d{9}$/gi.test(this.phone);
+        },
+        goodTotalPrice: function() {
+            let TotalPrice = 0;
+            this.moreGoodList.forEach(function(good) {
+                TotalPrice += parseFloat(good.goodTotalPrice);
+            })
+            return TotalPrice;
+        },
+        goodTotalNum: function() {
+            let TotalNum = 0;
+            this.moreGoodList.forEach(function(good) {
+                TotalNum += parseFloat(good.CartNum);
+            })
+            return TotalNum;
+        }
+    },
+    methods: {
+        ...mapMutations([
+            'SETTLE_ACCOUNTS', 'GIT_SETTLE_ACCOUNTS', 'SETTLE_PACKAGE_ACCOUNTS', 'GIT_SETTLE_PACKAGE_ACCOUNTS', 'IS_PACKAGE_ADD_MORE', 'CLEAR_ALL_SETTLE', 'CLEAR_PACKAGE', 'GIT_PACKAGE_ADD_MORE'
+        ]),
+        proData(pro) {
+            pro = pro.split(";");
+            let data = [];
+            for (let i = 0; i < pro.length; i++) {
+                data.push(pro[i].split(":")[1]);
+            }
+            return data.join(";");
+        },
+        //监听回退；
+        popStateHandler: function() {
+            var _this = this;
+            history.pushState(null, null, document.URL);
+            if (_this.settlePackageAccounts.length != 0) {
+                MessageBox.confirm('确认要放弃订单吗?', '').then(action => {
+                    _this.IS_PACKAGE_ADD_MORE({
+                        moreGood: false,
+                        packageOrderId: null,
+                    });
+                    _this.CLEAR_ALL_SETTLE();
+                    _this.CLEAR_PACKAGE();
+                    _this.$router.push('/shopstore');
+                    window.removeEventListener('popstate', this.popStateHandler);
+                });
+            }
+        },
+        //
+        dayCss(index, next) {
+            let now = new Date();
+            let month = now.getMonth() + 1;
+            let day = now.getDate();
+            this.isDay = index;
+            if (month < 10 && day < 10 && index < 10) {
+                month = '0' + month;
+                day = '0' + day;
+                index = '0' + index;
+            }
+            // this.normDate = now.getFullYear() + "-" + month + '-' + index;
+            // console.log(this.normDate)
+            // let s = new Date(this.normDate).getDay();
+            // let week = this.week[s];
+            if (next == 1) {
+                this.normDate = now.getFullYear() + "/" + (month + 1) + '/' + index;
+                // console.log(this.normDate)
+                let s = new Date(this.normDate).getDay();
+                let week = this.week[s];
+                this.date = now.getFullYear() + "年" + (month + 1) + '月' + index + '日' + '' + '星期' + week;
+            } else {
+                this.normDate = now.getFullYear() + "/" + month + '/' + index;
+                let s = new Date(this.normDate).getDay();
+                let week = this.week[s];
+                this.date = now.getFullYear() + "年" + month + '月' + index + '日' + '' + '星期' + week;
+            }
+        },
+        getNowDate1() {
+            let now = new Date();
+            let month = now.getMonth() + 1;
+            let day = now.getDate();
+            if (month < 10 && day < 10) {
+                month = '0' + month;
+                day = '0' + day;
+            }
+            let week = this.week[now.getDay()];
+            this.date = now.getFullYear() + "年" + month + '月' + day + '日' + '' + '星期' + week;
+            this.dayMonth = now.getFullYear() + "年" + month + '月';
+            if (this.dayMonth == 12) {
+                this.afterMonth = 1;
+            } else {
+                this.afterMonth = now.getFullYear() + "年" + parseInt(month + 1) + '月';
+            }
+
+            var date = new Date();
+            date.setDate(1);
+            this.isDay = day;
+            this.firstDay = date.getDay();
+            date.setMonth(date.getMonth() + 1);
+            var lastDate = new Date(date - 3600000 * 24);
+            this.lastDay = lastDate.getDate();
+            this.Qday = 30 - (this.lastDay - day);
+            var date1 = new Date();
+            date1.setDate(this.lastDay);
+            this.lastdayIndex = date1.getDay() + 1;
+            for (var i = this.lastDay; i > this.lastDay - this.lastdayIndex; i--) {
+                var jo = {};
+                jo.id = i;
+                this.nextnow.push(jo);
+            }
+            // console.log(this.nextnow.reverse())
+            for (let i = 1; i <= this.lastDay; i++) {
+                var jo = {};
+                jo.id = i;
+                jo.next = 1;
+                if (i < this.Qday) {
+                    jo.state = true;
+                } else {
+                    jo.state = false;
+                }
+                this.nextMonth.push(jo);
+            }
+            for (let i = 1; i <= this.lastDay; i++) {
+                var jo = {};
+                jo.id = i;
+                jo.next = 0;
+                if (i < day) {
+                    jo.state = false;
+                } else {
+                    jo.state = true;
+                }
+                this.nowsMonth.push(jo);
+            }
+        },
+        showDetail() {
+            this.isShowDetail = !this.isShowDetail
+        },
+        //添加更多商品
+        addMoreGoods() {
+            this.IS_PACKAGE_ADD_MORE({
+                moreGood: true,
+                packageOrderId: this.$route.query.id
+            });
+            this.moreGoodList = this.settleAccounts;
+            this.$router.push({ path: '/Qsearch' });
+
+        },
+        getMoreGoodList() {
+            this.GIT_SETTLE_ACCOUNTS();
+            this.moreGoodList = this.settleAccounts;
+        },
+        getTempLists() {
+            let templist = [];
+            this.moreGoodList.forEach(function(item, index) {
+                templist.push({
+                    num: item.CartNum,
+                    skuid: item.SkuInfoId,
+                    toid: item.CartGoodId,
+                    totype: 2
+                });
+
+            });
+            this.TempLists = JSON.stringify(templist);
+        },
+        //获取当前日期
+
+        //获取套餐数据
+        getPackageData() {
+            this.GIT_SETTLE_PACKAGE_ACCOUNTS();
+            if (this.settlePackageAccounts.length != 0) {
+                this.packageData = this.settlePackageAccounts[this.$route.query.id][this.$route.query.id];
+            }
+
+
+        },
+        // 点击显示对应的弹出层
+        handleClick: function(param) {
+            this.modal = param;
+            this.popupVisible = true;
+        },
+        //获取可预约城市列表
+        getOrderedList: function() {
+            this.$http.get('api/city/list').then(res => {
+
+                this.orderedCity = res.data;
+            })
+        },
+
+        // 选择具体城市
+        chooseCityClick: function(param, index) {
+            this.modal1 = param.mergerName;
+            this.popupVisible = false;
+            this.cityId = index;
+        },
+        // 选择性别
+        onSexChange(picker, values) {
+            this.sex = values[0] == undefined ? '男' : values[0];
+            this.sexnum = this.sex == '男' ? 1 :0;
+        },
+        onValuesChange2(picker, values) {
+            this.OrderTimeLong = values[0];
+        },
+        onValuesChange3(picker, values) {
+            this.OrderPersions = values[0];
+        },
+        //选择小时
+        chooseHours(index) {
+            this.isChooseHours = index;
+        },
+        //确认时间
+        comfirmTime() {
+            this.popupVisible = false;
+            this.place = this.date + ' ' + this.hours[this.isChooseHours] + ':00';
+        },
+        jsWechatPay(data) {
+            let _this = this;
+            WeixinJSBridge.invoke('getBrandWCPayRequest', data, function(res) {
+                if (res.err_msg == 'get_brand_wcpay_request:cancel') {
+                    MessageBox({
+                        title: '支付失败',
+                        message: '支付遇到问题，请尝试重新支付',
+                        showCancelButton: true,
+                        confirmButtonText: '重新支付'
+                    }).then(action => {
+
+                    });
+                }
+                else if (res.err_msg == 'get_brand_wcpay_request:ok') {
+                    _this.CLEAR_ALL_SETTLE();
+                    _this.CLEAR_PACKAGE();
+                    _this.IS_PACKAGE_ADD_MORE({
+                        moreGood: false,
+                        packageOrderId: null,
+                    });
+                    MessageBox({
+                        title: '支付成功',
+                        message: '您的订单会尽快给您处理',
+                        confirmButtonText: '完成'
+                    }).then(action => {
+                        _this.$router.push({ path: '/myorder?selected=0' });
+                    });
+                }
+                else if (res.err_msg == 'get_brand_wcpay_request:fail') {
+                    MessageBox({
+                        title: '支付失败',
+                        message: '支付网关出现错误，请稍后重试',
+                        confirmButtonText: '确定'
+                    }).then(action => {
+                        
+                    });
+                } else{
+                    MessageBox({
+                        title: '支付失败',
+                        message: res.err_msg,
+                        confirmButtonText: '确定'
+                    }).then(action => {
+                        
+                    });
+                }
+            });
+        },
+        // 确认支付
+        confirmPay(result) {
+            console.log(3)
+            var _this = this;
+            this.isDisabled = false;
+            console.log(this.place)
+            let str1 = this.place.replace(/年/, '-').replace(/月/, '-').replace(/日/, '').slice(0, 9);
+            let str2 = this.place.replace(/年/, '-').replace(/月/, '-').replace(/日/, '').slice(13);
+            console.log(str1,str2)
+            if (!this.place || !this.phone || !this.rightPhoneNumber) {
+                console.log(1)
+                this.isDisabled = true;
+                if (!this.place) {
+                    console.log(2)
+                    this.alertMsg = '请选择预约时间';
+                } else if (!this.phone) {
+                    this.alertMsg = '请填写联系电话';
+                } else if (!this.AddrMemo) {
+                    this.alertMsg = '请填写详细地址';
+                } else {
+                    this.alertMsg = '请填写正确的手机号';
+                }
+                this.showAlert = true;
+                var self = this;
+                setTimeout(function() {
+                    self.showAlert = false
+                }, 1000);
+                
+            } else {
+                this.$http.post('api/order/create', {
+                    "ReceiveId": '',
+                    "BuyerMessage": this.BuyerMessage,
+                    "OrderType": 1,
+                    "OrderToSex": this.sexnum,
+                    "OrderHaveVenues": this.selected,
+                    "OrderPromiseMoney": this.packageData.downPayment + this.goodTotalPrice,
+                    "OrderPormiseDate": str1 + ' ' + str2,
+                    "OrderCity": this.modal1,
+                    "OrderAreaId": this.orderedCity[this.cityId].id,
+                    "OrderPersions": this.OrderPersions,
+                    "OrderTimeLong": this.OrderTimeLong,
+                    "PartyId": this.packageData.packageId,
+                    "TempLists": this.TempLists,
+                    "AddrMemo": this.AddrMemo,
+                    "AddrName": this.AddrName,
+                    "AddrMobile": this.phone
+                }
+                ).then(res => {
+                    this.isDisabled =true;
+                    if (res.data.success) {
+                        this.$http.post('api/order/pay?id=' + res.data.data + '&payType=1').then(response => {
+                            if (response.data.success) {
+                                let wxdataa = JSON.parse(response.data.message);
+                                let package_list = wxdataa.package;
+                                let sendData = {
+                                    appId: wxdataa.appId,
+                                    nonceStr: wxdataa.nonceStr,
+                                    package: package_list,
+                                    paySign: wxdataa.paySign,
+                                    signType: wxdataa.signType,
+                                    timeStamp: wxdataa.timeStamp
+                                }
+                                if (typeof WeixinJSBridge == "undefined") {
+                                    if (document.addEventListener) {
+                                        document.addEventListener('WeixinJSBridgeReady', function() { _this.jsWechatPay(sendData) }, false);
+                                    }
+                                    else if (document.attachEvent) {
+                                        document.attachEvent('WeixinJSBridgeReady', function() { _this.jsWechatPay(sendData) });
+                                        document.attachEvent('onWeixinJSBridgeReady', function() { _this.jsWechatPay(sendData) });
+                                    }
+                                } else {
+                                    _this.jsWechatPay(sendData);
+                                }
+
+                            } else {
+                                MessageBox({
+                                    title: '支付失败',
+                                    message: '支付遇到问题，请尝试重新支付',
+                                    showCancelButton: true,
+                                    confirmButtonText: '重新支付'
+                                }).then(action => {
+                                       alert('请重新确认支付') 
+                                });
+
+                            }
+                        })
+                    }
+                }).catch(error => {
+                    this.isDisabled = false;
+                    if (error) {
+                        this.isDisabled = true;
+                    }
+                })
+
+            }
+
+
+
+
+        },
+
+
+    },
+    filters: {
+        //保留两位小数点
+        two: function(value) {
+
+            if (!value) { return '' };
+            return '¥' + value.toFixed(2);
+        },
+
+    }
+}
+</script>
+
+
+<style >
+.cartpackage .package-type {
+    background: #fff;
+    height: 1.2rem;
+    line-height: 1.2rem;
+    padding: 0 .4rem;
+    box-sizing: border-box;
+    font-size: .42rem;
+    color: #492b67;
+}
+
+.cartpackage .package-type i {
+    font-size: .55rem;
+    margin-right: .2rem;
+}
+
+.cartpackage {
+    background: #f1eef6
+}
+
+.cartpackage .goods {
+    height: 3.066667rem;
+    background: #f1eef6;
+    overflow: hidden;
+    box-sizing: border-box;
+    padding: .533333rem .4rem;
+}
+
+.cartpackage .goods .imgbox {
+    width: 2rem;
+    border-radius: .133333rem;
+    border: 1px solid #ece5f4;
+    margin-right: .4rem;
+    height: 2rem;
+    overflow: hidden;
+}
+
+.cartpackage .goods .imgbox img {
+    width: 100%;
+    height: 100%;
+}
+
+.cartpackage .goods .des {
+    width: 6.7rem;
+    box-sizing: border-box;
+    padding: .266667rem 0;
+}
+
+.cartpackage .goods .des .title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: .4rem;
+    color: #492b67;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    white-space: normal!important;
+    line-height: .506667rem;
+    min-height: 1rem;
+}
+
+.cartpackage .goods .des .ctype {
+    color: #aea2ba;
+    font-size: .36rem;
+    line-height: .8rem;
+}
+
+.cartpackage .goods .des .ctype i {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+    max-width: 4.8rem;
+    float: left;
+}
+
+.cartpackage .goods .des .price {
+    float: right;
+    color: #de3163;
+    font-size: .4rem;
+}
+
+.cartpackage .addgoods {
+    color: #b0a4bc;
+    font-size: .4rem;
+    background: #fff;
+    padding: 0 .4rem;
+    line-height: 1.2rem;
+    border-top: 1px solid #ece5f4
+}
+
+.cartpackage .addgoods .double-arrow {
+    font-size: 12px
+}
+
+.cartpackage .addgoods span {
+    float: right;
+    color: #492b67;
+}
+
+.cartpackage .order-price {
+    padding: .2rem .4rem;
+    box-sizing: border-box;
+    font-size: .4rem;
+    overflow: hidden;
+    background: #fff;
+    width: 100%;
+    box-sizing: border-box;
+    border-top: 1px solid #e8ddf2;
+    margin-bottom: .4rem;
+}
+
+.cartpackage .order-price p {
+    text-align: right;
+    color: #b0a4bc;
+    box-sizing: border-box;
+    line-height: .8rem
+}
+
+.cartpackage .order-price p span {
+    width: 2rem;
+    display: inline-block;
+}
+
+
+
+.cartpackage .order-price .needpay span {
+    color: #de3163;
+}
+
+
+
+
+
+
+
+
+
+
+/*  */
+
+.cartpackage .mint-navbar {
+    padding: .533333rem 1.6rem;
+    height: 2.133333rem;
+    box-sizing: border-box;
+}
+
+.cartpackage .mint-navbar .mint-tab-item {
+
+    padding: 0
+}
+
+.cartpackage .mint-navbar .mint-tab-item.is-selected {
+    margin: 0;
+    border: 0;
+}
+
+.cartpackage .mint-navbar .mint-tab-item.is-selected .mint-tab-item-label {
+    background: #b0a4bc;
+    color: #fff;
+}
+
+.cartpackage .mint-tab-item-label {
+    height: 1.066667rem;
+    line-height: 1.066667rem;
+    color: #b0a4bc;
+    font-size: .45rem;
+    background: #f1eef6;
+}
+
+.cartpackage .y .mint-tab-item-label {
+    border-top-left-radius: .133333rem;
+    border-bottom-left-radius: .133333rem;
+}
+
+.cartpackage .n .mint-tab-item-label {
+    border-top-right-radius: .133333rem;
+    border-bottom-right-radius: .133333rem;
+}
+
+
+
+
+
+
+
+
+
+
+/* 显示ul列表 */
+
+.cartpackage .mint-tab-container {
+    background: #fff;
+}
+
+.cartpackage .mint-tab-container-item .item-wraper li {
+
+    line-height: 1.2rem;
+    font-size: .4rem;
+    color: #492b67;
+    box-sizing: border-box;
+    border-top: 1px solid #e8ddf2;
+    padding: 0 .4rem;
+}
+
+.cartpackage .mint-tab-container-item .item-wraper li span {
+    color: #b0a4bc;
+    font-size: .4rem;
+    min-width: 1rem
+}
+
+.cartpackage .mint-tab-container-item .item-wraper li i {
+    float: right;
+    color: #b0a4bc;
+    font-size: .48rem;
+}
+
+.cartpackage .mint-tab-container-item .item-wraper li input {
+    border: 0;
+    color: #b0a4bc;
+    font-size: .4rem;
+    width: 6rem;
+}
+
+.cartpackage ::-webkit-input-placeholder {
+    /* WebKit, Blink, Edge */
+    color: #b0a4bc;
+    font-size: .4rem
+}
+
+.cartpackage :-moz-placeholder {
+    /* Mozilla Firefox 4 to 18 */
+    color: #b0a4bc;
+    font-size: .4rem
+}
+
+.cartpackage ::-moz-placeholder {
+    /* Mozilla Firefox 19+ */
+    color: #b0a4bc;
+    font-size: .4rem
+}
+
+.cartpackage :-ms-input-placeholder {
+    /* Internet Explorer 10-11 */
+    color: #b0a4bc;
+    font-size: .4rem
+}
+
+.cartpackage .remark {
+    font-size: .36rem;
+    color: #b0a4bc;
+    line-height: .733333rem;
+
+    overflow: hidden;
+    padding: .4rem;
+
+    border-top: 1px solid #e8ddf2;
+}
+
+.cartpackage .remark-wraper {
+    background: #f1eef6;
+    border-radius: .133333rem;
+    padding: .266667rem 0 0 .266667rem;
+    box-sizing: border-box;
+    height: 3rem;
+}
+
+.cartpackage .remark span {
+    position: absolute;
+    left: .6rem;
+    display: block;
+    background: #f1eef6;
+}
+
+.cartpackage .remark textarea {
+    border: 0;
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    color: #b0a4bc;
+    font-size: .36rem;
+    line-height: .733333rem;
+    background: #f1eef6;
+    text-indent: 5em
+}
+
+
+
+
+/*弹出层  */
+
+.cartpackage .mint-popup {
+    width: 100%;
+}
+
+
+
+
+
+
+
+
+
+
+/* 时间 */
+
+.show-time {
+    padding: .4rem 0;
+}
+
+.show-time h3 {
+    font-size: .48rem;
+    color: #492b67;
+    padding: 0 .4rem;
+}
+
+.show-time .advance {
+    overflow: hidden;
+    line-height: .733333rem;
+    font-size: .4rem;
+    color: #b0a4bc;
+    margin-bottom: .4rem;
+    padding: 0 .4rem;
+}
+
+.show-time .advance p {
+    float: left;
+}
+
+.show-time .advance p i {
+    margin-right: .2rem;
+}
+
+.show-time .advance ul {
+    float: left;
+}
+
+.show-time .advance ul li {
+    float: left;
+    margin-left: .4rem;
+}
+
+.show-time .advance ul li.isStutas {
+    color: #492b67
+}
+
+.show-time .advance ul li i {
+    margin-right: .2rem
+}
+
+.show-time .youchoose-wraper {
+    height: 1rem;
+    padding: 0 .4rem;
+}
+
+.show-time .youchoose {
+    float: left;
+    margin-left: .8rem;
+    font-size: .4rem;
+    line-height: 1rem;
+    color: #b0a4bc;
+}
+
+.input-wrapper[_v-6c618eea] {
+    width: 4.333333rem;
+    height: 1rem;
+    padding: 0;
+}
+
+.input[_v-6c618eea] {
+    line-height: 1rem;
+    font-size: .4rem;
+    color: #492b67;
+}
+
+.advance-hour {
+    padding: 0 0.4rem;
+    margin-top: .533333rem;
+    color: #b0a4bc;
+    font-size: .36rem;
+    overflow: hidden;
+}
+
+.advance-hour p i {
+    margin-right: .2rem;
+}
+
+.advance-hour ul {
+    padding: .266667rem 0;
+    box-sizing: border-box;
+}
+
+.advance-hour ul li {
+    float: left;
+    width: 1.6rem;
+    text-align: center;
+    height: .666667rem;
+    line-height: .666667rem;
+    border: 1px solid #b0a4bc;
+    border-radius: .133333rem;
+    margin-right: .24rem;
+    margin-bottom: .24rem;
+    box-sizing: border-box;
+}
+
+.advance-hour ul li.isHours {
+    border: 1px solid #492b67;
+    color: #fff;
+    background-color: #492b67;
+}
+
+.confirm-hour {
+    width: 100%;
+    height: 1.306667rem;
+    background: linear-gradient(to right, #926eb7, #de3193);
+    text-align: center;
+    line-height: 1.306667rem;
+    color: #fff;
+    font-size: .48rem;
+    position: absolute;
+    bottom: 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+/* 年份月份颜色 */
+
+.panel-header[_v-6c618eea] {
+    color: #492b67;
+}
+
+.type-year[_v-6c618eea],
+.type-month[_v-6c618eea],
+.date-list[_v-6c618eea] {
+    color: #492b67;
+}
+
+.year-list li.selected[_v-6c618eea],
+.month-list li.selected[_v-6c618eea] {
+    background-color: #492b67;
+}
+
+
+
+
+
+
+
+
+
+
+/* 面板颜色 */
+
+.date-list li .message.selected .bg[_v-6c618eea] {
+    background-color: #492b67;
+}
+
+.date-list li .message.selected span[_v-6c618eea] {
+    color: #b0a4bc;
+}
+
+.weeks .preMonth[_v-6c618eea],
+.date-list .preMonth[_v-6c618eea],
+.weeks .nextMonth[_v-6c618eea],
+.date-list .nextMonth[_v-6c618eea] {
+    color: #b0a4bc;
+}
+
+.weeks li[_v-6c618eea],
+.date-list li[_v-6c618eea] {
+    color: #492b67;
+}
+
+
+
+
+
+
+
+
+
+
+/*地点  */
+
+.cartpackage .show-city,
+.show-sex {
+    padding: .4rem;
+    line-height: .666667rem;
+}
+
+.cartpackage .show-city,
+.show-sex h3 {
+    font-size: .4rem;
+    color: #492b67;
+}
+
+.cartpackage .show-city .choose-title {
+    color: #b0a4bc;
+    font-size: .36rem;
+}
+
+.cartpackage .show-city .choose-city {
+    overflow: hidden;
+}
+
+.cartpackage .show-city .choose-city li {
+    padding: 0 .4rem;
+    border: 1px solid #b0a4bc;
+    border-radius: .133333rem;
+    text-align: center;
+    float: left;
+    margin: .2rem;
+    font-size: .36rem;
+    color: #b0a4bc;
+}
+
+.cartpackage .show-city .explain {
+    line-height: .48rem;
+    margin-top: .2rem;
+}
+
+.cartpackage .show-city .explain p {
+    color: #b0a4bc;
+    font-size: .36rem;
+}
+
+
+
+
+
+
+
+
+
+/*地点  */
+
+
+/*支付  */
+
+.cartpackage .pay {
+    height: 1.306667rem;
+    line-height: 1.306667rem;
+    color: #fff;
+    font-size: .466667rem;
+    text-align: center;
+    background: linear-gradient(to right, #926eb7, #de3193);
+}
+
+.cartpackage .paying {
+    background: #b0a4bc;
+}
+
+
+
+
+
+
+
+
+
+
+/* 支付成功 */
+
+.mint-msgbox-title {
+    color: #b0a4bc;
+    font-size: .533333rem;
+    font-weight: normal;
+}
+
+.mint-msgbox-message {
+    color: #b0a4bc;
+}
+
+.mint-msgbox-btn.mint-msgbox-confirm {
+    color: #492b67;
+    font-size: .48rem;
+}
+
+.mint-msgbox-btn.mint-msgbox-cancel {
+    color: #b0a4bc;
+    font-size: .48rem;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* alert-msg */
+
+.alert-msg {
+    position: fixed;
+    height: 1rem;
+    width: 6rem;
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    font-size: .4rem;
+    text-align: center;
+    line-height: 1rem;
+    top: 50%;
+    left: 50%;
+    transform: translate3d(-50%, -50%, 0);
+    border-radius: 0.2rem;
+    transition: .2s;
+}
+
+
+
+
+
+
+
+
+
+
+/* 加选商品样式 */
+
+.goods-detail {
+    background: #f1eef6;
+    padding: .2rem 0;
+    overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.mealdetail-footer-headContent {
+    width: 100%;
+    font-size: .3rem;
+    color: #b0a4bc;
+    padding: .2rem .4rem;
+    box-sizing: border-box;
+    height: 3.066667rem;
+}
+
+.mealdetail-footer-headContent img {
+    width: 2.666667rem;
+    height: 2.666667rem;
+    border-radius: 10px;
+    border: 1px solid #ece5f4;
+    float: left;
+    margin-right: .4rem
+}
+
+.mealdetail-footer-headContent .text-wraper {
+    overflow: hidden;
+    font-size: .4rem;
+    line-height: .6rem;
+    color: #492b67;
+    padding-top: .2rem;
+}
+
+.mealdetail-footer-headContent .text-wraper .text-wraper-left {
+    width: 70%;
+    float: left;
+}
+
+.mealdetail-footer-headContent .text-wraper .text-wraper-left>span:nth-of-type(2) {
+    color: #b0a4bc;
+    margin-top: .2rem;
+    display: block;
+}
+
+.mealdetail-footer-headContent .text-wraper .text-wraper-right {
+    width: 30%;
+    float: left;
+    text-align: right;
+}
+
+.mealdetail-footer-headContent .text-wraper .text-wraper-right span {
+    width: 100%;
+    display: block;
+}
+
+.mealdetail-footer-headContent .text-wraper .text-wraper-right>span:nth-of-type(1) {
+    color: #de3163;
+    font-size: .4rem;
+}
+
+.mealdetail-footer-headContent>p:nth-of-type(1) {
+    width: 6.1rem;
+    height: 100%;
+    margin-left: .32rem;
+    float: left;
+    margin-top: .4rem;
+}
+
+.mealdetail-footer-headContent>p:nth-of-type(2) {
+    width: 1.066667rem;
+    margin-right: .4rem;
+    float: right;
+    margin-top: 1.555rem;
+}
+
+.mealdetail-footer-headContent>p:nth-of-type(1)>span {
+    display: block;
+    width: 100%;
+    line-height: .666667rem;
+}
+
+.mealdetail-footer-headContent>p>span:nth-of-type(1) {
+    width: 70%;
+    float: left;
+}
+
+.colormeal {
+    background: #f3eef7;
+}
+
+.mealdetail-footer-headContent>p>span>span {
+    color: #b0a4bc;
+    display: block;
+    float: right;
+    margin-right: 0.4rem;
+}
+
+.date-day-size {
+    color: #666;
+}
+
+.notSend {
+    background: #492b67;
+    color: #fff !important;
+}
+
+.date-choose {
+    width: 100%;
+    height: 7rem;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+.date-choose-content {
+    width: 100%;
+    height: 200%;
+    overflow: hidden;
+}
+
+.date-choose p {
+    width: 100%;
+    height: 1.333333rem;
+    line-height: 1.333333rem;
+    text-align: center;
+    color: #492b67;
+    font-size: .4rem;
+}
+
+.date-choose-week {
+    width: 90%;
+    margin: 0 auto
+}
+
+.date-week {
+    float: left;
+    width: 14.28%;
+    height: 0.8rem;
+    text-align: center;
+    line-height: 0.8rem;
+    color: #492b67;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.date-day {
+    float: left;
+    width: 14.28%;
+    height: 1rem;
+    text-align: center;
+    line-height: 1rem;
+    color: #b0a4bc;
+    font-size: 12px;
+}
+
+.date-day a {
+    width: 80%;
+    height: 100%;
+    line-height: 3.2;
+    display: inline-block;
+    border-radius: 50%;
+}
+</style>

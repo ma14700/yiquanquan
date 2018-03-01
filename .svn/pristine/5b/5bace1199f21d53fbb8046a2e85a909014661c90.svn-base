@@ -1,0 +1,246 @@
+<template>
+  <div class="indentcenter">
+    <head-top></head-top>
+    <div class="indentcenter-head clearfix">
+      <img :src="RiderInfo.HeadImage" alt="" v-if="RiderInfo.HeadImage">
+      <div class="indentcenter-head-content">
+        <p>{{RiderInfo.NickName}}</p>
+        <!-- <p>自我介绍自我介绍自我介绍自我介绍自我介绍</p> -->
+        <!-- <div class="all-wraper">
+          <span class="all">
+            <input type="radio" name="b" value="0" v-model="inputdata" disabled="disabled" />
+            <span class="iconfont icon-huabanfuben"></span>
+            <input type="radio" name="b" value="1" v-model="inputdata" disabled="disabled" />
+            <span class="iconfont icon-huabanfuben"></span>
+            <input type="radio" name="b" value="2" v-model="inputdata" disabled="disabled" />
+            <span class="iconfont icon-huabanfuben"></span>
+            <input type="radio" name="b" value="3" v-model="inputdata" disabled="disabled" />
+            <span class="iconfont icon-huabanfuben"></span>
+            <input type="radio" name="b" value="4" v-model="inputdata" disabled="disabled" />
+            <span class="iconfont icon-huabanfuben"></span>
+            <input type="radio" name="b" value="5" v-model="inputdata" disabled="disabled" />
+            <span class="iconfont icon-huabanfuben"></span>
+          </span>
+        </div> -->
+
+      </div>
+    </div>
+    <div class="indentcenter-content">
+      <p class="title-type">我的标签：</p>
+      <div class="indentcenter-content-title clearfix">
+        <span v-for="item in myLable">{{item.lable}}({{item.num}})</span>
+      </div>
+      <p class="title-type">评价：</p>
+      <div class="indentcenter-evaluate" v-for="(item,index) in myEvaluate" :key="index">
+        <p>匿名评价
+          <span class="all">
+            <input type="radio" name="b" value="0" v-model="item.rateScore" disabled="disabled" />
+            <span class="iconfont icon-huabanfuben"></span>
+            <input type="radio" name="b" value="1" v-model="item.rateScore" disabled="disabled" />
+            <span class="iconfont icon-huabanfuben"></span>
+            <input type="radio" name="b" value="2" v-model="item.rateScore" disabled="disabled" />
+            <span class="iconfont icon-huabanfuben"></span>
+            <input type="radio" name="b" value="3" v-model="item.rateScore" disabled="disabled" />
+            <span class="iconfont icon-huabanfuben"></span>
+            <input type="radio" name="b" value="4" v-model="item.rateScore" disabled="disabled" />
+            <span class="iconfont icon-huabanfuben"></span>
+            <input type="radio" name="b" value="5" v-model="item.rateScore" disabled="disabled" />
+            <span class="iconfont icon-huabanfuben"></span>
+          </span>
+        </p>
+        <p>{{item.rateContent}}</p>
+      </div>
+
+    </div>
+    <footer></footer>
+  </div>
+</template>
+<script>
+import headTop from '../../../components/head/head';
+import {setStore,getStore} from '../../../config/mUtils'
+export default {
+  data() {
+    return {
+      myLable: '',
+      myEvaluate: [],
+      inputdata: '5',
+      RiderInfo:{},
+    }
+  },
+  mounted() {
+
+  },
+  created() {
+    let userInfo = JSON.parse(getStore('userInfo')) ||  {}; 
+    var checkRider  = !!!getStore('checkRider');
+    if(!!!userInfo.riderInfo){
+      if(checkRider)
+      {
+        setStore('checkRider',true);
+        window.location.href = "/author?clear=1";
+      }
+      else{
+         window.location.href = "/";
+      }
+    }
+    this.RiderInfo = userInfo.riderInfo;
+    console.info(this.RiderInfo);
+    this.getEvaluateList();
+  },
+  methods: {
+    getEvaluateList(key) {
+      this.$http.get('/api/rate/rider').then(res => {
+        console.log(res);
+        this.myEvaluate = res.data.data;
+        let a = res.data.message;
+        a = JSON.parse(a);
+        let arr = [];
+        for (var p in a) {
+          arr.push({
+            num:a[p],
+            lable:p,
+          })
+        }
+        this.myLable = arr;
+      })
+    },
+  },
+  components: {
+    headTop
+  }
+}
+</script>
+
+<style>
+.indentcenter {
+  background: #f1eef6
+}
+
+footer {
+  padding-bottom: 1.6rem;
+}
+
+.indentcenter-head {
+  width: 100%;
+  padding-top: .866667rem;
+  padding-bottom: 1.066667rem;
+  background: #fff;
+}
+
+.indentcenter-head img {
+  width: 2.533333rem;
+  height: 2.533333rem;
+  border-radius: 50%;
+  background: #e5e9ec;
+  float: left;
+  margin-left: 1.333333rem;
+}
+
+.indentcenter-head-content {
+  float: left;
+  margin-left: 5px;
+  margin-top: .4rem;
+  width: 55%;
+}
+
+.indentcenter-head-content>p:nth-of-type(1) {
+  color: #492b67;
+  font-size: .4rem;
+  height: .666667rem;
+  line-height: .666667rem;
+  font-weight: 600;
+}
+
+.indentcenter-head-content>p:nth-of-type(2) {
+  color: #b0a4bc;
+  font-size: .346667rem;
+  line-height: .533333rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.indentcenter-content {}
+
+.indentcenter-content .title-type {
+  width: 100%;
+  height: .8rem;
+  line-height: .8rem;
+  color: #492b67;
+  font-size: .426667rem;
+  padding: 0 .4rem;
+  box-sizing: border-box;
+  background: #fff
+}
+
+.indentcenter-content-title {
+  box-sizing: border-box;
+  padding: 0 .4rem;
+  width: 100%;
+  line-height: 0.766667rem;
+  padding-bottom: .666667rem;
+  background: #fff;
+}
+
+.indentcenter-content-title span {
+  padding: 0 .16rem;
+  background: #b0a4bc;
+  border-radius: 5px;
+  margin-right: .333333rem;
+  display: block;
+  float: left;
+  margin-top: .333333rem;
+  min-width: 2.133333rem;
+  text-align: center;
+  color: #fff;
+}
+
+.indentcenter-evaluate {
+  margin: .266667rem 0;
+  overflow: hidden;
+  background: #fff
+}
+
+.indentcenter-evaluate p {
+  line-height: .666667rem;
+  color: #b0a4bc;
+  font-size: .373333rem;
+  padding: 0 .4rem;
+  box-sizing: border-box
+}
+
+.indentcenter-evaluate .all {
+  float: right;
+}
+
+.all>input {
+  opacity: 0;
+  position: absolute;
+  width: .426667rem;
+  height: .426667rem;
+  margin: 0;
+}
+
+.all>input:nth-of-type(1),
+.all>span:nth-of-type(1) {
+  display: none;
+}
+
+.all>span {
+  font-size: .533333rem;
+  color: #de3163;
+  -webkit-transition: color .2s;
+  transition: color .2s;
+}
+
+.all>input:checked~span {
+  color: #b0a4bc;
+}
+
+.all>input:checked+span {
+  color: #de3163;
+}
+</style>
+
+
+

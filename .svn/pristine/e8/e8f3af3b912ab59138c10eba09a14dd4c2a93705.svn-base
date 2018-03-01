@@ -1,0 +1,558 @@
+<template>
+    <div class="coupons">
+        <div class="coupons-code">
+            <p @click="failIn">录入优惠码
+                <i class="iconfont " :class="showInput?'icon-arrowup':'icon-arrow_down'"></i>
+            </p>
+            <div class="coupons-fail-in-wraper" v-show="showInput">
+                <div ref="" id="wrap">
+                    <input type="text" @keyup="tokenInput" @keyup.delete="tokenDel" max-length="4" v-for="n in 4" :key="n" placeholder="_ _ _ _" class="input" ref="tokenInput" />
+                </div>
+                <span @click="exchange">兑换</span>
+            </div>
+        </div>
+
+        <mt-navbar v-model="selected">
+            <mt-tab-item id="0">全部</mt-tab-item>
+            <mt-tab-item id="1">未使用</mt-tab-item>
+            <mt-tab-item id="2">已使用</mt-tab-item>
+            <mt-tab-item id="3">已过期</mt-tab-item>
+        </mt-navbar>
+        <mt-tab-container v-model="selected">
+            <mt-tab-container-item id="0">
+                <ul class="mycoupons" v-if="mycoupons.length != 0">
+                    <li v-for="(item,index) in mycoupons" :key="index">
+                        <div class="coupons-price" :class="item.statusClass">
+                            <p>
+                                <span class="num" v-if="item.useType !='打折券'">
+                                    <i>￥</i>{{item.couponData}}</span>
+                                <span class="num" v-if="item.useType =='打折券'">
+                                    {{item.couponData | discount}}
+                                    <i>折</i>
+                                </span>
+                                <span class="type">{{item.useType}}</span>
+                            </p>
+                        </div>
+                        <div class="usetime">
+                            <p class="money">{{item.name | dot}}
+                            </p>
+                            <p class="time" :class="item.statusClass">有效期{{item.validDate | valid}}-{{item.invalidDate | valid}}</p>
+                            <p class="limit">{{item.useLimit}}</p>
+                        </div>
+                        <div class="coupons-status" :class="item.statusClass">{{item.status}}</div>
+                    </li>
+                </ul>
+                <div class="coupons-blank" v-else>
+                    <i class="iconfont icon-meiyouyouhuiquan"></i>
+                    <p>暂时没有优惠券</p>
+                </div>
+            </mt-tab-container-item>
+            <mt-tab-container-item id="1">
+                <ul class="mycoupons" v-if="newCoupons.length != 0">
+                    <li v-for="(item,index) in newCoupons" :key="index">
+                        <div class="coupons-price" :class="item.usedDate?'coupons-price-invalid':''">
+                            <p>
+                                <span class="num" v-if="item.useType !='打折券'">
+                                    <i>￥</i>{{item.couponData}}</span>
+                                <span class="num" v-if="item.useType =='打折券'">
+                                    {{item.couponData | discount}}
+                                    <i>折</i>
+                                </span>
+                                <span class="type">{{item.useType}}</span>
+                            </p>
+                        </div>
+                        <div class="usetime">
+                            <p class="money">{{item.name | dot}}
+                            </p>
+                            <p class="time">有效期{{item.validDate | valid}}-{{item.invalidDate | valid}}</p>
+                            <p class="limit">{{item.useLimit}}</p>
+                        </div>
+                        <div class="coupons-status">{{item.status}}</div>
+                    </li>
+                </ul>
+                <div class="coupons-blank" v-else>
+                    <i class="iconfont icon-meiyouyouhuiquan"></i>
+                    <p>暂时没有未使用的优惠券</p>
+                </div>
+            </mt-tab-container-item>
+            <mt-tab-container-item id="2">
+                <ul class="mycoupons" v-if="usedCoupons.length != 0">
+                    <li v-for="(item,index) in usedCoupons" :key="index">
+                        <div class="coupons-price used" >
+                            <p>
+                                <span class="num" v-if="item.useType !='打折券'">
+                                    <i>￥</i>{{item.couponData}}</span>
+                                <span class="num" v-if="item.useType =='打折券'">
+                                    {{item.couponData | discount}}
+                                    <i>折</i>
+                                </span>
+                                <span class="type">{{item.useType}}</span>
+                            </p>
+                        </div>
+                        <div class="usetime">
+                            <p class="money">{{item.name | dot}}
+                            </p>
+                            <p class="time used">有效期{{item.validDate | valid}}-{{item.invalidDate | valid}}</p>
+                            <p class="limit">{{item.useLimit}}</p>
+                        </div>
+                        <div class="coupons-status used" >{{item.status}}</div>
+                    </li>
+                </ul>
+                <div class="coupons-blank" v-else>
+                    <i class="iconfont icon-meiyouyouhuiquan"></i>
+                    <p>暂时没有已过期的优惠券</p>
+                </div>
+            </mt-tab-container-item>
+            <mt-tab-container-item id="3">
+                <ul class="mycoupons" v-if="invalidCoupons.length != 0">
+                    <li v-for="(item,index) in invalidCoupons" :key="index">
+                        <div class="coupons-price expired" :class="item.usedDate?'coupons-price-invalid':''">
+                            <p>
+                                <span class="num" v-if="item.useType !='打折券'">
+                                    <i>￥</i>{{item.couponData}}</span>
+                                <span class="num" v-if="item.useType =='打折券'">
+                                    {{item.couponData | discount}}
+                                    <i>折</i>
+                                </span>
+                                <span class="type">{{item.useType}}</span>
+                            </p>
+                        </div>
+                        <div class="usetime">
+                            <p class="money">{{item.name | dot}}
+                            </p>
+                            <p class="time expired">有效期{{item.validDate | valid}}-{{item.invalidDate | valid}}</p>
+                            <p class="limit">{{item.useLimit}}</p>
+                        </div>
+                        <div class="coupons-status expired">{{item.status}}</div>
+                    </li>
+                </ul>
+                <div class="coupons-blank" v-else>
+                    <i class="iconfont icon-meiyouyouhuiquan"></i>
+                    <p>暂时没有已使用的优惠券</p>
+                </div>
+            </mt-tab-container-item>
+        </mt-tab-container>
+
+    </div>
+</template>
+<script>
+import { Navbar, TabItem } from 'mint-ui';
+import { Popup } from 'mint-ui';
+import { Toast } from 'mint-ui';
+export default {
+    data() {
+        return {
+            selected: "0",
+            showInput: false,
+            mycoupons: [],
+            newCoupons: [],
+            usedCoupons: [],
+            invalidCoupons: [],
+            token: '',
+            inputArr: ['', '', '', ''],
+            tokenSplit: {
+                first: "",
+                second: "",
+                third: "",
+                fourth: ""
+            }
+        }
+    },
+    created() {
+        this.coupons();
+        console.info(this.mycoupons);
+    },
+    watch: {
+        tokenSplit: {
+            handler: function(n, o) {
+
+            },
+            deep: true
+        }
+    },
+    computed: {
+        nowDate: function() {
+            var myDate = new Date();
+            var year = myDate.getFullYear();
+            var month = myDate.getMonth() + 1;
+            var day = myDate.getDate();
+            var date = year + '-' + month + '-' + day;
+            return date;
+        } 
+    },
+    methods: {
+        tokenInput(evt) {
+            var v = evt.target.value;
+            var inputs = this.$refs.tokenInput;
+            var index = inputs.indexOf(evt.target);
+            if (v.length >= 4) {
+                evt.target.value = v.substring(0, 4);
+                if (index < 3) inputs[index + 1].focus();
+            }
+            this.token = inputs.map(function(s) { return s.value }).join('');
+        },
+        tokenDel(evt) {
+            var v = evt.target.value;
+            var inputs = this.$refs.tokenInput;
+            var index = inputs.indexOf(evt.target);
+            if (index > 0 && v.length == 0) {
+                inputs[index - 1].focus();
+            }
+            this.token = inputs.map(function(s) { return s.value }).join('');
+        },
+        coupons() {
+            var _this = this; 
+            this.$http.get('/api/coupon/list').then(res => {
+                
+                this.mycoupons = res.data.data.map(function(s){
+                    if(s.usedDate == null){
+                        if(s.invalidDate == null || new Date(s.invalidDate) * 1 > new Date()*1)
+                        {
+                            s.status = '未使用';
+                            s.statusClass = '';
+                            _this.newCoupons.push(s);
+                        }else{
+                            s.status = '已过期';
+                            s.statusClass = 'expired';
+                            _this.invalidCoupons.push(s);
+                        }
+                    } else {
+                            s.status = '已使用';
+                            s.statusClass = 'used';
+                            _this.usedCoupons.push(s);
+                    }
+                    return s;
+                });
+
+                console.info(this.mycoupons);
+
+                // for (let i = 0; i < this.mycoupons.length; i++) {
+                //     if (this.mycoupons[i].usedDate == null) {
+                //         if (this.compareDate(this.mycoupons[i].invalidDate, this.nowDate)) {
+                //             this.invalidCoupons[i] = this.mycoupons[i]//已过期
+                //         } else {
+                //             this.newCoupons[i] = this.mycoupons[i]//未使用
+                //         }
+                //     } else {
+                //         this.usedCoupons[i] = this.mycoupons[i]//已使用
+                //     }
+                // }
+            });
+
+        },
+        failIn() {
+            this.showInput = !this.showInput;
+        },
+        compareDate(invalidDate, nowDate) {
+            if(invalidDate == null) return true;
+            var arrInvalid = invalidDate.split("-");
+            var invalidTime = new Date(arrInvalid[0], arrInvalid[1], arrInvalid[2]);
+            var invalidTimes = invalidTime.getTime();
+            var arrNow = nowDate.split("-");
+            var nowTime = new Date(arrNow[0], arrNow[1], arrNow[2]);
+            var nowTimes = nowTime.getTime();
+            if (invalidTimes < nowTimes) {
+                return true;//已过期
+            }
+            return false;
+        },
+        exchange() {
+            if (this.token.length != 16) {
+                Toast({
+                    message: '请输入16位的优惠码哦',
+                    position: 'top',
+                    duration: 1.5e3
+                });
+            } else {
+                this.$http.get('/api/coupon/entering/' + this.token).then(res => {
+                    if (res.data.success) {
+                        Toast({
+                            message: '兑换成功',
+                            position: 'middle',
+                            duration: 1.5e3
+                        });
+                        this.token = '';
+                    } else {
+                        alert(res.data.message);
+                    }
+                    this.$nextTick(function() {
+                        this.coupons()
+                    })
+                })
+            }
+        }
+    },
+    filters: {
+        dot: function(value) {
+            if (!value) {
+                return value
+            } else {
+                if (value.length > 10) {
+                    return value.slice(0, 10) + '...'
+                } else {
+                    return value
+                }
+            }
+        },
+        discount: function(value) {
+            if (!value) { return '' };
+            var newValue = (value * 0.01).toFixed(2);
+            return newValue
+        },
+        valid(value) {
+            if(value == null) return value;
+            var newValue = value.split("T")[0];
+            return newValue
+        }
+    }
+}
+</script>
+
+<style scoped>
+.coupons .coupons-blank {
+    text-align: center;
+    font-size: .4rem;
+    color: #b0a4bc;
+    padding: .906667rem 0;
+}
+.coupons .coupons-blank i {
+    font-size: 3.066667rem;
+}
+/* nav-bar */
+.coupons .mint-navbar .mint-tab-item {
+    color: #b0a4bc;
+    padding: .386665rem 0;
+    border-top: 1px solid #f1eef6;
+    border-bottom: 1px solid #f1eef6;
+    font-size: .4rem;
+}
+
+.coupons .mint-navbar .mint-tab-item.is-selected {
+    border-bottom: 1px solid #492b67;
+    color: #492b67;
+    margin: 0;
+    font-size: .4rem;
+}
+.coupons .mint-navbar .mint-tab-item .mint-tab-item-label{
+    font-size: .4rem;
+}
+/*不显示center内容  */
+
+.center {
+    background: #fff;
+}
+
+.coupons {
+    background: #ece5f4;
+}
+
+.makecard,
+.footGuide,
+.mypic,
+.myorder,
+.mymsg,
+footer {
+    display: none;
+}
+
+.coupons {
+    background: #fff;
+}
+
+.coupons .coupons-code {
+    font-size: .4rem;
+    color: #492b67;
+    padding: 0 .4rem;
+    background: #fff;
+    overflow: hidden;
+}
+
+.coupons .coupons-code>p {
+    line-height: 1.1rem
+}
+
+.coupons-fail-in-wraper {
+    margin-bottom: .4rem;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.coupons-fail-in-wraper>div {
+    width: 75%;
+    height: 1rem;
+    border-radius: .133333rem;
+    background: #f1eef6;
+    padding: .2rem 0;
+    box-sizing: border-box;
+    float: left;
+    margin-right: .45rem;
+}
+
+.coupons-fail-in-wraper>div>input {
+    border: 0;
+    background: #f1eef6;
+    height: .6rem;
+    width: 25%;
+    text-align: center;
+    display: inline-block;
+    float: left;
+    color: #b0a4bc;
+    font-size: .4rem;
+    border-right: 1px solid #b0a4bc;
+    box-sizing: border-box;
+}
+
+.coupons-fail-in-wraper>div>input:last-child {
+    border-right: 0
+}
+
+.coupons-fail-in-wraper>span {
+    height: 1rem;
+    line-height: 1rem;
+    text-align: center;
+    border-radius: .133333rem;
+    width: 20%;
+    background: #f1eef6;
+    display: inline-block;
+    float: left;
+}
+
+.coupons .coupons-code>p>i {
+    float: right;
+    color: #b0a4bc;
+}
+
+.coupons .mycoupons {
+    padding: 0 .4rem;
+    margin-bottom: 0.4rem;
+}
+
+.coupons .mycoupons li {
+    width: 100%;
+    height: 2.2rem;
+    border: 1px solid #ece5f4;
+    margin-top: .4rem;
+    overflow: hidden;
+    position: relative;
+}
+
+.coupons .coupons-price {
+    width: 2.9rem;
+    border-right: 1px dashed #ece5f4;
+    height: 100%;
+    text-align: center;
+    font-size: .4rem;
+    color: #fff;
+    box-sizing: border-box;
+    padding-top: .6rem;
+    position: relative;
+    float: left;
+    text-align: center;
+
+    background: #de3163;
+}
+
+.coupons .coupons-price-invalid {
+    background: #b0a4bc;
+}
+
+.coupons .coupons-price .num {
+    font-size: .68rem;
+    width: 100%;
+    display: inline-block
+}
+
+.coupons .coupons-price .num i {
+    font-size: .4rem;
+}
+
+.coupons .coupons-price .type {
+    display: block;
+}
+
+.coupons .usetime {
+    float: left;
+    height: 100%;
+    width: 6rem;
+    text-align: center;
+    box-sizing: border-box;
+    padding: .25rem 0;
+}
+
+.coupons .usetime .money {
+    font-size: .4rem;
+    color: #b0a4bc;
+    line-height: .6rem;
+}
+
+.coupons .usetime .money span {
+    color: #de3163;
+}
+
+.coupons .usetime .limit {
+    color: #b0a4bc;
+    font-size: .36rem;
+    margin-top: .2rem
+}
+
+.coupons .usetime .time {
+    background: #b0a4bc;
+    color: white;
+    border-radius: 10px;
+    width: 5rem;
+    padding: 0 .2rem;
+    font-size: .32rem;
+    height: .533333rem;
+    line-height: .533333rem;
+    margin-left: .4rem;
+    margin-top: .1rem;
+}
+
+.coupons .coupons-status {
+    width: 4rem;
+    height: .45rem;
+    line-height: .45rem;
+    background: #de3163;
+    position: absolute;
+    text-align: right;
+    right: -.2rem;
+    transform: rotate(45deg);
+    top: 1rem;
+    font-size: .32rem;
+    color: #fff;
+    transform-origin: right;
+    padding-right: .44rem;
+}
+
+.coupons .expired {
+    background: #b5b5b5!important;
+}
+
+.coupons .used {
+    background: #b0a4bc!important;
+}
+
+::-webkit-input-placeholder {
+    /* WebKit, Blink, Edge */
+    color: #b0a4bc;
+    font-size: .4rem
+}
+
+ :-moz-placeholder {
+    /* Mozilla Firefox 4 to 18 */
+    color: #b0a4bc;
+    font-size: .4rem
+}
+
+ ::-moz-placeholder {
+    /* Mozilla Firefox 19+ */
+    color: #b0a4bc;
+    font-size: .4rem
+}
+
+ :-ms-input-placeholder {
+    /* Internet Explorer 10-11 */
+    color: #b0a4bc;
+    font-size: .4rem
+}
+</style>

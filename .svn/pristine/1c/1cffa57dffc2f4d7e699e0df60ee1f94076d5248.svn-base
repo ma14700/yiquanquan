@@ -1,0 +1,180 @@
+<template>
+    <div class="partyangelList">
+ <div class="backdrop">
+                <img src="../../assets/partyangel.png">
+            </div>
+            <div class="party-angle-wraper" >
+                <div class="party-angle-item" v-for="item in grabList">
+                    <img :src="item.headImage" alt="">
+                    <div class="angel-message">
+                        <h3 class="angel-title">{{item.nickName}}<span>
+                            <i class="iconfont icon-iconnan1" v-if="item.gender"></i>
+                            <i class="iconfont icon-iconnv" v-else></i>
+                        </span>
+                    </h3>
+                    <p class="angel-explain">给你带来不一样给你带来不</p>
+                    <ul class="angle-tag">
+                        <li v-for="items in item.spheres">{{items}}</li>
+                    </ul>
+                </div>
+                <div class="consult-button">
+                    <p @click="goPartyAngel(item.id)">查看</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+export default {
+    data() {
+        return {
+            grabList: []
+        }
+    },
+    created() {
+        this.angelData();
+    },
+    methods: {
+        angelData() {
+            this.$http.get('/api/planner/list?number=100').then(res => {
+                this.grabList = res.data.data.rows;
+                this.grabList.forEach(function(good) {
+                    good.spheres = good.spheres.split(",");
+                })
+            })
+        },
+        goPartyAngel(id) {
+            this.$router.push({ path: '/partyangel', query: { id } })
+        }
+    },
+    filters: {
+
+        dot: function(value) {
+            if (!value) {
+                return value
+            } else {
+                if (value.length > 35) {
+                    return value.slice(0, 35) + '...'
+                } else {
+                    return value
+                }
+            }
+        }
+    }
+}
+</script>
+
+<style scoped>
+.partyangelList {}
+
+.partyangelList .backdrop {
+    width: 100%;
+    height: 4.933333rem;
+}
+
+.partyangelList .backdrop img {
+    width: 100%;
+    height: 4.933333rem;
+}
+
+.partyangelList .party-angle-wraper {
+    width: 9.2rem;
+    background: #fff;
+    margin: -1.066667rem .4rem 0;
+    position: relative;
+    z-index: 100;
+}
+
+.partyangelList .party-angle-wraper .party-angle-item {
+    box-sizing: border-box;
+    border: 1px solid #ece5f4;
+    width: 9.2rem;
+    overflow: hidden;
+    padding: .266667rem .24rem .16rem;
+    margin-bottom: .4rem;
+}
+
+.partyangelList .party-angle-wraper .party-angle-item img {
+    width: 2rem;
+    height: 2rem;
+    box-sizing: border-box;
+    border: 1px solid #ece5f4;
+    border-radius: 50%;
+    float: left;
+}
+
+.angel-message {
+    float: left;
+    width: 5.466667rem;
+    height: 2rem;
+
+    padding: .266667rem .213333rem;
+    box-sizing: border-box;
+}
+
+.angel-message .angel-title {
+    font-size: .4rem;
+    color: #492b67;
+}
+
+.angel-message .angel-title span {
+    border-left: 1px solid #b0a4bc;
+
+    margin-left: .266667rem;
+    padding-left: .266667rem;
+    display: inline-block;
+}
+
+.angel-message .angel-title span i {
+    font-size: .32rem;
+    line-height: .4rem;
+}
+
+.angel-message .angel-title span i.icon-iconnan1 {
+    color: #78d0ed
+}
+
+.angel-message .angel-title span i.icon-nv {
+    color: #d93564;
+}
+
+.angel-message .angel-explain {
+    font-size: 12px;
+    line-height: .64rem;
+    color: #b0a4bc
+}
+
+.angel-message .angle-tag {}
+
+.angel-message .angle-tag li {
+    padding: 0 .2rem;
+    line-height: .466667rem;
+    box-sizing: border-box;
+    float: left;
+    border: 1px solid #ece5f4;
+    color: #b0a4bc;
+    font-size: 12px;
+    border-radius: 4px;
+    margin-right: .133333rem
+}
+
+.consult-button {
+    float: left;
+    height: 2rem;
+
+    padding: .733333rem 0;
+    box-sizing: border-box;
+}
+
+.consult-button p {
+    width: 1.19rem;
+    height: .533333rem;
+    background: #b0a4bc;
+    color: #fff;
+    text-align: center;
+    line-height: .533333rem;
+    font-size: .36rem;
+    border-radius: 4px
+}
+</style>

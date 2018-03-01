@@ -3,7 +3,7 @@
         <loading v-if="isLoading"></loading>
         <div v-if="!isLoading">
             <!--navbar  -->
-            <mt-navbar v-model="selected" class="blank-leaving" :class="{'fixed':showIcon}">
+            <mt-navbar v-model="selected" class="blank-leaving ">
                 <mt-tab-item id="1">综合</mt-tab-item>
                 <mt-tab-item id="2">销量</mt-tab-item>
                 <mt-tab-item id="3">人气</mt-tab-item>
@@ -22,7 +22,7 @@
             <!-- tab-container -->
             <mt-tab-container v-model="selected" class="blank-leaving">
                 <mt-tab-container-item id="1">
-                    <div class="main-body" :style="{'-webkit-overflow-scrolling': scrollMode}">
+                    <div class="main-body">
                         <v-loadmore :bottom-method="loadBottom" :bottom-all-loaded="allLoaded" :auto-fill="false" ref="loadmore">
                             <ul class="clearfix">
                                 <li v-for="(item,index) in shopList" :class="[test?'lump-wraper':'item-wraper']" :key="index">
@@ -42,7 +42,7 @@
                                     <span class="line">MORE</span>
                                     <span>查看更多</span>
                                 </div>
-                                <div class="more" v-else>下面没有了</div>
+                                <div class="more" v-else>我是有底线的</div>
                             </div>
                         </v-loadmore>
                     </div>
@@ -100,19 +100,15 @@
                 </span>
 
             </div>
-
             <!--固定搜索 end -->
             <div class="shoplist-blank" v-if="shopList.length == 0">
                 暂时没有商品哦
             </div>
-            <footer class="footer"></footer>
-            <foot-Guide selected="shopstore"></foot-Guide>
         </div>
     </div>
 </template>
 
 <script>
-
 import { Header } from 'mint-ui';
 import { Navbar, TabItem } from 'mint-ui';
 import { Loadmore } from 'mint-ui';
@@ -137,15 +133,16 @@ export default {
             priceuplist: [],
             pricedownlist: [],
             pageHeight: document.body.clientHeight, //页面一屏的高度
-            searchCondition: {  //分页属性  
+            searchCondition: {  //分页属性
                 catId: this.$route.query.id,
                 recommend: true,
-                row: 10,
+                row:10,
                 page: 1,
                 name:this.$route.query.value,
+                orderBy: 1,
             },
-            allLoaded: false, //是否可以上拉属性，false可以上拉，true为禁止上拉，就是不让往上划加载数据了  
-            scrollMode: "touch", //移动端弹性滚动效果，touch为弹性滚动，auto是非弹性滚动  
+            allLoaded: false, //是否可以上拉属性，false可以上拉，true为禁止上拉，就是不让往上划加载数据了
+            scrollMode: "auto", //移动端弹性滚动效果，touch为弹性滚动，auto是非弹性滚动
             updown: true,
             clickMessage: true,
             isLoading: true,
@@ -174,7 +171,7 @@ export default {
                 arr2[i] = arr[i]
             }
             return arr2.sort(function(a, b) {
-                return b.goodVirtualSales - a.goodVirtualSales;//降序               
+                return b.goodVirtualSales - a.goodVirtualSales;//降序
             })
         },
         //根据人气进行排序
@@ -185,7 +182,7 @@ export default {
                 arr2[i] = arr[i]
             }
             return arr2.sort(function(a, b) {
-                return b.hot - a.hot;//降序               
+                return b.hot - a.hot;//降序
             })
         },
         //根据价格进行排序
@@ -199,12 +196,11 @@ export default {
             }
             if (this.arrowshow) {
                 return arr3.sort(function(a, b) {
-                    return a.goodPrice - b.goodPrice;//升序，价格由低到高     
+                    return a.goodSalePrice - b.goodSalePrice;//升序，价格由低到高
                 })
             } else {
-
                 return arr2.sort(function(a, b) {
-                    return b.goodPrice - a.goodPrice;//降序    价格由高到低   s
+                    return b.goodSalePrice - a.goodSalePrice;//降序    价格由高到低   s
                 })
             }
         }
@@ -212,28 +208,25 @@ export default {
     mounted() {
         window.addEventListener('scroll', this.changeShow);
         this.loadPageList();
-        
+
     },
-
-    
     methods: {
-        // 
-        handleClose() {
-
-        },
         //列表，块状图标转换
         changeIcon: function() {
             this.test = !this.test;
         },
         changeShow() {
-            this.scroll = document.body.scrollTop;
+
+            if(document.documentElement&&document.documentElement.scrollTop){
+                 this.scroll = document.documentElement.scrollTop;
+            }else if(document.body){
+                this.scroll = document.body.scrollTop;
+            }
         },
         //返回顶部
         gotop() {
             if (document.body.scrollTop > 65) {
                 document.body.scrollTop = 0;
-            } else {
-                console.log(document.body.scrollTop);
             }
         },
         //
@@ -245,27 +238,26 @@ export default {
             this.arrowshow = !this.arrowshow;
         },
         goShopdetail(id) {
-            if (this.clickMessage == true) {
+            if (this.clickMessage) {
                 this.$router.push({ path: '/shopdetail', query: { id } })
             }
 
         },
-        loadTop: function() { //组件提供的下拉触发方法  
-            //下拉加载  
-            console.log(1)
+        loadTop: function() { //组件提供的下拉触发方法
+            //下拉加载
             this.loadPageList();
-            this.$refs.loadmore.onTopLoaded();// 固定方法，查询完要调用一次，用于重新定位  
+            this.$refs.loadmore.onTopLoaded();// 固定方法，查询完要调用一次，用于重新定位
         },
         loadBottom: function() {
-            // 上拉加载  
-            this.more();// 上拉触发的分页查询  
-            this.$refs.loadmore.onBottomLoaded();// 固定方法，查询完要调用一次，用于重新定位  
+            // 上拉加载
+            this.more();// 上拉触发的分页查询
+            this.$refs.loadmore.onBottomLoaded();// 固定方法，查询完要调用一次，用于重新定位
         },
         loadPageList: function() {
-            // 查询数据 
+            // 查询数据
             this.$http.post('/api/good/goodlist', this.searchCondition).then(res => {
                 this.shopList = res.data.data;
-                if(res.data){
+                if(res.data.data){
                     this.isLoading = false;
                 }
                 this.$nextTick(function() {
@@ -274,19 +266,18 @@ export default {
             })
         },
         more: function() {
-            // 分页查询  
-            this.searchCondition.page = parseInt(this.searchCondition.page) + 1;
-            console.log(this.searchCondition);
+            // 分页查询
             this.clickMessage = false;
+            this.searchCondition.page = parseInt(this.searchCondition.page) + 1;
             var self = this;
             setTimeout(function() {
                 self.clickMessage = true
-            }, 1000);
+            }, 1500);
             this.$http.post('/api/good/goodlist', this.searchCondition).then(res => {
-                if (res.data.length == 0) {
+                if (res.data.data.length == 0) {
                     this.updown = false
                 } else {
-                    this.shopList = this.shopList.concat(res.data);
+                    this.shopList = this.shopList.concat(res.data.data);
                 }
             })
         },
@@ -352,7 +343,8 @@ export default {
     height: 1.2rem;
     text-align: left;
     display: block;
-    position: relative;
+    position: fixed;
+    top: 0;
     width: 100%;
     box-sizing: border-box;
     box-shadow: 0 0 2px 0 #aaa;
@@ -420,27 +412,16 @@ export default {
     color: #b0a4bc;
 }
 
-
-
-
-
-
-
-
 /*container  */
 
 .shoplist .mint-tab-container {
-
+    margin-top: 1.2rem;
     background: #fff;
 }
 
 .shoplist .mint-tab-container-wrap {
     margin-top: .4rem;
 }
-
-
-
-
 
 
 /*块  */
@@ -455,7 +436,7 @@ export default {
 .shoplist .lump-wraper .img-box {
     width: 100%;
     margin-bottom: .2325rem;
-    height: 4.466667rem;
+    height: 3.766667rem;
 }
 
 .shoplist .lump-wraper:nth-child(odd) {
@@ -483,33 +464,23 @@ export default {
     font-size: .4rem;
     color: #492b67;
 }
-
 .shoplist .price {
     color: #de3163;
     font-size: .4rem;
     font-weight: 700;
 }
-
-
-
 .shoplist .price i {
     float: right;
     margin-right: .133333rem;
     color: #cdc6d5;
     font-weight: normal;
-    font-size: 12px
+    font-size: 12px;
 }
-
-
-
-
-
 
 /*列表 */
 
 .shoplist .item-wraper {
     width: 9.2rem;
-    height: 2.666667rem;
     overflow: hidden;
     margin-bottom: .4rem;
 }
@@ -517,7 +488,7 @@ export default {
 .shoplist .item-wraper .img-box {
     width: 2.666667rem;
     float: left;
-    height: 2.666667rem;
+    height: 2.2222225rem;
 }
 
 .shoplist .item-wraper .title {
@@ -538,14 +509,9 @@ export default {
 .shoplist .item-wraper .price {
     margin-top: .4rem
 }
-
-
-
-
-
-
-
-
+.shoplist .item-wraper .price i{
+    line-height: .5rem
+}
 /*搜索  */
 
 .shoplist .aside span {

@@ -1,0 +1,173 @@
+<template>
+  <div>
+      <head-top></head-top>
+      <div class="homeContent">
+        <div class="angel-head">
+          <div class="angel-head-content">
+              <img src="../../assets/paisong.jpg" alt="" class="angel-head-img">
+              <p>昵称介绍</p>
+          </div>
+          <p class="angel-head-introduce">个人介绍</p>
+          <p class="angel-head-title"><span>宝宝宴</span></p>
+        </div>
+        <p class="angel-title">案例展示</p>
+        <div class="angel-content">
+            <p>完美派对</p>
+            <div class="angel-introduce">自我介绍自我介绍自我介绍自我介绍自我介绍自我介绍自我介绍自我介绍自我介绍自我介绍自我介绍自我介绍自我介绍自我介绍</div>
+            <div class="angel-img clearfix">
+                <img src="../../assets/home/paisong.jpg" alt="">
+                <img src="../../assets/home/paisong.jpg" alt="">
+                <img src="../../assets/home/paisong.jpg" alt="">
+                <img src="../../assets/home/paisong.jpg" alt="">
+                <img src="../../assets/home/paisong.jpg" alt="">
+                <img src="../../assets/home/paisong.jpg" alt="">
+            </div>
+            <p><span><i class="iconfont icon-xihuan"></i>17,932</span><span><i class="iconfont icon-yanjing"></i>17,932</span></p>
+        </div>
+        <div class="angel-content">
+            <p>完美派对</p>
+            <div class="angel-introduce">自我介绍自我介绍自我介绍自我介绍自我介绍自我介绍自我介绍自我介绍自我介绍自我介绍自我介绍自我介绍自我介绍自我介绍</div>
+            <div class="angel-img clearfix">
+                <img src="../../assets/home/paisong.jpg" alt="">
+                <img src="../../assets/home/paisong.jpg" alt="">
+                <img src="../../assets/home/paisong.jpg" alt="">
+                <img src="../../assets/home/paisong.jpg" alt="">
+                <img src="../../assets/home/paisong.jpg" alt="">
+                <img src="../../assets/home/paisong.jpg" alt="">
+            </div>
+            <p><span><i class="iconfont icon-xihuan"></i>17,932</span><span><i class="iconfont icon-yanjing"></i>17,932</span></p>
+        </div>
+      </div>
+      
+  </div>
+</template>
+<script>
+    import headTop from '../../components/head/head'
+    export default {
+        data(){
+            return{
+
+            }
+        },
+        components:{
+            headTop
+        },
+        mounted(){
+
+        },
+        methods:{
+
+        }
+    }
+</script>
+
+<style>
+  .homeContent{
+    width: 100%;
+    background: #f3eef7;
+  }
+  .angel-head{
+      width: 100%;
+      background: #fff;
+      padding-bottom: .666667rem;
+  }
+.angel-head-content{
+    width: 10rem;
+    height: 4rem;
+    background-size: contain;
+    text-align: center;
+}
+.angel-head-img{
+    width: 2.333333rem;
+    height: 2.333333rem;
+    border-radius: 50%;
+    margin: 0 auto;
+    margin-top: .466667rem;
+}
+.angel-head-content p{
+    width: 100%;
+    line-height: .8rem;
+    height: .8rem;
+    font-size: .4rem;
+    color: #492b67;
+}
+.angel-head-introduce{
+    width: 60%;
+    margin: 0 auto;
+    height: .6rem;
+    line-height: .6rem;
+    text-align: center;
+    font-size: 12px;
+    color: #b0a4bc;
+}
+.angel-head-title{
+    height: .733333rem;
+    line-height: .733333rem;
+    width: 70%;
+    margin:0 auto;
+    margin-top: 10px;
+    text-align: center;
+}
+.angel-head-title span{
+    padding: 5px 15px;
+    border:1px solid #b0a4bc;
+    border-radius: 5px;
+    color: #b0a4bc;
+}
+.angel-title{
+    width: 100%;
+    line-height: .933333rem;
+    height: .933333rem;
+    font-size: .4rem;
+    color: #492b67;
+    text-align: center;
+}
+.angel-content{
+    -moz-box-sizing: border-box;
+　　-webkit-box-sizing: border-box;
+　　box-sizing: border-box;
+    padding: 0 0.4rem;
+    background: #fff;
+    margin-bottom: .4rem;
+}
+.angel-content p{
+    width: 100%;
+    height: .666667rem;
+    line-height: .666667rem;
+    color: #492b67;
+    font-size: .4rem;
+    padding-top: .266667rem;
+}
+.angel-content p:nth-of-type(2){
+    padding-top: 0px;
+}
+.angel-content p span{
+    float: right;
+    margin-left: .533333rem;
+    font-size: 12px;
+    color: #b0a4bc;
+}
+.angel-content p span i{
+    padding-right: 10px;
+    position: relative;
+    top:2px;
+}
+.angel-introduce{
+    width: 100%;
+    font-size: 12px;
+    color: #b0a4bc;
+    line-height: .453333rem;
+}
+.angel-img{
+    width: 100%;
+    margin-top: .4rem;
+}
+.angel-img img{
+    width: 2.933333rem;
+    height: 2.933333rem;
+    float: left;
+    border-radius: 6px;
+    margin-right: .133333rem;
+    margin-bottom: .13333rem;
+}
+</style>

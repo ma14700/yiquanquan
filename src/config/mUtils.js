@@ -7,8 +7,8 @@ export const cookies = {
             document.cookie = name + '=' + escape(value) + ';expires=' + exp.toGMTString() + ';path=/'
         },
         get: function(name) {
-            let arr = new RegExp('(^| )' + name + '=([^;]*)(;|$)')
-            let reg = arr
+            let arr = new RegExp('(^| )' + name + '=([^;]*)(;|$)');
+            let reg = arr;
             arr = document.cookie.match(reg)
             if (arr) {
                 return unescape(arr[2])
@@ -375,3 +375,40 @@ export const ImageCompress = function(file, quality, mode, callback) {
     }
 
 }
+
+
+export const QueryUrlParams = function() {
+    var keyValuePair = function(key, value) {
+        this.key = key;
+        this.value = value;
+    }
+    var query = window.location.search.substring(1),
+        vars = query.split("&"),
+        pair;
+    var list = [];
+    for (var i = 0; i < vars.length; i++) {
+        if (vars[i].length > 0) {
+            pair = vars[i].split("=");
+            if (pair[0] != undefined && pair[0].length > 0) list.push(new keyValuePair(pair[0], (pair[1])));
+        }
+    }
+    this.find = function(key) {
+        if (key == undefined) {
+            console.error("必须为key键赋值");
+            return null;
+        }
+        var value = null;
+        for (var i = 0; i < list.length; i++) {
+            (function(o) {
+                if (o.key == key) {
+                    value = o.value;
+                    return false;
+                }
+            })(list[i]);
+        }
+        return value;
+    };
+    this.tolist = function() {
+        return list;
+    };
+};

@@ -1,0 +1,190 @@
+<template>
+  <div>
+      <div class="homeContent">
+        <div class="angel-head">
+          <div class="angel-head-content">
+              <img :src="angelList.headImage" alt="" class="angel-head-img" >
+              <p>{{angelList.nickName}}</p>
+          </div>
+          <div>
+            </div>
+          <p class="angel-head-introduce">{{angelList.summary}}</p>
+          <p class="angel-head-title"><span v-for="item in angelList.spheres">{{item}}</span></p>
+        </div>
+        <p class="angel-title">案例展示</p>
+        <div class="angel-content" v-for="item in angelCase">
+            <p>{{item.title}}</p>
+            <div class="angel-introduce">{{item.summary}}</div>
+            <div class="angel-img clearfix" >
+                <img class="preview-img" v-for="(items, index) in item.partyCaseImages" :src="items.src"  @click="$preview.open(index, item.partyCaseImages)">
+            </div>
+            <p><span><i class="iconfont icon-yanjing"></i>{{item.click}}</span></p>
+        </div>
+      </div>
+      
+  </div>
+</template>
+<script>
+    export default {
+        data(){
+            return{
+                Id:null,
+                angelList:[],
+                angelCase:[],
+                showImg:false,
+                imgSrc: '',
+                test:[],
+            }
+        },
+        components:{
+            
+        },
+        mounted(){
+            this.partyAngel();
+            this.partyCase();
+        },
+        methods:{
+            partyAngel(){
+                this.Id = this.$route.query.id;
+                this.$http.get('/api/planner/' + this.Id).then(res=>{
+                    if(res.status == '200'){
+                        this.angelList = res.data;
+                        console.log(this.angelList)
+                        this.angelList.spheres = this.angelList.spheres.split(",");
+   
+                    }
+                })
+            },
+            partyCase(){
+                this.$http.post('/api/partycase/list',{
+                    PartyPlannerId:this.Id,
+                    rows:2,
+                    page:1
+                }).then(res=>{
+                    this.angelCase = res.data.data.rows;
+                    console.log(this.angelCase)
+                    this.angelCase.forEach(function(good){
+                        good.partyCaseImages.forEach(function(goods){
+                            goods.w = 1200;
+                            goods.h = 900;
+                            goods.src = goods.imageUrl;
+                        })
+                    })
+                    console.log(this.angelCase)
+                })
+            }
+        }
+    }
+</script>
+
+<style scoped>
+  .homeContent{
+    width: 100%;
+    background: #f3eef7;
+  }
+  .angel-head{
+      width: 100%;
+      background: #fff;
+      padding-bottom: .666667rem;
+  }
+.angel-head-content{
+    width: 10rem;
+    height: 4rem;
+    background-size: contain;
+    text-align: center;
+}
+.angel-head-img{
+    width: 2.333333rem;
+    height: 2.333333rem;
+    border-radius: 50%;
+    margin: 0 auto;
+    margin-top: .466667rem;
+}
+.angel-head-content p{
+    width: 100%;
+    line-height: .8rem;
+    height: .8rem;
+    font-size: .4rem;
+    color: #492b67;
+}
+.angel-head-introduce{
+    width: 70%;
+    margin: 0 auto;
+    line-height: .6rem;
+    text-align: center;
+    font-size: 12px;
+    color: #b0a4bc;
+}
+.angel-head-title{
+    height: .733333rem;
+    line-height: .733333rem;
+    width: 70%;
+    margin:0 auto;
+    margin-top: 10px;
+    text-align: center;
+}
+.angel-head-title span{
+    padding: 5px 15px;
+    border:1px solid #b0a4bc;
+    border-radius: 5px;
+    color: #b0a4bc;
+    margin-right: .266667rem
+}
+.angel-title{
+    width: 100%;
+    line-height: .933333rem;
+    height: .933333rem;
+    font-size: .4rem;
+    color: #492b67;
+    text-align: center;
+}
+.angel-content{
+    -moz-box-sizing: border-box;
+　　-webkit-box-sizing: border-box;
+　　box-sizing: border-box;
+    padding: 0 0.4rem;
+    background: #fff;
+    margin-bottom: .8rem;
+}
+.angel-content p{
+    width: 100%;
+    line-height: .666667rem;
+    color: #492b67;
+    font-size: .4rem;
+    padding-top: .266667rem;
+}
+.angel-content p:nth-of-type(2){
+    padding-top: 0px;
+}
+.angel-content p span{
+    float: right;
+    margin-left: .533333rem;
+    font-size: 12px;
+    color: #b0a4bc;
+    margin-right: .533333rem;
+}
+.angel-content p span i{
+    padding-right: 10px;
+    position: relative;
+    top:2px;
+}
+.angel-introduce{
+    width: 100%;
+    font-size: 12px;
+    color: #b0a4bc;
+    line-height: .453333rem;
+}
+.angel-img{
+    width: 100%;
+    margin-top: .4rem;
+}
+.angel-img img{
+    width: 2.933333rem;
+    height: 2.933333rem;
+    float: left;
+    border-radius: 6px;
+    margin-right: .133333rem;
+    margin-bottom: .13333rem;
+    margin-top: .133333rem;
+}
+</style>

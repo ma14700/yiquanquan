@@ -1,0 +1,352 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>IconFont</title>
+    <link rel="stylesheet" href="demo.css">
+    <link rel="stylesheet" href="iconfont.css">
+</head>
+<body>
+    <div class="main markdown">
+        <h1>IconFont 图标</h1>
+        <ul class="icon_lists clear">
+            
+                <li>
+                <i class="icon iconfont icon-dianhua"></i>
+                    <div class="name">电话</div>
+                    <div class="fontclass">.icon-dianhua</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-lltakeoutflowseconddisabled"></i>
+                    <div class="name">待接单</div>
+                    <div class="fontclass">.icon-lltakeoutflowseconddisabled</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-hunlimiyue"></i>
+                    <div class="name">婚礼蜜月</div>
+                    <div class="fontclass">.icon-hunlimiyue</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-baoji"></i>
+                    <div class="name">结婚</div>
+                    <div class="fontclass">.icon-baoji</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-jinriyouchaodian"></i>
+                    <div class="name">今日有潮电</div>
+                    <div class="fontclass">.icon-jinriyouchaodian</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-54"></i>
+                    <div class="name">时间</div>
+                    <div class="fontclass">.icon-54</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-duduyinleappicon350101"></i>
+                    <div class="name">活动</div>
+                    <div class="fontclass">.icon-duduyinleappicon350101</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-iconfont"></i>
+                    <div class="name">商城</div>
+                    <div class="fontclass">.icon-iconfont</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-partyhatl"></i>
+                    <div class="name">party_hat_L</div>
+                    <div class="fontclass">.icon-partyhatl</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-hunqing"></i>
+                    <div class="name">婚庆</div>
+                    <div class="fontclass">.icon-hunqing</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-juhuihongpa"></i>
+                    <div class="name">聚会轰趴</div>
+                    <div class="fontclass">.icon-juhuihongpa</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-080juhui"></i>
+                    <div class="name">聚会</div>
+                    <div class="fontclass">.icon-080juhui</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-simijuhui"></i>
+                    <div class="name">私密聚会</div>
+                    <div class="fontclass">.icon-simijuhui</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-qq"></i>
+                    <div class="name">QQ</div>
+                    <div class="fontclass">.icon-qq</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-weibo"></i>
+                    <div class="name">微博</div>
+                    <div class="fontclass">.icon-weibo</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-shengri-copy"></i>
+                    <div class="name">生日</div>
+                    <div class="fontclass">.icon-shengri-copy</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-weibiaoti202-copy"></i>
+                    <div class="name">宝宝</div>
+                    <div class="fontclass">.icon-weibiaoti202-copy</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-shengri"></i>
+                    <div class="name">生日</div>
+                    <div class="fontclass">.icon-shengri</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-tuanjian"></i>
+                    <div class="name">团建</div>
+                    <div class="fontclass">.icon-tuanjian</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-liuyan"></i>
+                    <div class="name">留言</div>
+                    <div class="fontclass">.icon-liuyan</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-jierixuanze"></i>
+                    <div class="name">节日选择</div>
+                    <div class="fontclass">.icon-jierixuanze</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-huodong"></i>
+                    <div class="name">活动</div>
+                    <div class="fontclass">.icon-huodong</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-chuangyichaopin"></i>
+                    <div class="name">创意潮品</div>
+                    <div class="fontclass">.icon-chuangyichaopin</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-chuangyichaopin1"></i>
+                    <div class="name">创意潮品</div>
+                    <div class="fontclass">.icon-chuangyichaopin1</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-zhuye"></i>
+                    <div class="name">商城</div>
+                    <div class="fontclass">.icon-zhuye</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-shangcheng"></i>
+                    <div class="name">商城</div>
+                    <div class="fontclass">.icon-shangcheng</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-bhjwedding"></i>
+                    <div class="name">办会家_婚礼</div>
+                    <div class="fontclass">.icon-bhjwedding</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-zbbicon03111"></i>
+                    <div class="name">接单失败</div>
+                    <div class="fontclass">.icon-zbbicon03111</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-chaoliukeji"></i>
+                    <div class="name">潮流科技</div>
+                    <div class="fontclass">.icon-chaoliukeji</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-dizhi"></i>
+                    <div class="name">地址</div>
+                    <div class="fontclass">.icon-dizhi</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-ren"></i>
+                    <div class="name">人</div>
+                    <div class="fontclass">.icon-ren</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-time"></i>
+                    <div class="name">时间</div>
+                    <div class="fontclass">.icon-time</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-ren1"></i>
+                    <div class="name">人</div>
+                    <div class="fontclass">.icon-ren1</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-hunqing1"></i>
+                    <div class="name">婚庆</div>
+                    <div class="fontclass">.icon-hunqing1</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-shengri1"></i>
+                    <div class="name">生日</div>
+                    <div class="fontclass">.icon-shengri1</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-huodong1"></i>
+                    <div class="name">活动</div>
+                    <div class="fontclass">.icon-huodong1</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-ren2"></i>
+                    <div class="name">人</div>
+                    <div class="fontclass">.icon-ren2</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-weibiaoti-"></i>
+                    <div class="name">时间</div>
+                    <div class="fontclass">.icon-weibiaoti-</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-huodong2"></i>
+                    <div class="name">活动</div>
+                    <div class="fontclass">.icon-huodong2</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-yonghu"></i>
+                    <div class="name">用户</div>
+                    <div class="fontclass">.icon-yonghu</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-qinglvzuo"></i>
+                    <div class="name">情侣座</div>
+                    <div class="fontclass">.icon-qinglvzuo</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-hunqingyongche"></i>
+                    <div class="name">18婚庆用车</div>
+                    <div class="fontclass">.icon-hunqingyongche</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-shangcheng1"></i>
+                    <div class="name">商城</div>
+                    <div class="fontclass">.icon-shangcheng1</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-shangyecehua"></i>
+                    <div class="name">商业策划</div>
+                    <div class="fontclass">.icon-shangyecehua</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-shijian1"></i>
+                    <div class="name">时间</div>
+                    <div class="fontclass">.icon-shijian1</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-huodong3"></i>
+                    <div class="name">活动</div>
+                    <div class="fontclass">.icon-huodong3</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-shangwuhezuo"></i>
+                    <div class="name">商务合作</div>
+                    <div class="fontclass">.icon-shangwuhezuo</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-qinglvzhuang"></i>
+                    <div class="name">情侣装</div>
+                    <div class="fontclass">.icon-qinglvzhuang</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-jieri"></i>
+                    <div class="name">节日</div>
+                    <div class="fontclass">.icon-jieri</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-weixin"></i>
+                    <div class="name">微信</div>
+                    <div class="fontclass">.icon-weixin</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-shijian"></i>
+                    <div class="name">时间</div>
+                    <div class="fontclass">.icon-shijian</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont icon-dizhi-copy"></i>
+                    <div class="name">地址</div>
+                    <div class="fontclass">.icon-dizhi-copy</div>
+                </li>
+            
+        </ul>
+
+        <h2 id="font-class-">font-class引用</h2>
+        <hr>
+
+        <p>font-class是unicode使用方式的一种变种，主要是解决unicode书写不直观，语意不明确的问题。</p>
+        <p>与unicode使用方式相比，具有如下特点：</p>
+        <ul>
+        <li>兼容性良好，支持ie8+，及所有现代浏览器。</li>
+        <li>相比于unicode语意明确，书写更直观。可以很容易分辨这个icon是什么。</li>
+        <li>因为使用class来定义图标，所以当要替换图标时，只需要修改class里面的unicode引用。</li>
+        <li>不过因为本质上还是使用的字体，所以多色图标还是不支持的。</li>
+        </ul>
+        <p>使用步骤如下：</p>
+        <h3 id="-fontclass-">第一步：引入项目下面生成的fontclass代码：</h3>
+
+
+        <pre><code class="lang-js hljs javascript"><span class="hljs-comment">&lt;link rel="stylesheet" type="text/css" href="./iconfont.css"&gt;</span></code></pre>
+        <h3 id="-">第二步：挑选相应图标并获取类名，应用于页面：</h3>
+        <pre><code class="lang-css hljs">&lt;<span class="hljs-selector-tag">i</span> <span class="hljs-selector-tag">class</span>="<span class="hljs-selector-tag">iconfont</span> <span class="hljs-selector-tag">icon-xxx</span>"&gt;&lt;/<span class="hljs-selector-tag">i</span>&gt;</code></pre>
+        <blockquote>
+        <p>"iconfont"是你项目下的font-family。可以通过编辑项目查看，默认是"iconfont"。</p>
+        </blockquote>
+    </div>
+</body>
+</html>

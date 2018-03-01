@@ -1,0 +1,203 @@
+<template>
+    <div class="center">
+        <router-view>
+        </router-view>
+    </div>
+</template>
+
+<script>
+export default {
+    data() {
+        return {
+            goodCollectList:[],
+            centerIndex:null,
+        }
+    },
+    components: {
+       
+    },
+    created() {
+       
+      
+    },
+    
+    watch:{
+        // '$route'(to,from){
+        //     const toDepth = to.path.split('/').length
+        //     const fromDepth = from.path.split('/').length
+        //     console.log(toDepth,fromDepth)
+        //     this.centerIndex = toDepth < fromDepth ? 'centerIndexx' : 'centerIndexx1'
+        // }
+    },
+    methods: {
+    }
+}
+</script>
+
+
+<style scoped>
+.centerIndexx{
+    display: block;
+}
+.centerIndexx1{
+    display: none;
+}
+
+.center {
+    background: #ece5f4;
+}
+.fade-enter-active, .fade-leave-active {
+        transition: opacity .5s;
+    }
+    .fade-enter, .fade-leave-active {
+        opacity: 0;
+    }
+    .fade-choose-enter-active, .fade-choose-leave-active {
+        transition: opacity .5s;
+    }
+    .fade-choose-leave, .fade-choose-leave-active {
+        display: none;
+    }
+    .fade-choose-enter, .fade-choose-leave-active {
+        opacity: 0;
+    }
+    .router-slid-enter-active, .router-slid-leave-active {
+        transition: all .4s;
+    }
+    .router-slid-enter, .router-slid-leave-active {
+        transform: translate3d(2rem, 0, 0);
+        opacity: 0;
+    }
+    .toggle-cart-enter-active, .toggle-cart-leave-active {
+        transition: all .3s ease-out;
+    }
+    .toggle-cart-enter, .toggle-cart-leave-active {
+        transform: translateY(100%);
+    }
+
+.center .mypic {
+    height: 5.066667rem;
+    background: linear-gradient(to right, #9869b4, #d93595);
+    box-sizing: border-box;
+    padding: .666667rem 0;
+}
+
+.center .mypic .img-box {
+    width: 2.333333rem;
+    height: 2.333333rem;
+    overflow: hidden;
+    border-radius: 50%;
+    margin: 0 auto;
+}
+
+.center .mypic .img-box img {
+    width: 100%;
+}
+
+.center .mypic .myname {
+    text-align: center;
+    color: #fff;
+    font-size: .48rem;
+    line-height: 1.2rem;
+}
+
+
+
+/* order */
+
+.center .myorder {
+    box-sizing: border-box;
+
+    overflow: hidden;
+}
+
+.center .myorder .order-text {
+    padding: 0 .4rem;
+    line-height: 1.333333rem;
+    font-size: .4rem;
+    color: #492b67;
+    border-bottom: 1px solid #eeecf1;
+    background: #fff;
+}
+
+.center .myorder .order-text span {
+    float: right;
+    font-size: .36rem;
+    color: #b0a4bc;
+}
+
+.center .order-con {
+    padding: .4rem;
+    overflow: hidden;
+    margin-bottom: .4rem;
+    background: #fff;
+}
+
+.center .order-con li {
+    float: left;
+    width: 20%;
+    text-align: center;
+    line-height: .733333rem;
+    font-size: .4rem;
+    color: #492b67;
+    border-right: 1px solid #eeecf1;
+    box-sizing: border-box;
+}
+
+.center .order-con li:last-child {
+    border-right: none;
+    position: relative;
+    right: -.1rem;
+}
+
+.center .order-con li i {
+    font-size: .6rem;
+    color: #b0a4bc;
+}
+
+.center .mymsg {
+
+
+
+    background: #fff;
+}
+
+.center .mymsg li {
+    box-sizing: border-box;
+    padding: 0 .4rem;
+    line-height: 1.333333rem;
+    font-size: .4rem;
+    color: #492b67;
+    border-bottom: 1px solid #eeecf1;
+}
+
+.center .mymsg li:last-child {
+    border-bottom: 0;
+}
+
+.center .makecard {
+    box-sizing: border-box;
+    padding: 0 .4rem;
+    line-height: 1.333333rem;
+    font-size: .4rem;
+    color: #492b67;
+    background: #fff;
+    margin: .266667rem 0;
+}
+
+.center .makecard i {
+    float: right;
+    color: #b0a4bc;
+    font-size: .52rem;
+}
+
+.center .mymsg li i {
+    float: right;
+    color: #b0a4bc;
+    font-size: .52rem;
+}
+
+
+
+/*编辑资料  */
+</style>

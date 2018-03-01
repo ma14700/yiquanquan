@@ -1,0 +1,649 @@
+<template>
+  <div>
+    <div class="homeContent">
+      <div class="homeSearch">
+        <span>郑州
+          <i class="iconfont icon-arrow_down" @click="location"></i>
+        </span>
+        <img src="../../assets/home/logo.png" alt="">
+        <span @click="homesearch">
+          <i class="iconfont icon-sousuo1"></i>
+        </span>
+      </div>
+      <div class="homeHeader">
+        <mt-swipe :auto="0">
+          <mt-swipe-item><img src="../../assets/home/swper1.png" alt=""></mt-swipe-item>
+          <mt-swipe-item>2</mt-swipe-item>
+          <mt-swipe-item>3</mt-swipe-item>
+        </mt-swipe>
+      </div>
+      <div class="homeNavigation clearfix">
+        <div class="navigation-head">
+          您对派对的计划？
+        </div>
+        <ul class="navigation-content">
+          <li class="navigation-icon" v-for="(item,index) in packageContent" :key="index" @click="goShopMeal(item.id)">
+            <img :src="item.mainImage" alt="">
+            <span class="navigation-icon-font" v-if="item.name.length>0">{{item.name}}</span>
+          </li>
+        </ul>
+      </div>
+      <!-- <div class="homeHotparty">
+        <div class="homeHotparty-head">
+          <i class="iconfont icon-huatong"></i>
+          <span>热门潮趴</span>
+          <span>More
+            <i class="iconfont icon-smallxiangyou"></i>
+          </span>
+        </div>
+        <div class="homeHotparty-content clearfix">
+          <router-link tag="div" class="homeHotparty-contentimg" :class="'homeHotparty-contentimg'+item.id" v-for="item in swiperimg" :key="item.id" :to="'/partydetail/' + item.id">
+            <img :src="item.img">
+            <span>{{item.title}}</span>
+          </router-link>
+        </div>
+      </div> -->
+      <div class="partyteach">
+        <div class="homeHotparty-head">
+          <i class="iconfont icon-2"></i>
+          <span>派对策划师</span>
+          <!-- :to="'/partyangelList'" -->
+          <router-link tag="span" :to="'/partyangelList'" >More
+            <i class="iconfont icon-smallxiangyou"></i>
+          </router-link>
+        </div>
+        <div class="partyteach-content">
+          <ul class="partyteach-content-center">
+            <li class="partyteachContent" v-for="(item,index) in grabList" :key="item.id"  v-if="index<5" @click="goPartyAngel(item.id)">
+              <div class="partyteach-container">
+                <div class="partyteachContentImg">
+                  <img :src="item.headImage">
+                </div>
+                <div class="partyteachContentname">{{item.nickName | dot}}
+                  <i class="iconfont" :class="item.gender?'icon-iconnan1 man':'icon-nv woman'"></i>
+                </div>
+                <div class="partyteachContentintroduce">
+                  {{item.spheres}}
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="comborecommend">
+        <div class="homeHotparty-head">
+          <i class="iconfont icon-taocanleixing"></i>
+          <span>套餐推荐</span>
+          <span @click="goShopMeal(0)">More
+            <i class="iconfont icon-smallxiangyou"></i>
+          </span>
+        </div>
+        <div class="homeHotparty-content clearfix">
+          <div class="comboImg1 homeHotparty-contentimg" @click="goMealDetail(packageList[0].id)" v-if="packageList.length != 0"> 
+            <img  :src="packageList[0].mainImg" alt="">
+          </div>
+          <div class="comboImg2 homeHotparty-contentimg" @click="goMealDetail(packageList[1].id)" v-if="packageList.length != 0">
+            <img   v-lazy="packageList[1].mainImg" alt="">
+          </div>
+          <div class="comboImg3 homeHotparty-contentimg" @click="goMealDetail(packageList[2].id)" v-if="packageList.length != 0">
+            <img   v-lazy="packageList[2].mainImg" alt="">
+          </div>
+        </div>
+        <div class="combo-content-center">
+            <ul class="comboContent">
+              <li class="comboContentImg" v-for="item in packMeallist" @click="mealGo(item.id)">
+                <img :src="item.mainImg" alt="">
+                <div class="comboContentfoot" v-if="item.name.length>0">
+                  {{item.name}}
+                </div>
+              </li>
+            </ul>
+          </div>
+      </div>
+    </div>
+
+    <footer></footer>
+    <foot-Guide selected="home"></foot-Guide>
+  </div>
+</template>
+
+<script>
+import { TabContainer, TabContainerItem } from 'mint-ui';
+import { Swipe, SwipeItem } from 'mint-ui';
+import headTop from '../../components/head/head'
+import footGuide from '../../components/footer/footGuide'
+import { mapMutations, mapState } from 'vuex'
+import { MessageBox } from 'mint-ui';
+export default {
+  data() {
+    return {
+      active: "tab-container1",
+      scrolled: false,
+      scroll: '',
+      packageContent: [],
+      packageList:[],
+      packMeallist:[],
+      grabList:[]
+    }
+  },
+  created() {
+    this.getPackageContent();
+    this.$http.get('/api/planner/list?number=100').then(res=>{
+        this.grabList = res.data.data.rows;
+        console.log(this.grabList,1)
+    })
+  },
+  computed: {
+
+  },
+  components: {
+    footGuide,
+    headTop
+  },
+  methods: {
+    goPartyAngel(id){
+        this.$router.push({ path: '/partyangel', query: { id } })
+    },
+    location(){
+        MessageBox({
+            title: '其他区域暂未开放',
+            message: '',
+            confirmButtonText: '确定'
+        }).then(action => {
+            
+        });
+    },
+    mealGo(id){
+        this.$router.push({ path: '/mealdetail', query: { id } })
+    },
+    goMealDetail(id){
+        this.$router.push({ path: '/mealdetail', query: { id } })
+    },
+    goShopMeal(classifyId) {
+      this.$router.push({ path: '/shopmeal', query: { classifyId } }, )
+    },
+    getPackageContent() {
+      this.$http.get("api/partypkgcat/partycatlist").then(res => {
+        console.log(res)
+        this.packageContent = res.data;
+        if(this.packageContent.length>8){
+          this.packageContent = this.packageContent.slice(0,8);
+          console.log(this.packageContent)
+        }
+        this.getPackageList();
+      }); 
+    },
+    getPackageList(){
+      console.log(1)
+        this.$http.post('api/partypkg/partylist',{
+        "recommend":false,
+        "row":9,
+        "page":1,
+        "catId":0,
+      }).then(res=>{
+          console.log(res);
+          this.packageList =res.data;
+          this.packMeallist = res.data.slice(3,9);
+      })
+    },
+    handleScroll() {
+      this.scrolled = window.scrollY > 500;
+    },
+    homesearch() {
+      this.$router.push({ path: '/Hsearch' })
+    }
+  },
+  beforeDestroyed() {
+    window.removeEventListener()('scroll', this.handleScroll);
+  },
+  filters: {
+        dot: function(value) {
+            if (!value) {
+                return value
+            } else {
+                if (value.length > 10) {
+                    return value.slice(0, 10) + '...'
+                } else {
+                    return value
+                }
+            }
+        }
+
+    }
+}
+</script>
+<style>
+.comboContentImg{
+  display: table-cell;
+}
+.homeSearch {
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0px;
+  background: linear-gradient(to right, rgba(190, 168, 212, 0.7), rgba(231, 134, 192, 0.7));
+  height: 1.066667rem;
+  z-index: 100;
+}
+
+.homeSearch span:nth-of-type(1) {
+  float: left;
+  line-height: 1.066667rem;
+  color: #fff;
+  font-size: .375rem;
+  margin-left: .4rem;
+  width: 2rem;
+}
+
+.homeSearch span:nth-of-type(1) i {
+  font-size: .325rem;
+  padding-left: .2rem;
+}
+
+.homeSearch span:nth-of-type(2) {
+  float: right;
+  line-height: 1.066667rem;
+  color: #fff;
+  font-size: .426667rem;
+  margin-right: .4rem;
+}
+
+.homeSearch span:nth-of-type(2) i {
+  font-size: .533333rem;
+}
+
+.homeSearch img {
+  width: 1.933333rem;
+  height: .853333rem;
+  margin: 0 auto;
+  display: block;
+  margin-top: .106667rem;
+  float: left;
+  margin-left: 2rem;
+}
+
+.homereturnTop {
+  width: 1rem;
+  height: 1rem;
+  position: fixed;
+  right: 0px;
+  bottom: 2rem;
+}
+
+.homeTopscroll {
+  background: red;
+}
+
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #fff;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #fff
+}
+
+::-webkit-scrollbar-button {
+  background-color: #fff
+}
+
+::-webkit-scrollbar-corner {
+  background-color: #fff;
+}
+
+footer {
+  width: 100%;
+  height: 70px;
+}
+
+.notSend {
+  background: red;
+}
+
+.send {
+  background: green;
+}
+
+.homeContent {
+  width: 100%;
+  background: #f3eef7;
+  overflow-x: hidden;
+}
+
+.homeHeader {
+  width: 100%;
+  height: 6.666667rem;
+  background: #fff;
+}
+
+.homeHeader img {
+  width: 100%;
+}
+
+.mint-swipe-indicator.is-active {
+  background: #9c154b;
+}
+
+.mint-swipe-indicator {
+  background: #b4bac1;
+}
+
+.navigation-head {
+  width: 100%;
+  height: 1.733333rem;
+  line-height: 1.733333rem;
+  text-align: center;
+  font-size: .4rem;
+  color: #492b67;
+  background: #fff;
+}
+
+.homeNavigation {
+  background: #fff;
+}
+
+.navigation-content {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -o-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box;
+  padding: 0 0.3125rem;
+  width: 100%;
+  text-align: center;
+  background: #fff;
+}
+
+.navigation-icon {
+  width: 25%;
+  height: 1.92rem;
+  float: left;
+  position: relative;
+  color: #492b67;
+}
+.navigation-icon img{
+  width: 40%;
+}
+.navigation-icon-font {
+  display: block;
+  padding-top: 10px;
+  color: #b0a4bc;
+}
+
+.navigation-icon i {
+  display: block;
+  font-size: .666667rem !important;
+  color: #482a66;
+}
+
+.homeHotparty,
+.partyteach,
+.comborecommend {
+  width: 100%;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -o-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box;
+  padding: 0 0.4rem;
+  margin-top: 0.4rem;
+  background: #fff;
+}
+
+.partyteach {
+  padding-bottom: .533333rem;
+}
+
+.homeHotparty-head {
+  height: 1.333333rem;
+  line-height: 1.333333rem;
+}
+
+.homeHotparty-head>i {
+  font-size: .4rem;
+  color: #492b67;
+}
+
+.homeHotparty-head>span {
+  padding-left: 12px;
+  font-size: .4rem;
+  color: #492b67;
+  position: relative;
+  top: 0px;
+}
+
+.homeHotparty-head>span:nth-of-type(2) {
+  font-size: .4rem;
+  color: #e8ddf2;
+  float: right;
+}
+
+.homeHotparty-content {
+  width: 100%;
+}
+
+.homeHotparty-contentimg {
+  float: left;
+  margin-bottom: .266667rem;
+}
+
+.homeHotparty-contentimg1,
+comboImg1 {
+  width: 9.2rem;
+  height: 5.333333rem;
+}
+
+.comboImg1>img {
+  width: 9.2rem;
+  border-radius: 5px;
+}
+
+.comboImg2 {
+  width: 3.466667rem;
+  height: 3.466667rem;
+}
+
+.comboImg2>img {
+  width: 3.466667rem;
+  height: 3.466667rem;
+}
+
+.comboImg3 {
+  width: 5.466667rem;
+  height: 3.466667rem;
+  float: right !important;
+}
+
+.comboImg3>img {
+  width: 5.466667rem;
+  height: 3.466667rem;
+}
+
+.homeHotparty-contentimg1>img {
+  width: 9.2rem;
+  border-radius: 5px;
+  height: 5.333333rem;
+}
+
+.homeHotparty-contentimg2 {
+  width: 5.466667rem;
+  height: 3.466667rem;
+}
+
+.homeHotparty-contentimg2>img {
+  width: 5.466667rem;
+  border-radius: 5px;
+  height: 3.466667rem;
+}
+
+.homeHotparty-contentimg3 {
+  width: 3.466667rem;
+  height: 3.466667rem;
+  float: right;
+}
+
+.homeHotparty-contentimg3>img {
+  width: 3.466667rem;
+  border-radius: 5px;
+  height: 3.466667rem;
+}
+
+.homeHotparty-contentimg4 {
+  width: 4.4rem;
+}
+
+.homeHotparty-contentimg4>img {
+  width: 4.4rem;
+  border-radius: 5px;
+  height: 3.466667rem;
+}
+
+.homeHotparty-contentimg5 {
+  width: 4.5rem;
+
+  float: right;
+}
+
+.homeHotparty-contentimg5>img {
+  width: 4.5rem;
+  border-radius: 5px;
+  height: 3.466667rem;
+}
+
+.homeHotparty-contentimg>span {
+  display: inline-block;
+  font-size: 12px;
+  margin-top: 10px;
+  color: #7a6490;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+
+.combo-content-center {
+  width: 100%;
+  height: 3.733333rem;
+  position: relative;
+  left: 0;
+  overflow-y: hidden;
+  overflow-x: scroll;
+}
+
+.partyteach-content {
+  width: 100%;
+  position: relative;
+  left: 0;
+  overflow-y: hidden;
+  overflow-x: scroll;
+}
+
+.partyteach-content-center {
+  display: block;
+  float: left;
+  width: auto;
+  height: 100%;
+  list-style: none;
+  padding: 0;
+  overflow: hidden;
+}
+
+.comboContent {
+  position: relative;
+}
+
+.comboContent img {
+  width: 2.4rem;
+  height: 3.733333rem;
+  margin-right: .266667rem;
+  border-radius: 5px;
+}
+
+.comboContentfoot {
+  width: 2.4rem;
+  text-align: center;
+  height: .733333rem;
+  line-height: .733333rem;
+  position: absolute;
+  bottom: 0px;
+  color: #333333;
+  background: rgba(255, 255, 255, 0.7);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+
+/* .partyteachContentImg{
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    margin: 0 auto;
+  } */
+
+.partyteach-container {
+  width: 2.733333rem;
+  height: 100%;
+  border: 1px solid #ece5f4;
+  padding-bottom: .4rem;
+}
+
+.partyteachContentImg {}
+
+.partyteachContentImg img {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  margin: 0 auto;
+  display: block;
+  margin-top: .4rem;
+  margin-bottom: 15px;
+}
+
+.partyteachContent {
+  /* width: 2.733333rem;
+    height: 100%;
+    margin-right: .3rem;
+    border:1px solid #ece5f4;
+    padding-bottom: .4rem; */
+  padding-right: .3rem;
+  display: table-cell;
+}
+
+.partyteachContentname {
+  height: .4rem;
+  line-height: 0.4rem;
+  width: 100%;
+  text-align: center;
+  font-size: .32rem;
+  color: #492b67;
+  margin-bottom: .133333rem;
+}
+
+.partyteachContentname .woman {
+  color: #da3967;
+  font-size: 0.32rem;
+}
+.partyteachContentname .man {
+  color: #75cfed;
+  font-size: 0.32rem;
+}
+
+.partyteachContentintroduce {
+  height: .8rem;
+  line-height: 0.4rem;
+  padding: 0 15px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  color: #b0a4bc;
+}
+</style>
+
+

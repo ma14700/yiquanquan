@@ -1,0 +1,638 @@
+<template>
+    <div class="shoplist">
+        <loading v-if="isLoading"></loading>
+        <div v-if="!isLoading">
+            <!--navbar  -->
+            <mt-navbar v-model="selected" class="blank-leaving" :class="{'fixed':showIcon}">
+                <mt-tab-item id="1">综合</mt-tab-item>
+                <mt-tab-item id="2">销量</mt-tab-item>
+                <mt-tab-item id="3">人气</mt-tab-item>
+                <mt-tab-item id="4">
+                    <span @click="arrowSelected">价格</span>
+                    <span class="arrow">
+                        <i class="iconfont icon-shangsanjiao top" :class="[arrowshow?'':'arrowNotselected']"></i>
+                        <i class="iconfont icon-xiasanjiao bottom" :class="[arrowshow?'arrowNotselected':'']"></i>
+                    </span>
+                </mt-tab-item>
+                <div class="list">
+                    <i class="iconfont" @click="changeIcon" :class="[test?'icon-list':'icon-liebiao1gai']"></i>
+                </div>
+            </mt-navbar>
+            <!--navbar end -->
+            <!-- tab-container -->
+            <mt-tab-container v-model="selected" class="blank-leaving">
+                <mt-tab-container-item id="1">
+                    <div class="main-body" :style="{'-webkit-overflow-scrolling': scrollMode}">
+                        <v-loadmore :bottom-method="loadBottom" :bottom-all-loaded="allLoaded" :auto-fill="false" ref="loadmore">
+                            <ul class="clearfix">
+                                <li v-for="(item,index) in shopList" :class="[test?'lump-wraper':'item-wraper']" :key="index">
+                                    <div class="img-box">
+                                        <img v-lazy.container="item.goodFirstPicUrl" alt="" @click.prevent="goShopdetail(item.id)">
+                                    </div>
+                                    <div class="content">
+                                        <p class="title" ref="title" @click.prevent="goShopdetail(item.id)">{{item.goodName}}</p>
+                                        <p class="price" @click.prevent="goShopdetail(item.id)">¥{{item.goodSalePrice | two}}
+                                            <i>销量&ensp;{{item.goodVirtualSales}}</i>
+                                        </p>
+                                    </div>
+                                </li>
+                            </ul>
+                            <div slot="bottom" class="mint-loadmore-bottom">
+                                <div class="more" v-if="updown == true">
+                                    <span class="line">MORE</span>
+                                    <span>查看更多</span>
+                                </div>
+                                <div class="more" v-else>下面没有了</div>
+                            </div>
+                        </v-loadmore>
+                    </div>
+
+                </mt-tab-container-item>
+                <mt-tab-container-item id="2">
+                    <div :key="item.id" v-for="(item,index) in countList" :class="[test?'lump-wraper':'item-wraper']" @click="goShopdetail(item.id)">
+                        <div class="img-box">
+                            <img v-lazy.container="item.goodFirstPicUrl" alt="">
+                        </div>
+                        <div class="content">
+                            <p class="title">{{item.goodName}}</p>
+                            <p class="price">¥{{item.goodSalePrice | two }}
+                                <i>销量{{item.goodVirtualSales}}</i>
+                            </p>
+                        </div>
+                    </div>
+                </mt-tab-container-item>
+                <mt-tab-container-item id="3">
+                    <div :key="item.id" v-for="(item,index) in hotList" :class="[test?'lump-wraper':'item-wraper']" @click="goShopdetail(item.id)">
+                        <div class="img-box">
+                            <img v-lazy.container="item.goodFirstPicUrl" alt="">
+                        </div>
+                        <div class="content">
+                            <p class="title">{{item.goodName}}</p>
+                            <p class="price">¥{{item.goodSalePrice | two}}
+                                <i>销量{{item.goodVirtualSales}}</i>
+                            </p>
+                        </div>
+                    </div>
+                </mt-tab-container-item>
+                <mt-tab-container-item id="4">
+                    <div :key="item.id" v-for="(item,index) in priceList" :class="[test?'lump-wraper':'item-wraper']" @click="goShopdetail(item.id)">
+                        <div class="img-box">
+                            <img v-lazy.container="item.goodFirstPicUrl" alt="">
+                        </div>
+                        <div class="content">
+                            <p class="title">{{item.goodName}}</p>
+                            <p class="price">¥{{item.goodSalePrice | two}}
+                                <i>销量{{item.goodVirtualSales}}</i>
+                            </p>
+                        </div>
+                    </div>
+                </mt-tab-container-item>
+            </mt-tab-container>
+            <!-- tab-container end-->
+
+            <!--固定搜索  -->
+            <div class="aside">
+                <span class="search" @click="homesearch">
+                    <i class="iconfont icon-sousuo "></i>
+                </span>
+                <span class="go-top" @click="gotop">
+                    <i class="iconfont icon-dingbu02 "></i>
+                </span>
+
+            </div>
+
+            <!--固定搜索 end -->
+            <div class="shoplist-blank" v-if="shopList.length == 0">
+                暂时没有商品哦
+            </div>
+            <footer class="footer"></footer>
+            <foot-Guide selected="shopstore"></foot-Guide>
+        </div>
+    </div>
+</template>
+
+<script>
+
+import { Header } from 'mint-ui';
+import { Navbar, TabItem } from 'mint-ui';
+import { Loadmore } from 'mint-ui';
+import headTop from '../../components/head/head';
+import footGuide from '../../components/footer/footGuide';
+import { mapState, mapMutations } from 'vuex';
+import loading from '../../components/loading/loading';
+export default {
+    data() {
+        return {
+            star: true,
+            selected: '1',
+            value: '',
+            test: true,
+            scroll: '',
+            arrowshow: true,
+            // transitionName: 'ease'
+            catid: '',
+            shopList: [],//商品列表,
+            countlist: [],
+            hotlist: [],
+            priceuplist: [],
+            pricedownlist: [],
+            pageHeight: document.body.clientHeight, //页面一屏的高度
+            searchCondition: {  //分页属性  
+                catId: this.$route.query.id,
+                recommend: true,
+                row: 10,
+                page: 1,
+                name:this.$route.query.value,
+            },
+            allLoaded: false, //是否可以上拉属性，false可以上拉，true为禁止上拉，就是不让往上划加载数据了  
+            scrollMode: "touch", //移动端弹性滚动效果，touch为弹性滚动，auto是非弹性滚动  
+            updown: true,
+            clickMessage: true,
+            isLoading: true,
+        }
+    },
+    created() {
+    },
+    components: {
+        footGuide,
+        'v-loadmore': Loadmore,
+        loading,
+    },
+    computed: {
+        ...mapState([
+            'addMoreGood'
+        ]),
+        showIcon: function() {
+            this.changeShow();
+            return this.scroll > 65;
+        },
+        // 根据销量进行排序
+        countList: function() {
+            let arr = this.shopList;
+            let arr2 = this.countlist;
+            for (let i = 0; i < arr.length; i++) {
+                arr2[i] = arr[i]
+            }
+            return arr2.sort(function(a, b) {
+                return b.goodVirtualSales - a.goodVirtualSales;//降序               
+            })
+        },
+        //根据人气进行排序
+        hotList: function() {
+            let arr = this.shopList;
+            let arr2 = this.hotlist;
+            for (let i = 0; i < arr.length; i++) {
+                arr2[i] = arr[i]
+            }
+            return arr2.sort(function(a, b) {
+                return b.hot - a.hot;//降序               
+            })
+        },
+        //根据价格进行排序
+        priceList: function() {
+            let arr = this.shopList;
+            let arr2 = this.pricedownlist;
+            let arr3 = this.priceuplist;
+            for (let i = 0; i < arr.length; i++) {
+                arr2[i] = arr[i];
+                arr3[i] = arr[i];
+            }
+            if (this.arrowshow) {
+                return arr3.sort(function(a, b) {
+                    return a.goodSalePrice - b.goodSalePrice;//升序，价格由低到高     
+                })
+            } else {
+
+                return arr2.sort(function(a, b) {
+                    return b.goodSalePrice - a.goodSalePrice;//降序    价格由高到低   s
+                })
+            }
+        }
+    },
+    mounted() {
+        window.addEventListener('scroll', this.changeShow);
+        this.loadPageList();
+        
+    },
+
+    
+    methods: {
+        // 
+        handleClose() {
+
+        },
+        //列表，块状图标转换
+        changeIcon: function() {
+            this.test = !this.test;
+        },
+        changeShow() {
+            this.scroll = document.body.scrollTop;
+        },
+        //返回顶部
+        gotop() {
+            if (document.body.scrollTop > 65) {
+                document.body.scrollTop = 0;
+            } else {
+                console.log(document.body.scrollTop);
+            }
+        },
+        //
+        homesearch() {
+            this.$router.push({ path: '/Hsearch' })
+        },
+        //价格排序箭头
+        arrowSelected() {
+            this.arrowshow = !this.arrowshow;
+        },
+        goShopdetail(id) {
+            if (this.clickMessage == true) {
+                this.$router.push({ path: '/shopdetail', query: { id } })
+            }
+
+        },
+        loadTop: function() { //组件提供的下拉触发方法  
+            //下拉加载  
+            console.log(1)
+            this.loadPageList();
+            this.$refs.loadmore.onTopLoaded();// 固定方法，查询完要调用一次，用于重新定位  
+        },
+        loadBottom: function() {
+            // 上拉加载  
+            this.more();// 上拉触发的分页查询  
+            this.$refs.loadmore.onBottomLoaded();// 固定方法，查询完要调用一次，用于重新定位  
+        },
+        loadPageList: function() {
+            // 查询数据 
+            this.$http.post('/api/good/goodlist', this.searchCondition).then(res => {
+                this.shopList = res.data.data;
+                if(res.data){
+                    this.isLoading = false;
+                }
+                this.$nextTick(function() {
+                    this.scrollMode = "touch";
+                });
+            })
+        },
+        more: function() {
+            // 分页查询  
+            this.searchCondition.page = parseInt(this.searchCondition.page) + 1;
+            console.log(this.searchCondition);
+            this.clickMessage = false;
+            var self = this;
+            setTimeout(function() {
+                self.clickMessage = true
+            }, 1000);
+            this.$http.post('/api/good/goodlist', this.searchCondition).then(res => {
+                if (res.data.data.length == 0) {
+                    this.updown = false
+                } else {
+                    console.log(res.data)
+                    this.shopList = this.shopList.concat(res.data.data);
+                }
+            })
+        },
+    },
+    filters: {
+        //保留两位小数点
+        two: function(value) {
+            if (!value) { return '' };
+            return value.toFixed(2);
+        },
+        textFilter: function(value, myString) {
+            // if(this.$refs.title.style.height>){
+
+            // }
+            let arr = this.$refs.title;
+            arr.forEach(function(item, index) {
+                if (item.style.height > 1) {
+
+                }
+            })
+            return value + myString
+        }
+
+    }
+}
+</script>
+
+
+<style>
+.mint-loadmore-bottom {
+    margin-bottom: -1.6rem
+}
+
+.shoplist {
+    background: #ece5f4;
+}
+
+.mint-loadmore-top,
+.mint-loadmore-bottom {
+    line-height: 0px;
+}
+
+
+
+
+
+
+
+/* .ease-transition{
+    transition: all .3s ease;
+
+}
+.ease-enter, .expand-leave{
+    height: 0;
+    padding: 0 10px;
+    opacity: 0;
+} */
+
+
+/*navbar  */
+
+.shoplist .mint-navbar {
+    height: 1.2rem;
+    text-align: left;
+    display: block;
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
+    box-shadow: 0 0 2px 0 #aaa;
+    z-index: 100;
+}
+
+.shoplist .fixed {
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+}
+
+.shoplist .mint-navbar .mint-tab-item {
+    padding: 0;
+    width: 2.2rem;
+    float: left;
+    color: #b0a4bc;
+}
+
+.shoplist .mint-navbar .mint-tab-item.is-selected {
+    border: none;
+    color: #4a2c68;
+    margin: 0;
+}
+
+.shoplist .mint-navbar .mint-tab-item-label {
+    line-height: 1.2rem;
+    font-size: .4rem;
+    position: relative;
+}
+
+.shoplist .mint-navbar .mint-tab-item-label .arrow {
+    position: absolute;
+    top: 0.2rem;
+    width: .4rem;
+    line-height: 1;
+}
+
+.shoplist .mint-navbar .mint-tab-item-label .arrow i {
+    display: inline-block;
+    font-size: .32rem;
+    position: relative;
+    right: -.1rem;
+}
+
+.shoplist .mint-navbar .mint-tab-item-label .arrow i.top {}
+
+.shoplist .arrowselected {
+    color: #4a2c68;
+}
+
+.shoplist .arrowNotselected {
+    color: #b0a4bc;
+}
+
+.shoplist .mint-navbar .mint-tab-item-label .arrow i.bottom {
+    top: -.1rem;
+}
+
+.shoplist .mint-navbar .list {
+    position: absolute;
+    right: 0.4rem;
+    font-size: .426667rem;
+    line-height: 1.2rem;
+    color: #b0a4bc;
+}
+
+
+
+
+
+
+
+
+/*container  */
+
+.shoplist .mint-tab-container {
+
+    background: #fff;
+}
+
+.shoplist .mint-tab-container-wrap {
+    margin-top: .4rem;
+}
+
+
+
+
+
+
+/*块  */
+
+.shoplist .lump-wraper {
+    width: 4.466667rem;
+    float: left;
+    line-height: .64rem;
+    margin-bottom: .4rem
+}
+
+.shoplist .lump-wraper .img-box {
+    width: 100%;
+    margin-bottom: .2325rem;
+    height: 4.466667rem;
+}
+
+.shoplist .lump-wraper:nth-child(odd) {
+    margin-right: .266667rem;
+}
+
+
+/*块 列表 共有  */
+
+.shoplist .img-box {
+    border: 1px solid #ece5f4;
+    border-radius: .133333rem;
+    overflow: hidden;
+}
+
+.shoplist .img-box img {
+    width: 100%;
+    height: 100%;
+}
+
+.shoplist .title {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: .4rem;
+    color: #492b67;
+}
+.shoplist .price {
+    color: #de3163;
+    font-size: .4rem;
+    font-weight: 700;
+}
+.shoplist .price i {
+    float: right;
+    margin-right: .133333rem;
+    color: #cdc6d5;
+    font-weight: normal;
+    font-size: 12px;
+    line-height: .4rem;
+}
+
+
+
+
+
+
+/*列表 */
+
+.shoplist .item-wraper {
+    width: 9.2rem;
+    height: 2.666667rem;
+    overflow: hidden;
+    margin-bottom: .4rem;
+}
+
+.shoplist .item-wraper .img-box {
+    width: 2.666667rem;
+    float: left;
+    height: 2.666667rem;
+}
+
+.shoplist .item-wraper .title {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    white-space: normal!important;
+    line-height: .506667rem
+}
+
+.shoplist .item-wraper .content {
+    width: 6.47rem;
+    padding: .4rem .24rem;
+    box-sizing: border-box;
+    float: right
+}
+
+.shoplist .item-wraper .price {
+    margin-top: .4rem
+}
+
+
+
+
+
+
+
+
+/*搜索  */
+
+.shoplist .aside span {
+    position: fixed;
+    z-index: 100;
+    text-align: center;
+    border: 1px solid #ece5f4;
+    font-size: .48rem;
+    display: block;
+    border-radius: 50%;
+    width: 1rem;
+    height: 1rem;
+    line-height: 1rem;
+    color: #d3cdda;
+    background: #fff;
+}
+
+
+.shoplist .search {
+
+    right: .4rem;
+    bottom: 3.4rem;
+}
+
+.shoplist .go-top {
+    right: .4rem;
+    bottom: 2rem;
+}
+
+
+
+/* .shoplist .show {
+    display: block
+} */
+
+
+/* more
+
+.shoplist .more {
+    width: 100%;
+    height: 1.4rem;
+    padding: .4rem 0;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.shoplist .more .more-text {
+    display: inline-block;
+    font-size: .36rem;
+    border-top: 1px solid #ece5f4;
+    border-bottom: 1px solid #ece5f4;
+    color: #beb5c9;
+    line-height: .6rem;
+} */
+
+
+/*查看更多  */
+
+.more {
+    height: 0.8rem;
+    margin: .4rem 0;
+    text-align: center;
+    color: #b0a4bc;
+    font-size: .32rem;
+}
+
+.more span {
+    display: block;
+    line-height: .5rem;
+    letter-spacing: .066667rem;
+}
+
+.more .line {
+    display: inline-block;
+    padding: 0 .333333rem;
+    border-bottom: 1px solid #b0a4bc;
+    font-size: .36rem;
+}
+
+.shoplist .shoplist-blank {
+    position: fixed;
+    height: 1rem;
+    width: 6rem;
+    color: #b0a4bc;
+    font-size: .48rem;
+    text-align: center;
+    line-height: 1rem;
+    top: 50%;
+    left: 50%;
+    transform: translate3d(-50%, -50%, 0);
+}
+</style>

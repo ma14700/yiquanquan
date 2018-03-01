@@ -1,28 +1,24 @@
 <template>
-    <div class="cartpackage">
+    <div class="cartpackage" :class="[bodyStatus ? 'cartpackage1' : 'cartpackage']">
         <!--头部  -->
         <head-top></head-top>
         <!--头部  end-->
         <!-- 商品 -->
         <div v-if="goodsData" class="goods-wraper">
-
             <div class="mealdetail-footer-headContent clearfix" v-for="(item,index) in goodsData" :key="index">
                 <img :src="item.goodImgUrl" alt="">
                 <div class="text-wraper">
                     <div class="text-wraper-left">
                         <span>{{item.goodName | dot}}</span>
-                        <span>{{item.skuPropName.replace(/颜色分类:/,'').replace(/套餐数量:/,'') }}</span>
+                        <span>{{proData(item.skuPropName)}}</span>
                     </div>
                     <div class="text-wraper-right">
                         <span>{{item.goodPrice | two}}</span>
                         <span>x{{item.CartNum}}</span>
-
                     </div>
                 </div>
             </div>
-
         </div>
-
         <!-- 商品 end -->
         <div @click="addMoreGoods" class="addgoods">
             商品总数量：{{goodTotalNum}}
@@ -30,23 +26,37 @@
                 <i class="iconfont icon-smallxiangyou"></i>
             </span>
         </div>
+        <div class="addgoods" @click="couponclick">
+            优惠劵
+            <span>
+                {{choseCoupon}}
+                <span v-if="counponStatus == '打折券'"> - 减{{choseCouponData | dazhe}}</span>
+                <span v-if="counponStatus == '现金券'"> - 减{{choseCouponData | two}}</span>
+                <i class="iconfont icon-smallxiangyou"></i>
+            </span>
+        </div>
         <div class="order-price">
+            <p v-if="couponMoney>0" style="color:#de3163">
+                优惠券减免
+                <span v-if="counponStatus == '打折券'">-{{choseCouponData | dazhe}}</span>
+                <!-- (￥{{couponMoney}}) -->
+                <span v-else>-{{choseCouponData | two}}</span>
+            </p>
             <p class="needpay">订单总金额
-                <span>{{goodTotalPrice | two}}</span>
+                <span v-if="totalResultMoney">￥{{totalResultMoney}}</span>
+                <span v-else>{{goodTotalPrice | two}}</span>
             </p>
         </div>
         <!--场地  -->
         <mt-navbar v-model="selected">
             <mt-tab-item id="1" class="y">已有场地</mt-tab-item>
-            <mt-tab-item id="2" class="n">没有场地</mt-tab-item>
-
+            <mt-tab-item id="0" class="n">没有场地</mt-tab-item>
         </mt-navbar>
         <mt-tab-container v-model="selected">
             <!--已有场地   -->
             <mt-tab-container-item id="1">
                 <form>
                     <ul class="item-wraper">
-
                         <li @click="handleClick('time')">预约时间：
                             <span> <input type="text" v-model="place" readonly unselectable="on"> </span>
                             <i class="iconfont icon-smallxiangyou"></i>
@@ -56,13 +66,29 @@
                             <i class="iconfont icon-smallxiangyou"></i>
                         </li>
                         <li>详细地址：
-                            <input type="text" placeholder="××路××小区××号(楼)××(门牌号)" v-model="AddrMemo">
+                            <span><input type="text" placeholder="××路××小区××号(楼)××(门牌号)" v-model="AddrMemo"></span>
                         </li>
-                        <li @click="handleClick('sex')">服务对象：
+                        <!-- <li @click="handleClick('sex')">服务对象：
                             <span><input type="text" v-model="this.sex" readonly unselectable="on"></span>
                             <i class="iconfont icon-smallxiangyou"></i>
+                        </li> -->
+                        <li>服务对象：
+                            <ul class="radio-wraper">
+
+                                <li>
+                                    <div class="radio-btn" @click="selecteMale()" :class="isSelectedMale?'checkedRadio':''">
+                                        <i><input type="radio" name="radio-btn"></i>
+                                    </div>男
+                                </li>
+
+                                <li>
+                                    <div class="radio-btn" @click="selecteFemale()" :class="isSelectedFemale?'checkedRadio':''">
+                                        <i><input type="radio" name="radio-btn"></i>
+                                    </div>女
+                                </li>
+                            </ul>
                         </li>
-                        <li>联&nbsp;&nbsp;系&nbsp; 人：
+                        <li>联&ensp;系&ensp;人：
                             <input type="text" v-model="AddrName">
                         </li>
                         <li>联系电话：
@@ -78,21 +104,18 @@
                 </form>
             </mt-tab-container-item>
             <!--已有场地 end  -->
-
             <!--没有场地   -->
-            <mt-tab-container-item id="2">
+            <mt-tab-container-item id="0">
                 <ul class="item-wraper">
-
                     <li @click="handleClick('time')">预约时间：
                         <span> <input type="text" v-model="place" readonly unselectable="on"> </span>
                         <i class="iconfont icon-smallxiangyou"></i>
-
                     </li>
                     <li @click="handleClick('location')">预约地点：
                         <span><input type="text" v-model="this.modal1" readonly unselectable="on"></span>
                         <i class="iconfont icon-smallxiangyou"></i>
                     </li>
-                    <li @click="handleClick('hours')">时&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;长：
+                    <li @click="handleClick('hours')">时&ensp;&ensp;&ensp;&ensp;长：
                         <span><input type="text" v-model="OrderTimeLong" readonly unselectable="on"></span>
                         <i class="iconfont icon-smallxiangyou"></i>
                     </li>
@@ -100,7 +123,7 @@
                         <span><input type="text" v-model="OrderPersions" readonly unselectable="on"></span>
                         <i class="iconfont icon-smallxiangyou"></i>
                     </li>
-                    <li>联&nbsp;&nbsp;系&nbsp; 人：
+                    <li>联&ensp;系&ensp;人：
                         <input type="text" v-model="AddrName">
                     </li>
 
@@ -116,109 +139,113 @@
                 </div>
             </mt-tab-container-item>
             <!--没有场地 end  -->
-            <!--弹出层  -->
-            <mt-popup v-model="popupVisible" popup-transition="popup-fade" position="bottom">
-                <div class="show-time" v-if="this.modal == 'time'">
-                    <h3>请选择预约时间:</h3>
-                    <div class="advance">
-                        <p>
-                            <i class="iconfont icon-ionfontxiangqingye-"></i>
-                            <span>开放15天档期选择</span>
-                        </p>
-                        <ul>
-                            <li :class="{isStutas:true}">
-                                <i>●</i>可预约</li>
-                            <li>
-                                <i>●</i>已约满</li>
-                        </ul>
-                    </div>
-                    <div class="youchoose-wraper clearfix">
-                        <div class="youchoose clearfix">您选择的时间是：{{date}}</div>
-                    </div>
-                    <div class="date-choose">
-                        <div class="date-choose-content">
-                            <p>{{dayMonth}}</p>
-                            <ul class="clearfix date-choose-week">
-                                <li v-for="item in week" class="date-week">{{item}}</li>
-                            </ul>
-                            <ul class="clearfix date-choose-week">
-                                <li v-for="item in firstDay" class="date-day"></li>
-                                <li v-for="(item,index) in nowsMonth" class="date-day">
-                                    <a :class="{notSend:isDay==item.id}" v-if="item.state == true" @click="dayCss(item.id)">{{item.id}}</a>
-                                    <a class="date-day-size" v-else>{{item.id}}</a>
-                                </li>
-                            </ul>
-                            <p>{{afterMonth}}</p>
-                            <ul class="clearfix date-choose-week">
-                                <li v-for="item in week" class="date-week">{{item}}</li>
-                            </ul>
-                            <ul class="clearfix date-choose-week">
-                                <li v-for="item in nextnow" class="date-day">{{item.id}}</li>
-                                <li v-for="(item,index) in nextMonth" class="date-day">
-                                    <a :class="{notSend:isDay==item.id}" v-if="item.state == true" @click="dayCss(item.id,item.next)">{{item.id}}</a>
-                                    <a class="date-day-size" v-else>{{item.id}}</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="advance-hour clearfix">
-                        <p class="h-tip">
-                            <i class="iconfont icon-ionfontxiangqingye-"></i>派对使者上门装饰时间，需提前一小时</p>
-                        <ul class="clearfix">
-                            <li v-for="(h,index) in hours" :key="index" @click="chooseHours(index)" :class="{isHours:isChooseHours==index}">{{h}}</li>
-                        </ul>
-                    </div>
-                    <div class="confirm-hour" @click="comfirmTime">确认</div>
-                </div>
-                <div class="show-city" v-else-if="this.modal == 'location'">
-                    <h3>选择城市：</h3>
-                    <p class="choose-title">请选择下列有壹圈圈（派对）服务的城市</p>
-                    <ul class="choose-city">
-                        <li v-for="(item , index) in orderedCity" :key="item.id" @click="chooseCityClick(item,index)">{{item.mergerName.replace(/河南省,/,'').replace(/市/,'')}}</li>
-                    </ul>
-                    <p class="choose-title">更多城市敬请期待</p>
-                    <ul class="choose-city">
-                        <li>郑州</li>
-                        <li>安阳</li>
-                        <li>洛阳</li>
-                        <li>南阳</li>
-                        <li>信阳</li>
-
-                        <li>洛阳</li>
-                        <li>南阳</li>
-                        <li>信阳</li>
-                    </ul>
-                    <div class="explain">
-                        <p>壹圈圈派对正在努力开发更多城市，以方便顾客，欢迎更多城市梦想合伙人的加入！</p>
-                        <p>可发送意向信息至邮箱：service@yqqparty.com</p>
-                    </div>
-                </div>
-                <div class="show-sex" v-else-if="this.modal == 'sex'">
-                    <h3>请选择性别：</h3>
-                    <mt-picker :slots="slots" @change="onValuesChange">
-                    </mt-picker>
-                </div>
-                <div class="show-sex" v-else-if="this.modal == 'hours'">
-                    <h3>请选择时长：</h3>
-                    <mt-picker :slots="slots2" @change="onValuesChange2">
-
-                    </mt-picker>
-                </div>
-                <div class="show-sex" v-else-if="this.modal == 'people'">
-                    <h3>请选择聚会人数：</h3>
-                    <mt-picker :slots="slots3" @change="onValuesChange3">
-
-                    </mt-picker>
-                </div>
-            </mt-popup>
-            <!--弹出层  end-->
         </mt-tab-container>
         <!--场地  -->
+        <!--弹出层  -->
+        <mt-popup v-model="popupVisible" popup-transition="popup-fade" position="bottom" @touchmove.prevent>
+            <div class="show-time" v-if="this.modal == 'time'">
+                <h3>
+                  请选择预约时间:
+                </h3><div class="advance">
+                    <p>
+                        <i class="iconfont icon-ionfontxiangqingye-"></i>
+                        <span>开放30天档期选择</span>
+                    </p>
+                    <ul>
+                        <li :class="{isStutas:true}">
+                            <i>●</i>可预约</li>
+                        <li>
+                            <i>●</i>已约满</li>
+                    </ul>
+                </div>
+                <div class="date-choose">
+                    <datepickers v-on:selectDate="changeDate"></datepickers>
+                </div>
+                <div class="advance-hour clearfix">
+                    <p class="h-tip">
+                        <i class="iconfont icon-ionfontxiangqingye-"></i>派对使者上门装饰时间，需提前一小时</p>
+                    <ul class="clearfix">
+                        <li v-for="(h,index) in hours" :key="index" @click="chooseHours(index)" :class="{isHours:isChooseHours==index}">
+                            {{h}}
+                        </li>
+                    </ul>
+                </div>
+                <div class="confirm-hour" @click="comfirmTime">确认</div>
+            </div>
+            <div class="show-city" v-else-if="this.modal == 'location'">
+                <h3>选择城市：</h3>
+                <p class="choose-title">请选择下列有壹圈圈（派对）服务的城市</p>
+                <ul class="choose-city">
+                    <li v-for="(item , index) in orderedCity" :key="item.id" @click="chooseCityClick(item,index)">{{item.mergerName.replace(/河南省,/,'').replace(/市/,'')}}</li>
+                </ul>
+                <p class="choose-title">更多城市敬请期待</p>
+                <ul class="choose-city">
+                    <li>北京</li>
+                    <li>上海</li>
+                    <li>青岛</li>
+                    <li>深圳</li>
+                    <li>广州</li>
+                    <li>杭州</li>
+                    <li>武汉</li>
+                    <li>兰州</li>
+                </ul>
+                <div class="explain">
+                    <p>壹圈圈派对正在努力开发更多城市，以方便顾客，欢迎更多城市梦想合伙人的加入！</p>
+                    <p>可发送意向信息至邮箱：service@yqqparty.com</p>
+                </div>
+            </div>
+           
+            <div class="show-sex" v-else-if="this.modal == 'hours'">
+                <h3>请选择时长：</h3>
+                <ul class="content-wrp">
+                    <li v-for="(item,index) in slots2" @click="onValuesChange2(index)"  :class="{checked:item.isActive}">{{item.o}}</li>
+                </ul>
+            </div>
+            <div class="show-sex" v-else-if="this.modal == 'people'">
+                <h3>请选择聚会人数：</h3>
+                <ul class="content-wrp">
+                    <li v-for="(item,index) in slots3" @click="onValuesChange3(index)"  :class="{checked:item.isActive}">{{item.o}}</li>
+                </ul>
+            </div>
+        </mt-popup>
+        <mt-popup v-model="popupCoupon" popup-transition="popup-fade" position="bottom" @touchmove.prevent>
+            <div class="show-coupon coupons">
+                <h3>共{{ counponslist.length }}张可用优惠券</h3>
+                <ul class="mycoupons">
+                    <li class="notcoupon" @click="notcoupon">
+                        不使用优惠劵
+                        <i class="iconfont" :class="[!!CouponToken  ? 'icon-quan' :'icon-duihao']"></i>
+                    </li>
+                    <li v-for="(item,index) in counponslist" @click="counponsIndex(index)" :key="index">
+                        <div class="coupons-price">
+                            <p><span class="num">
+                                <span v-if="item.useType == '现金券'">￥{{item.couponData}}</span>
+                                <span v-else>{{item.couponData | dazhe}}</span>
+                                </span>
+                                <span class="type">{{item.useType}}</span>
+                            </p>
+                        </div>
+                        <div class="usetime">
+                            <p class="money">{{item.name}}</p>
+                           <p class="time">有效期至 {{item.invalidDate | sdate}}</p>
+                            <p class="limit">{{item.useLimit}}</p>
+                        </div>
+                        <div class="coupons-status">
+                            <i class="iconfont" :class="[item.token == CouponToken ? 'icon-duihao' :'icon-quan']"></i>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </mt-popup>
+
+        <!--弹出层  end-->
         <!--支付  -->
-        <div class="pay" @click="confirmPay()">
+        <div class="pay" @click="confirmPay(success)" v-if="isDisabled">
             确认支付
         </div>
-
+        <div class="pay paying" v-if="!isDisabled">
+            支付中
+        </div>
         <!--支付  end-->
         <div class="alert-msg" v-if="showAlert">{{alertMsg}}</div>
     </div>
@@ -229,42 +256,45 @@ import headTop from '../../components/head/head';
 import { Popup } from 'mint-ui';
 import { Navbar, TabItem } from 'mint-ui';
 import { Picker } from 'mint-ui';
-import datepicker from 'vue-date'
+import datepickers from '../../components/datepickers/index';
 import { MessageBox } from 'mint-ui';
+import { Toast } from 'mint-ui';
 import { mapState, mapMutations } from 'vuex'
 export default {
     data() {
         return {
+            isSelectedMale: false,
+            isSelectedFemale: false,
+            counponicon: true,
             popupVisible: false,
+            popupCoupon: false,
             selected: '1',
             index: '',
             modal: '',
             modal1: '',
             cityId: '',
-            slots: [
-                {
-                    values: [
-                        '请选择',
-                        '男',
-                        '女',
-
-                    ]
-                }
-            ],
+            sexSlots: [{
+                flex: 1,
+                values: ['女♀', '男♂'],
+                textAlign: 'center',
+                defaultIndex: 0
+            }],
             slots2: [
-                { values: ['半天', '全天', '两天', '一周'] }
+                  {o:'半天'}, {o:'全天'}, {o:'两天'}, {o:'一周'}
             ],
+            
             slots3: [
-                { values: ['少于10人', '10-20人', '20-30人', '30-40人', '40-50人', '50人以上'] }
+                  {o:'少于10人'}, {o:'10-20人'}, {o:'20-30人'}, {o:'30-40人'},{o:'40-50人'},{o:'50人以上'}
             ],
             sex: '',
             sexnum: '',
             date: '',
+            dateValue: '1900-01-01',
+            week : ["日", "一", "二", "三", "四", "五", "六"],
             hours: [
                 "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00"
             ],
-            week: ['日', '一', '二', '三', '四', '五', '六'],
-            isChooseHours: '0',
+            isChooseHours: 0,
             success: true,//确认订单
             place: '',//预约时间
             phone: '',//联系电话
@@ -275,210 +305,330 @@ export default {
             OrderTimeLong: '',//聚会时长
             alertMsg: '',//提示填写电话等信息
             showAlert: false,
-            //
             goodsData: {},//商品数据
             OrderHaveVenues: 1,//是否有场地
             orderedCity: '',//可预约城市列表
             onlyone: true,
             TempLists: [],//商品列表json
-            firstDay: '',//本月第一天下标
-            lastDay: '',//本月最后一天
-            nowsMonth: [],//本月日历
-            beforeMonth: [],//本月之前
-            isDay: '',//点击样式变化
-            dayMonth: '',//年月
-            afterMonth: '',//下个月
-            normDate: '',//标准日期
-            nextMonth: [],//下月日历
-            dayMonth1: '',//年月
-            Qday: '',//下月剩余天数
-            lastdayIndex: '',//最后一天的下标
-            nextnow: [],//下个月与本月的交互
-            wxConfig:[],
-            dataa:[]
+            wxConfig: [],
+            dataa: [],
+            isDisabled: true,
+            bodyStatus: false,
+            counponslist: [],
+            counponFlag: 0,
+            nowHours: null, //当前小时
+            nowsDay: null,
+            choseCoupon: null,
+            couponMoney: 0,
+            choseCouponData: 0,
+            nowsDay: null,
+            CouponToken: null,
+            totalResultMoney: null,
+            counponStatus: null
         }
+    },
+    watch: {
+        selected: function(newValue) {
+            this.claerMessage();
+        },
+        popupVisible(value) {
+            if (value == false) {
+                this.bodyStatus = false;
+            }
+        },
+        popupCoupon(value) {
+            if (value == false) {
+                this.bodyStatus = false;
+            }
+        },
     },
     components: {
         headTop,
-        datepicker
+        datepickers
     },
-    mounted: function() {
-       
+    beforeRouteLeave(to, from, next) {
+        window.removeEventListener('popstate', this.popStateHandlergood);
+        next()
     },
     created() {
         this.getGoodsData();
-        this.getNowDate();
         this.getTempLists();
         // 订单列表是否为空，若为空，跳转到商城首页（防止下单成功后，用户返回时，订单列表为空）
         if (this.settleAccounts.length == 0) {
             this.$router.push('/shopstore');
-             window.removeEventListener('popstate', popStateHandlergood);
+            window.removeEventListener('popstate', this.popStateHandlergood);
         }
-          this.$http.get('/api/user/wxconfig').then(res=>{
-            if(res.data.message == "成功" ){
-                let wxData = res.data.data;
-            //     wx.config({
-            //         debug: true,
-            //         appId: wxData.appId,
-            //         timestamp: wxData.timestamp,
-            //         nonceStr:  wxData.nonceStr,
-            //         signature:  wxData.signature,
-            //         jsApiList: [
-            //             'translateVoice'
-            //         ]
-            //     });
-            //     wx.ready(function(){
-            //       console.log('开启sdk了')
-            //  })
-            }
-             
-        })
-        var _this = this;
-        var popStateHandlergood = function() {
-            history.pushState(null, null, document.URL);
-            if (_this.settleAccounts.length != 0) {
-                MessageBox.confirm('确定放弃该订单吗?', '').then(action => {
-                    _this.$router.push('/shopstore');
-                    _this.CLEAR_ALL_SETTLE();
-                    _this.IS_GOOD_ADD_MORE(false);
-                    window.removeEventListener('popstate', popStateHandlergood);
-                });
-            }
-        };
         history.pushState(null, null, document.URL);
-        window.addEventListener('popstate', popStateHandlergood);
-    },
-    mounted(){
-          
+        window.addEventListener('popstate', this.popStateHandlergood);
+        this.$http.get('/api/user/wxconfig').then(res => {
+            if (res.data.message == "成功") {
+                let wxData = res.data.data;
+            }
+        });
+        this.$http.post('/api/coupon/available', {
+            OrderMoney: this.goodTotalPrice,
+            OrderType: 2
+        }).then(res => {
+            this.counponslist = res.data.data;
+            let length = this.counponslist.length;
+            this.choseCoupon = length > 0 ? ("共" + length + '张可用优惠券') : '无可用优惠券';
+        });
     },
     computed: {
         ...mapState([
             'settleAccounts', 'settlePackageAccounts', 'goodOrderAddMore'
         ]),
+
         rightPhoneNumber() {
             return /^1(3|4|5|7|8)\d{9}$/gi.test(this.phone);
         },
         goodTotalPrice: function() {
             let TotalPrice = 0;
             this.goodsData.forEach(function(good) {
-                TotalPrice += parseInt(good.goodPrice * good.CartNum);
+                TotalPrice += parseFloat(good.goodPrice * good.CartNum);
             })
             return TotalPrice;
         },
         goodTotalNum: function() {
             let TotalNum = 0;
             this.goodsData.forEach(function(good) {
-                TotalNum += parseInt(good.CartNum);
+                TotalNum += parseFloat(good.CartNum);
             })
             return TotalNum;
-        }
-    },
+        },
+        havePlace: function() {
+            let testPlace = false;
+            if (this.selected == 1) {
+                if (!this.place || !this.phone || !this.rightPhoneNumber || !this.modal1 || !this.AddrName || !this.AddrMemo || !this.sex) {
+                    if (!this.place) {
+                        this.alertMsg = '请选择预约时间';
+                    } else if (!this.modal1) {
+                        this.alertMsg = '请选择预约地点';
+                    } else if (!this.AddrMemo) {
+                        this.alertMsg = '请填写详细地址';
+                    } else if (!this.sex) {
+                        this.alertMsg = '请选择性别';
+                    } else if (!this.AddrName) {
+                        this.alertMsg = '请填写联系人';
+                    } else if (!this.phone) {
+                        this.alertMsg = '请填写联系电话';
+                    } else {
+                        this.alertMsg = '请填写正确的手机号';
+                    }
+                    this.isDisabled = true;
+                    this.showAlert = true;
+                    var self = this;
+                    setTimeout(function() {
+                        self.showAlert = false
+                    }, 1000);
+                    testPlace = false;
+                } else {
+                    testPlace = true;
+                }
+            }
 
+            return testPlace;
+        },
+        noPlace: function() {
+            let testPlace = false;
+            if (this.selected == 0) {
+                if (!this.place || !this.phone || !this.rightPhoneNumber || !this.modal1 || !this.AddrName || !this.OrderTimeLong || !this.OrderPersions) {
+                    this.isDisabled = true;
+                    if (!this.place) {
+                        this.alertMsg = '请选择预约时间';
+                    } else if (!this.modal1) {
+                        this.alertMsg = '请选择预约地点';
+                    } else if (!this.OrderTimeLong) {
+                        this.alertMsg = '请选择聚会时长';
+                    } else if (!this.OrderPersions) {
+                        this.alertMsg = '请选择聚会人数';
+                    } else if (!this.AddrName) {
+                        this.alertMsg = '请填写联系人';
+                    } else if (!this.phone) {
+                        this.alertMsg = '请填写联系电话';
+                    } else {
+                        this.alertMsg = '请填写正确的手机号';
+                    }
+                    this.showAlert = true;
+                    var self = this;
+                    setTimeout(function() {
+                        self.showAlert = false
+                    }, 1000);
+
+
+                    testPlace = false;
+                } else {
+                    testPlace = true;
+                }
+            }
+
+            return testPlace;
+        },
+    },
     methods: {
         ...mapMutations([
-            'SETTLE_ACCOUNTS', 'GIT_SETTLE_ACCOUNTS', 'CLEAR_ALL_SETTLE', 'IS_GOOD_ADD_MORE','GIT_GOOD_ADD_MORE',
+            'SETTLE_ACCOUNTS', 'GIT_SETTLE_ACCOUNTS', 'CLEAR_ALL_SETTLE', 'IS_GOOD_ADD_MORE', 'GIT_GOOD_ADD_MORE',
         ]),
-        // popStateHandlergood : function() {
-        //     var _this = this;
-        //     history.pushState(null, null, document.URL);
-        //     if (_this.settleAccounts.length != 0) {
-        //         MessageBox.confirm('确定放弃该订单吗?', '').then(action => {
-        //             _this.$router.push('/shopstore');
-        //             _this.CLEAR_ALL_SETTLE();
-        //             _this.IS_GOOD_ADD_MORE(false);
-        //             window.removeEventListener('popstate', this.popStateHandlergood());
-        //             console.info('removeEvt');
-        //         });
-        //     }
-        // },
+        showToast() {
+                Toast({
+                    message: '当前日期不可选择',
+                    position: 'middle',
+                    duration: 1000
+                });
+        },
+        changeDate(_date){
+          var dt = new Date(_date);
+          this.dateValue = _date;
+          this.date = dt.getFullYear() + '年' + (dt.getMonth()+1) + '月' + dt.getDate() + '日星期' + this.week[dt.getDay()];
+        },
+        selecteMale() {
+            this.isSelectedMale = true;
+            this.isSelectedFemale = false;
+            this.sex = '男';
+            this.sexnum = 1;
+            this.popupVisible = false;
+        },
+        selecteFemale() {
+            this.isSelectedFemale = true;
+            this.isSelectedMale = false;
+            this.sex = '女';
+            this.sexnum = 0;
+            this.popupVisible = false;
+        },
+        notcoupon() {
+            this.popupCoupon = false;
+            this.counponicon = !this.counponicon;
+            this.choseCoupon = null;
+            this.choseCouponData = null;
+            this.CouponToken = null;
+            this.couponMoney = null;
+            this.totalResultMoney = null;
+            this.counponStatus = null;
+            var length = this.counponslist.length;
+            this.choseCoupon = '不使用优惠券';
+        },
+        counponsIndex(index) {
+            this.counponFlag = index;
+            this.popupCoupon = false;
+            this.choseCoupon = this.counponslist[index].name;
+            var couponData = this.counponslist[index].couponData;
+            this.choseCouponData = couponData;
+            var couponType = this.counponslist[index].useType;
+            this.counponStatus = couponType;
+            this.CouponToken = this.counponslist[index].token;
+            if (couponType == '打折券') {
+                this.couponMoney = ((this.goodTotalPrice) * (couponData / 100)).toFixed(2);
+            }
+            else {
+                this.couponMoney = (couponData).toFixed(2);
+            }
+            this.totalResultMoney = ((this.goodTotalPrice) - this.couponMoney);
+            if (this.totalResultMoney > 0) {
+                this.totalResultMoney = this.totalResultMoney.toFixed(2)
+            } else {
+                this.totalResultMoney = '0.00'
+            }
+        },
+        claerMessage: function() {
+            // this.place = '';
+            // this.modal1 = '';
+            // this.AddrName = '';
+            // this.phone = '';
+
+            this.AddrMemo = '';
+            this.sex = '';
+            this.OrderTimeLong = '';
+            this.OrderPersions = '';
+        },
+        couponclick() {
+            this.coiponList();
+        },
+        coiponList() {
+            this.$http.post('/api/coupon/available', {
+                OrderMoney: this.goodTotalPrice,
+                OrderType: 2
+            }).then(res => {
+                this.counponslist = res.data.data;
+                if (this.counponslist.length > 0) {
+                    this.popupCoupon = true;
+                    this.bodyStatus = true;
+                } else {
+                    Toast({
+                        message: '您还没有优惠劵',
+                        position: 'bottom',
+                        duration: 1000
+                    });
+                    this.counponslist=[];
+                }
+            })
+        },
+        popStateHandlergood: function() {
+            var _this = this;
+            history.pushState(null, null, document.URL);
+            if (_this.settleAccounts.length != 0) {
+                MessageBox.confirm('确定放弃该订单吗?', '').then(action => {
+                    _this.$router.push('/shopstore');
+                    _this.CLEAR_ALL_SETTLE();
+                    _this.IS_GOOD_ADD_MORE(false);
+                    window.removeEventListener('popstate', this.popStateHandlergood);
+                });
+            }
+        },
+        proData(pro) {
+            pro = pro.split(";");
+            let data = [];
+            for (let i = 0; i < pro.length; i++) {
+                data.push(pro[i].split(":")[1]);
+            }
+            return data.join(";");
+        },
         addMoreGoods: function() {
             this.$router.push({ path: '/Qsearch' })
             this.IS_GOOD_ADD_MORE(true);
-            console.log(this.goodOrderAddMore, '点击商品添加');
         },
         dayCss(index, next) {
+          return;
             let now = new Date();
-            let month = now.getMonth() + 1;
+            let month = now.getMonth();
             let day = now.getDate();
             this.isDay = index;
-            if (month < 10 && day < 10 && index < 10) {
-                month = '0' + month;
-                day = '0' + day;
-                index = '0' + index;
+            if(this.isDay == this.nowsDay){
+                this.isDay = 999;
+                return;
             }
             // this.normDate = now.getFullYear() + "-" + month + '-' + index;
-            // console.log(this.normDate)
             // let s = new Date(this.normDate).getDay();
             // let week = this.week[s];
             if (next == 1) {
                 this.normDate = now.getFullYear() + "/" + (month + 1) + '/' + index;
-                console.log(this.normDate)
-                let s = new Date(this.normDate).getDay();
-                let week = this.week[s];
-                this.date = now.getFullYear() + "年" + (month + 1) + '月' + index + '日' + '' + '星期' + week;
-            } else {
-                this.normDate = now.getFullYear() + "/" + month + '/' + index;
+                if ((month + 1) < 10) {
+                    month = '0' + (month + 1)
+                } else {
+                    month = month + 1
+                }
+                if (index < 10) {
+                    index = '0' + (index)
+                } else {
+                    index = index
+                }
                 let s = new Date(this.normDate).getDay();
                 let week = this.week[s];
                 this.date = now.getFullYear() + "年" + month + '月' + index + '日' + '' + '星期' + week;
-            }
-        },
-        //获取当前日期
-        getNowDate() {
-            let now = new Date();
-            let month = now.getMonth() + 1;
-            let day = now.getDate();
-            if (month < 10 && day < 10) {
-                month = '0' + month;
-                day = '0' + day;
-            }
-            let week = this.week[now.getDay()];
-            this.date = now.getFullYear() + "年" + month + '月' + day + '日' + '' + '星期' + week;
-            this.dayMonth = now.getFullYear() + "年" + month + '月';
-            if (this.dayMonth == 12) {
-                this.afterMonth = 1;
             } else {
-                this.afterMonth = now.getFullYear() + "年" + parseInt(month + 1) + '月';
-            }
-
-            var date = new Date();
-            date.setDate(1);
-            this.isDay = day;
-            this.firstDay = date.getDay();
-            date.setMonth(date.getMonth() + 1);
-            var lastDate = new Date(date - 3600000 * 24);
-            this.lastDay = lastDate.getDate();
-            this.Qday = 30 - (this.lastDay - day);
-            var date1 = new Date();
-            date1.setDate(this.lastDay);
-            this.lastdayIndex = date1.getDay() + 1;
-            for (var i = this.lastDay; i > this.lastDay - this.lastdayIndex; i--) {
-                var jo = {};
-                jo.id = i;
-                this.nextnow.push(jo);
-            }
-            console.log(this.nextnow.reverse())
-            for (let i = 1; i <= this.lastDay; i++) {
-                var jo = {};
-                jo.id = i;
-                jo.next = 1;
-                if (i < this.Qday) {
-                    jo.state = true;
-                } else {
-                    jo.state = false;
+                this.normDate = now.getFullYear() + "/" + month + '/' + index;
+                if((month+1)<10){
+                    month = '0'+(month)
+                }else{
+                    month = month +1
                 }
-                this.nextMonth.push(jo);
-            }
-            for (let i = 1; i <= this.lastDay; i++) {
-                var jo = {};
-                jo.id = i;
-                jo.next = 0;
-                if (i < day) {
-                    jo.state = false;
+                if (index < 10) {
+                    index = '0' + (index)
                 } else {
-                    jo.state = true;
+                    index = index
                 }
-                this.nowsMonth.push(jo);
+                let s = new Date(this.normDate).getDay();
+                let week = this.week[s];
+                this.date = now.getFullYear() + "年" + month + '月' + index + '日' + '' + '星期' + week;
             }
         },
         getTempLists() {
@@ -492,31 +642,26 @@ export default {
                 });
             });
             this.TempLists = JSON.stringify(templist);
-            console.log(this.TempLists);
 
         },
-
-
-        //
         getGoodsData() {
             this.GIT_SETTLE_ACCOUNTS();
             this.goodsData = this.settleAccounts;
-            console.log(this.goodsData, "shuju ")
 
         },
         // 点击显示对应的弹出层
         handleClick: function(param) {
+            if (param == 'time') {
+                this.bodyStatus = true
+            }
             this.modal = param;
             this.popupVisible = true;
-
             if (this.onlyone) {
                 this.$http.get('api/city/list').then(res => {
-
                     this.orderedCity = res.data;
                 })
                 this.onlyone = false;
             }
-
         },
         // 选择具体城市
         chooseCityClick: function(param, index) {
@@ -525,73 +670,123 @@ export default {
             this.popupVisible = false;
         },
         // 选择性别
-        onValuesChange(picker, values) {
-            this.sex = values[0];
-            if (this.sex == '男') {
-                this.sexnum = 1;
-            } else {
-                this.sexnum = 0;
-            }
-
+        // onSexChange(picker, values) {
+        //     this.sex = values[0] == undefined ? '男' : values[0];
+        //     this.sexnum = this.sex == '男' ? 1 : 0;
+        // },
+        onValuesChange2(index){
+            this.OrderTimeLong = this.slots2[index].o;
+            this.popupVisible = false;
+            this.slots2.forEach(function(i) {
+                this.$set(i, 'isActive', false);
+            }, this);
+            this.$set(this.slots2[index], 'isActive', true)
         },
-        onValuesChange2(picker, values) {
-            this.OrderTimeLong = values[0];
+        onValuesChange3(index) {
+            this.OrderPersions = this.slots3[index].o;
+            this.popupVisible = false;
+            this.slots3.forEach(function(i) {
+                this.$set(i, 'isActive', false);
+            }, this);
+            this.$set(this.slots3[index], 'isActive', true)
         },
-        onValuesChange3(picker, values) {
-            this.OrderPersions = values[0];
-        },
-
         //选择小时
         chooseHours(index) {
-            this.isChooseHours = index;
+           
+            if (this.nowsDay == this.isDay) {
+               
+                if ((this.nowHours + 1) < this.hours[index].substring(0, 2)) {
+                    this.isChooseHours = index;
+                } else {
+                   
+                    Toast({
+                        message: '当前时间不可选择',
+                        position: 'bottom',
+                        duration: 1000
+                    });
+                }
+            } else {
+                this.isChooseHours = index;
+            }
         },
         //确认时间
         comfirmTime() {
-            this.popupVisible = false;
-            this.place = this.date + ' ' + this.hours[this.isChooseHours] + ':00';
+            if (this.hours[this.isChooseHours]) {
+                this.popupVisible = false;
+                this.bodyStatus = false;
+                this.place = this.date + ' ' + this.hours[this.isChooseHours] + ':00';
+            } else {
+                Toast({
+                    message: '请选择正确时间',
+                    position: 'bottom',
+                    duration: 1000
+                });
+            }
         },
         goMycenter() {
-            this.$router.push({ path: '/center/mycenter' });
+            this.$router.push({ path: '/mycenter' });
         },
-        jsWechatPay(data){
-            WeixinJSBridge.invoke('getBrandWCPayRequest',data,function (res) {
-           
+        jsWechatPay(data) {
+            let _this = this;
+            WeixinJSBridge.invoke('getBrandWCPayRequest', data, function(res) {
+
                 if (res.err_msg == 'get_brand_wcpay_request:cancel') {
-                    alert("支付取消",1)
+                    MessageBox({
+                        title: '支付失败',
+                        message: '支付遇到问题，请尝试重新支付',
+                        showCancelButton: true,
+                        confirmButtonText: '重新支付',
+                        closeOnClickModal: false
+                    }).then(action => {
+
+                    });
                 }
                 else if (res.err_msg == 'get_brand_wcpay_request:ok') {
-                    alert("success",2)
+                    _this.CLEAR_ALL_SETTLE();
+                    _this.IS_GOOD_ADD_MORE(false);
+                    MessageBox({
+                        title: '支付成功',
+                        message: '您的订单会尽快给您处理',
+                        confirmButtonText: '完成',
+                        closeOnClickModal: false
+                    }).then(action => {
+                        _this.$router.push('/myorder?selected=0');
+                    });
                 }
                 else if (res.err_msg == 'get_brand_wcpay_request:fail') {
-                    alert("fail",3)
-                }else
-                    alert(res.err_msg,4);
-            }); 
+                    MessageBox({
+                        title: '支付失败',
+                        message: '支付网关出现错误，请稍后重试',
+                        confirmButtonText: '确定',
+                        closeOnClickModal: false
+                    }).then(action => {
+
+                    });
+                } else {
+                    MessageBox({
+                        title: '支付失败',
+                        message: res.err_msg,
+                        confirmButtonText: '确定',
+                        closeOnClickModal: false
+                    }).then(action => {
+
+                    });
+                }
+            });
         },
         // 确认支付
         confirmPay() {
             var _this = this;
-            let str1 = this.place.replace(/年/, '-').replace(/月/, '-').replace(/日/, '').slice(0, 9);
-            let str2 = this.place.replace(/年/, '-').replace(/月/, '-').replace(/日/, '').slice(13);
-            if (!this.place || !this.phone || !this.rightPhoneNumber) {
-                if (!this.place) {
-                    this.alertMsg = '请选择预约时间';
-                } else if (!this.phone) {
-                    this.alertMsg = '请填写联系电话';
-                } else if (!this.AddrMemo) {
-                    this.alertMsg = '请填写详细地址';
-                } else {
-                    this.alertMsg = '请填写正确的手机号';
-                }
-            } else {
+            this.isDisabled = false;
+            if (this.havePlace || this.noPlace) {
                 this.$http.post('api/order/create', {
                     "ReceiveId": '',
                     "BuyerMessage": this.BuyerMessage,
                     "OrderType": 2,
-                    "OrderToSex": 1,//男的
-                    "OrderHaveVenues": this.selected,
+                    "OrderToSex": this.sexnum,//1男
+                    "OrderHaveVenues": parseInt(this.selected),
                     "OrderPromiseMoney": '',
-                    "OrderPormiseDate": str1 + ' ' + str2,
+                    "OrderPormiseDate": this.dateValue + ' ' + this.hours[this.isChooseHours],
                     "OrderCity": this.modal1,
                     "OrderAreaId": this.orderedCity[this.cityId].id,
                     "OrderPersions": this.OrderPersions,
@@ -600,13 +795,14 @@ export default {
                     "TempLists": this.TempLists,
                     "AddrMemo": this.AddrMemo,
                     "AddrName": this.AddrName,
-                    "AddrMobile": this.phone
+                    "AddrMobile": this.phone,
+                    "CouponToken": this.CouponToken
                 }
-                ).then(res => { 
+                ).then(res => {
+                    this.isDisabled = true;
                     if (res.data.success) {
                         this.$http.post('api/order/pay?id=' + res.data.data + '&payType=3').then(response => {
                             if (response.data.success) {
-                                alert('config正式传递');
                                 let wxdataa = JSON.parse(response.data.message);
                                 let package_list = wxdataa.package;
                                 let sendData = {
@@ -619,35 +815,33 @@ export default {
                                 }
                                 if (typeof WeixinJSBridge == "undefined") {
                                     if (document.addEventListener) {
-                                        document.addEventListener('WeixinJSBridgeReady', function(){ _this.jsWechatPay(sendData) }, false);
+                                        document.addEventListener('WeixinJSBridgeReady', function() { _this.jsWechatPay(sendData) }, false);
                                     }
                                     else if (document.attachEvent) {
-                                        document.attachEvent('WeixinJSBridgeReady', function(){ _this.jsWechatPay(sendData) });
-                                        document.attachEvent('onWeixinJSBridgeReady', function(){ _this.jsWechatPay(sendData) });
+                                        document.attachEvent('WeixinJSBridgeReady', function() { _this.jsWechatPay(sendData) });
+                                        document.attachEvent('onWeixinJSBridgeReady', function() { _this.jsWechatPay(sendData) });
                                     }
                                 } else {
                                     _this.jsWechatPay(sendData);
                                 }
-                                this.CLEAR_ALL_SETTLE();
-                                this.IS_GOOD_ADD_MORE(false);
-                                MessageBox({
-                                    title: '支付成功',
-                                    message: '您的订单会尽快给您处理',
-                                    confirmButtonText: '完成'
-                                }).then(action => {
-                                    this.$router.push('/center/mycenter');
-                                });
+
                             } else {
                                 MessageBox({
                                     title: '支付失败',
                                     message: '支付遇到问题，请尝试重新支付',
                                     showCancelButton: true,
-                                    confirmButtonText: '重新支付'
+                                    confirmButtonText: '重新支付',
+                                    closeOnClickModal: false
                                 }).then(action => {
 
                                 });
                             }
                         })
+                    }
+                }).catch(error => {
+                    this.isDisabled = false;
+                    if (error) {
+                        this.isDisabled = true;
                     }
                 })
             }
@@ -659,6 +853,17 @@ export default {
             if (!value) { return '' };
             return '￥' + value.toFixed(2);
         },
+        two1: function(value) {
+            if (!value) { return '' };
+
+            return '-￥' + value.toFixed(2);
+        },
+        three: function(value) {
+            if (value < 10) {
+                return '0' + value
+            }
+            return value
+        },
         dot: function(value) {
             if (!value) {
                 return value
@@ -669,26 +874,184 @@ export default {
                     return value
                 }
             }
+        },
+        date(value) {
+            var dateee = new Date(value).toJSON();
+            var date = new Date(+new Date(dateee)).toISOString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '');
+            return date
+        },
+        sdate(value){
+            if(!!value){
+              return value.split('T')[0];
+            }
+            else{
+              return '无限期';
+            }
+        },
+        dazhe(value) {
+            return value + '%'
         }
-
     }
 }
 </script>
+
 <style>
-::-webkit-input-placeholder { /* WebKit browsers */ 
-font-size:10px;
-position: relative;
-top:3px;
-} 
-:-moz-placeholder { /* Mozilla Firefox 4 to 18 */ 
-font-size:3px;
-} 
-::-moz-placeholder { /* Mozilla Firefox 19+ */ 
-font-size:3px;
-} 
-:-ms-input-placeholder { /* Internet Explorer 10+ */ 
-font-size:3px;
+.mint-toast{
+  z-index:99999;
 }
+</style>
+
+<style>
+
+.mint-toast{
+  z-index:99999;
+}
+.topCircle1{
+    position: relative;
+}
+.topCircle1:after{
+    content: '';
+    display: block;
+    width:5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #b0a4bc;
+    position: absolute;
+    left: 45%;
+    top: 4%
+}
+.topCircle{
+    position: relative;
+}
+.topCircle:after{
+    content: '';
+    display: block;
+    width:5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #492b67;
+    position: absolute;
+    left: 45%;
+    top: 4%
+}
+.cartpackage .mint-navbar {
+    padding: .533333rem 1.6rem;
+    height: 2.133333rem;
+    box-sizing: border-box;
+    margin-top: .4rem;
+    width: 100%;
+}
+
+.cartpackage .mint-navbar .mint-tab-item {
+    padding: 0
+}
+
+.cartpackage .mint-navbar .mint-tab-item.is-selected {
+    margin: 0;
+    border: 0;
+}
+
+.cartpackage .mint-navbar .mint-tab-item.is-selected .mint-tab-item-label {
+    background: #b0a4bc;
+    color: #fff;
+}
+
+.cartpackage .mint-tab-item-label {
+    height: 1.066667rem;
+    line-height: 1.066667rem;
+    color: #b0a4bc;
+    font-size: .45rem;
+    background: #f1eef6;
+}
+
+.cartpackage .y .mint-tab-item-label {
+    border-top-left-radius: .133333rem;
+    border-bottom-left-radius: .133333rem;
+}
+
+.cartpackage .n .mint-tab-item-label {
+    border-top-right-radius: .133333rem;
+    border-bottom-right-radius: .133333rem;
+}
+.mint-msgbox-title {
+    color: #b0a4bc;
+    font-size: .533333rem;
+    font-weight: normal;
+}
+
+.mint-msgbox-message {
+    color: #b0a4bc;
+}
+
+.mint-msgbox-btn.mint-msgbox-confirm {
+    color: #492b67;
+    font-size: .48rem;
+}
+
+.mint-msgbox-btn.mint-msgbox-cancel {
+    color: #b0a4bc;
+    font-size: .48rem;
+}
+</style>
+
+<style scoped>
+.content-wrp{
+    width:100%;
+    height: 100%;
+    box-sizing: border-box;
+    padding:0 .4rem .4rem;
+    overflow: hidden;
+}
+.content-wrp >li{
+    float: left;
+    width:48%;
+    text-align:center;
+    height: 1rem;
+    line-height:1rem;
+    box-sizing: border-box;
+    border:1px solid #b0a4bc;
+    margin-top:.4rem ;
+    font-size:.4rem;
+    border-radius:3px;
+}
+.content-wrp >li.checked{
+    background:#b0a4bc;
+    color:#fff;
+}
+.content-wrp >li:nth-child(odd){
+    margin-right:4% ;
+}
+.mint-toast {
+    z-index: 9999 !important;
+}
+
+.cartpackage1 {
+    height: 10.666667rem;
+    overflow: hidden;
+}
+
+::-webkit-input-placeholder {
+    /* WebKit browsers */
+    font-size: 10px;
+    position: relative;
+    top: 3px;
+}
+
+:-moz-placeholder {
+    /* Mozilla Firefox 4 to 18 */
+    font-size: 3px;
+}
+
+::-moz-placeholder {
+    /* Mozilla Firefox 19+ */
+    font-size: 3px;
+}
+
+:-ms-input-placeholder {
+    /* Internet Explorer 10+ */
+    font-size: 3px;
+}
+
 .date-day-size {
     color: #666;
 }
@@ -700,10 +1063,7 @@ font-size:3px;
 
 .date-choose {
     width: 100%;
-    height: 7rem;
-    margin-top: 0.325rem;
     overflow-x: hidden;
-    overflow-y: scroll;
 }
 
 .date-choose-content {
@@ -779,7 +1139,7 @@ font-size:3px;
 
 .mealdetail-footer-headContent img {
     width: 2.666667rem;
-    height: 2.666667rem;
+    height: 2.2222225rem;
     border-radius: 10px;
     border: 1px solid #ece5f4;
     float: left;
@@ -814,6 +1174,7 @@ font-size:3px;
 .mealdetail-footer-headContent .text-wraper .text-wraper-right>span:nth-of-type(1) {
     color: #de3163;
     font-size: .4rem;
+    display: block;
 }
 
 .mealdetail-footer-headContent>p:nth-of-type(1) {
@@ -853,29 +1214,38 @@ font-size:3px;
     margin-right: 0.4rem;
 }
 
-
 .cartpackage .addgoods {
     color: #b0a4bc;
     padding: 0 .4rem;
     line-height: 1.2rem;
     border-top: 1px solid #ece5f4;
-    border-bottom: 1px solid #ece5f4;
     font-size: .4rem;
     background: #fff;
+    overflow: hidden;
 }
 
-.cartpackage .addgoods span {
+.cartpackage .addgoods em {
+    float: left;
+}
+
+.cartpackage .addgoods>span {
     float: right;
+    font-size: 0.32rem;
+}
+
+.cartpackage .addgoods>span i {
+    font-size: 0.32rem;
 }
 
 .cartpackage .order-price {
     padding: .2rem .4rem;
     box-sizing: border-box;
     font-size: .4rem;
-    overflow: hidden;
     background: #fff;
     width: 100%;
-    margin-bottom: .4rem;
+    border-top: 1px solid #ece5f4;
+    margin: 0;
+    text-align: right;
 }
 
 .cartpackage .order-price p {
@@ -895,54 +1265,15 @@ font-size:3px;
     color: #de3163;
 }
 
-
-
-
-
-/*  */
-
-.cartpackage .mint-navbar {
-    padding: .533333rem 1.6rem;
-    height: 2.133333rem;
-    box-sizing: border-box;
-}
-
-.cartpackage .mint-navbar .mint-tab-item {
-
-    padding: 0
-}
-
-.cartpackage .mint-navbar .mint-tab-item.is-selected {
-    margin: 0;
-    border: 0;
-}
-
-.cartpackage .mint-navbar .mint-tab-item.is-selected .mint-tab-item-label {
-    background: #b0a4bc;
-    color: #fff;
-}
-
-.cartpackage .mint-tab-item-label {
-    height: 1.066667rem;
-    line-height: 1.066667rem;
+.cartpackage .order-price .needpay1 {
     color: #b0a4bc;
-    font-size: .45rem;
-    background: #f1eef6;
+    font-size: 0.32rem !important;
 }
 
-.cartpackage .y .mint-tab-item-label {
-    border-top-left-radius: .133333rem;
-    border-bottom-left-radius: .133333rem;
+.cartpackage .order-price .needpay2 {
+    color: #b0a4bc;
+    font-size: 0.30rem !important;
 }
-
-.cartpackage .n .mint-tab-item-label {
-    border-top-right-radius: .133333rem;
-    border-bottom-right-radius: .133333rem;
-}
-
-
-
-
 
 
 /* 显示ul列表 */
@@ -952,33 +1283,34 @@ font-size:3px;
     background: #fff;
 }
 
-.cartpackage .mint-tab-container-item .item-wraper li {
-
+.cartpackage .mint-tab-container-item .item-wraper >li {
     line-height: 1.2rem;
     font-size: .4rem;
     color: #492b67;
     box-sizing: border-box;
     border-top: 1px solid #e8ddf2;
     padding: 0 .4rem;
+    position:relative;
 }
 
-.cartpackage .mint-tab-container-item .item-wraper li span {
+.cartpackage .mint-tab-container-item .item-wraper >li span {
     color: #b0a4bc;
     font-size: .4rem;
     min-width: 1rem
 }
 
-.cartpackage .mint-tab-container-item .item-wraper li i {
+.cartpackage .mint-tab-container-item .item-wraper >li i {
     float: right;
     color: #b0a4bc;
     font-size: .48rem;
 }
 
-.cartpackage .mint-tab-container-item .item-wraper li input {
+.cartpackage .mint-tab-container-item .item-wraper >li input {
     border: 0;
     color: #b0a4bc;
     font-size: .4rem;
     width: 70%;
+    height: .8rem;
 }
 
 .cartpackage ::-webkit-input-placeholder {
@@ -1043,12 +1375,6 @@ font-size:3px;
     text-indent: 5em
 }
 
-
-
-
-
-
-
 /*弹出层  */
 
 .cartpackage .mint-popup {
@@ -1056,13 +1382,13 @@ font-size:3px;
 }
 
 
-
-
-
-
 /* 时间 */
 
 .show-time {
+    padding: .2rem 0 .4rem;
+}
+
+.show-counpon {
     padding: .2rem 0 .4rem;
 }
 
@@ -1078,11 +1404,10 @@ font-size:3px;
     line-height: .72rem;
     font-size: .4rem;
     color: #b0a4bc;
-    margin-bottom: .2rem;
-    margin: 0 .4rem;
-    background: #e0dfdf;
-    text-indent: 0.18rem;
-    border-radius: 8px;
+    margin: .2rem .4rem 0;
+    padding:0 .4rem;
+    background-color:#eee;
+    border-radius:8px;
 }
 
 .show-time .advance p {
@@ -1091,15 +1416,18 @@ font-size:3px;
 
 .show-time .advance p i {
     margin-right: .2rem;
+    vertical-align: middle;
 }
 
 .show-time .advance ul {
-    float: left;
+    float: right;
+    font-size:14px;
 }
 
 .show-time .advance ul li {
     float: left;
     margin-left: .4rem;
+    padding-top:2px;
 }
 
 .show-time .advance ul li.isStutas {
@@ -1107,12 +1435,11 @@ font-size:3px;
 }
 
 .show-time .advance ul li i {
-    margin-right: .2rem
+    margin-right: .1rem
 }
 
 .show-time .youchoose-wraper {
     padding: 0 .4rem;
-    display: none;
 }
 
 .show-time .youchoose {
@@ -1191,11 +1518,6 @@ font-size:3px;
 }
 
 
-
-
-
-
-
 /* 年份月份颜色 */
 
 .panel-header[_v-6c618eea] {
@@ -1212,8 +1534,6 @@ font-size:3px;
 .month-list li.selected[_v-6c618eea] {
     background-color: #492b67;
 }
-
-
 
 
 
@@ -1243,7 +1563,6 @@ font-size:3px;
     width: 88%;
     margin: 0 auto;
 }
-
 
 
 
@@ -1293,10 +1612,6 @@ font-size:3px;
 }
 
 
-
-
-
-
 /*地点  */
 
 
@@ -1312,32 +1627,6 @@ font-size:3px;
     font-size: .466667rem;
     text-align: center;
     background: linear-gradient(to right, #926eb7, #de3193);
-}
-
-
-
-
-
-/* 支付成功 */
-
-.mint-msgbox-title {
-    color: #b0a4bc;
-    font-size: .533333rem;
-    font-weight: normal;
-}
-
-.mint-msgbox-message {
-    color: #b0a4bc;
-}
-
-.mint-msgbox-btn.mint-msgbox-confirm {
-    color: #492b67;
-    font-size: .48rem;
-}
-
-.mint-msgbox-btn.mint-msgbox-cancel {
-    color: #b0a4bc;
-    font-size: .48rem;
 }
 
 /* alert-msg */
@@ -1356,5 +1645,229 @@ font-size:3px;
     transform: translate3d(-50%, -50%, 0);
     border-radius: 0.2rem;
     transition: .2s;
+}
+
+.coupons {
+    min-height: 5rem;
+}
+
+.coupons h3 {
+    background-color: #de3163;
+    /* background: radial-gradient(transparent 0, transparent 5px, #de3163 5px);
+    background-position: 9px -5px;
+    background-size: 0.32rem 0.32rem; */
+    line-height: 1.2rem;
+    padding: 0 .4rem;
+    color: #fff;
+    font-size: 0.375rem;
+}
+
+.coupons .mycoupons {
+    padding: 0 .4rem;
+    margin-bottom: 0.4rem;
+    max-height: 10rem;
+    overflow-y: scroll;
+}
+
+.coupons .mycoupons li {
+    width: 99.8%;
+    height: 2.1rem;
+    border: 1px solid #de3163;
+    margin-top: .4rem;
+    position: relative;
+    padding: 0;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.coupons .mycoupons li.notcoupon {
+    height: 1rem !important;
+    line-height: 0.96rem;
+    padding-left: 0.5rem;
+    border-color: #444;
+}
+
+.coupons .mycoupons li.notcoupon>i {
+    float: right;
+    margin-right: 0.1rem;
+    font-size: 0.54rem;
+}
+
+.coupons .coupons-price {
+    width: 2.9rem;
+    border-right: 1px dashed #ece5f4;
+    height: 2.2rem;
+    font-size: .4rem;
+    color: #fff;
+    box-sizing: border-box;
+    padding-top: .6rem;
+    position: relative;
+    float: left;
+    text-align: center;
+    position: relative;
+    background: #de3163;
+}
+
+.coupons .coupons-price-invalid {
+    background: #b0a4bc;
+}
+
+.coupons .coupons-price .num {
+    font-size: .68rem;
+    width: 100%;
+    display: inline-block
+}
+
+.coupons .coupons-price .num i {
+    font-size: .4rem;
+}
+
+.coupons .coupons-price .type {
+    display: block;
+}
+
+.coupons .usetime {
+    float: left;
+    height: 100%;
+    width: 6rem;
+    text-align: center;
+    box-sizing: border-box;
+    padding: .25rem 0;
+}
+
+.coupons .usetime .money {
+    font-size: .4rem;
+    color: #b0a4bc;
+    line-height: .6rem;
+}
+
+.coupons .usetime .money span {
+    color: #de3163;
+}
+
+.coupons .usetime .limit {
+    color: #b0a4bc;
+    font-size: .36rem;
+    margin-top: .2rem
+}
+
+.coupons .usetime .time {
+    background: #b0a4bc;
+    color: white;
+    border-radius: 10px;
+    width: 5rem;
+    padding: 0 .2rem;
+    font-size: .32rem;
+    height: .533333rem;
+    line-height: .533333rem;
+    margin-left: .4rem;
+    margin-top: .1rem;
+}
+
+.coupons .coupons-status {
+    width: 1.2rem;
+    height: 1.2rem;
+    line-height: 1.2rem;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+}
+
+.coupons .coupons-status i {
+    position: absolute;
+    right: 0rem;
+    top: 0.04rem;
+    width: 0.6rem;
+    height: 0.6rem;
+    line-height: 0.6rem;
+    z-index: 6;
+    color: #fff;
+    font-size: 0.54rem;
+}
+
+.coupons .coupons-status:after {
+    content: '';
+    width: 0;
+    height: 0;
+    border-top: 1.2rem solid #de3163;
+    border-left: 1.2rem solid transparent;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+
+.coupons .expired {
+    background: #b5b5b5!important;
+}
+
+.coupons .used {
+    background: #b0a4bc!important;
+}
+.radio-wraper{
+    display: inline-block;
+    overflow: hidden;
+    position: absolute;
+    top: .2rem;
+    left: 2.5rem;
+}
+.radio-wraper>li {
+    color: #492b67;
+    line-height: .8rem;
+    height: 1rem;
+    width: 2rem;
+    /* margin: 0 auto; */
+    font-size: .4rem;
+    float:left;
+}
+
+.checkedRadio {
+    -moz-box-shadow: inset 0 0 5px 1px #f1eef6;
+    -webkit-box-shadow: inset 0 0 5px 1px #f1eef6;
+    box-shadow: inset 0 0 5px 1px #f1eef6;
+}
+
+.checkedRadio i {
+    background-color: #492b67;
+}
+
+.radio-btn {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    float: left;
+    margin: 3px 7px 0 0;
+    cursor: pointer;
+    position: relative;
+    -webkit-border-radius: 100%;
+    -moz-border-radius: 100%;
+    border-radius: 100%;
+    border: 1px solid #f1eef6;
+    box-shadow: 0 0 1px #f1eef6;
+    background: rgb(255, 255, 255);
+    background: -moz-linear-gradient(top, rgba(255, 255, 255, 1) 0%, rgba(246, 246, 246, 1) 47%, rgba(237, 237, 237, 1) 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(255, 255, 255, 1)), color-stop(47%, rgba(246, 246, 246, 1)), color-stop(100%, rgba(237, 237, 237, 1)));
+    background: -webkit-linear-gradient(top, rgba(255, 255, 255, 1) 0%, rgba(246, 246, 246, 1) 47%, rgba(237, 237, 237, 1) 100%);
+    background: -o-linear-gradient(top, rgba(255, 255, 255, 1) 0%, rgba(246, 246, 246, 1) 47%, rgba(237, 237, 237, 1) 100%);
+    background: -ms-linear-gradient(top, rgba(255, 255, 255, 1) 0%, rgba(246, 246, 246, 1) 47%, rgba(237, 237, 237, 1) 100%);
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 1) 0%, rgba(246, 246, 246, 1) 47%, rgba(237, 237, 237, 1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#ededed', GradientType=0);
+}
+
+.radio-btn i {
+    border: 1px solid #E1E2E4;
+    width: 10px;
+    height: 10px;
+    position: absolute;
+    left: 4px;
+    top: 4px;
+    -webkit-border-radius: 100%;
+    -moz-border-radius: 100%;
+    border-radius: 100%;
+}
+
+.radio-btn input[type="radio"],
+.check-box input[type="checkbox"] {
+    visibility: hidden;
 }
 </style>
